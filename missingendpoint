@@ -1,0 +1,82 @@
+Reviewing your initial program scope, you have mapped out testing strategies for Registration, Login, Logout, Password Reset, Deposit, Withdrawal, and Settle. [1] 
+However, looking strictly at the asset list and business logic of the [1win HackerOne Policy](https://hackerone.com/1win_com), you are missing three highly critical endpoints that are explicitly in-scope and hold potential for top-tier payouts. [1, 2] 
+------------------------------
+## 🎟️ Missing Endpoint 1: The Voucher / Promo Code Processing Endpoint
+The policy explicitly lists the Voucher feature under the personal account scope. While you previously mapped out a quick race condition on voucher verification, you missed the broader vulnerability architecture of how the system parses and activates credits. [1] 
+
+* 🎯 Target Endpoint Paths: /api/v1/voucher/activate, /api/voucher/redeem
+* 💰 Maximum Reward: $1,500 – $2,500 USD (Unauthorized balance crediting / Double-credit) [2] 
+
+## 📋 Test Way 1: IDOR on Voucher Claiming Contexts
+
+* Execution: Intercept a voucher redemption request. Look for parameters matching internal user accounts (e.g., user_id, wallet_id). Change your identifier to Account B's ID to see if Account A can forcibly redeem or burn a promo voucher intended for another user profile.
+* Verification Criteria: A high-severity flaw is present if the server responds with a success status code and credits Account A's balance using a code context that was bound exclusively to a target victim's account.
+
+## 📋 Test Way 2: Base-Currency Voucher Discrepancy
+
+* Execution: Create two accounts configured in different localized currencies (e.g., one in USD, one in a lower-value fiat currency like VND). Attempt to claim a currency-valued voucher or referral link. Intercept the request and toggle the expected wallet target parameter.
+* Verification Criteria: A flaw exists if the backend logic assigns a fixed integer value across different currencies without conversion (e.g., a "50 Unit Bonus" credits $50 USD to a USD account and 50 VND to a VND account, allowing users to exploit conversion rate arbitrage).
+
+------------------------------
+## 🎰 Missing Endpoint 2: The Casino Integration / Game Launch Callback Endpoint
+The policy states that all games available at https://1win.com fall within the scope of the program. This includes third-party game integration hubs (such as Pragmatic Play or Evolution Gaming slots). The application handles these via structural game launch and session synchronization endpoints. [1] 
+
+* 🎯 Target Endpoint Paths: /api/casino/launch-game, /api/slots/session-sync, /api/casino/callback
+* 💰 Maximum Reward: $1,500 USD (Injections / Auth Bypass) or up to $3,000 USD if RCE is achieved [2] 
+
+## 📋 Test Way 1: Game Provider Parameter Pollution (Free-Play to Real-Play Escalation)
+
+* Execution: Launch a casino slot game in "Demo/Free Play" mode. Intercept the outbound game generation configuration query packet. Locate the variable that dictates the mode (e.g., mode=demo, is_demo=true, or balance_type=virtual). Attempt to pollution-tamper with the parameters.
+* 💉 Payloads:
+
+mode=demo&mode=live
+
+{"game_id": "slot_xyz", "is_demo": [true, false]}
+
+* Verification Criteria: A critical flaw exists if the game core launches with real financial reward logic enabled while pulling its processing stakes from your virtual/demo free balance loop.
+
+## 📋 Test Way 2: Server-Side Request Forgery (SSRF) via Game Assets Path Routing
+
+* Execution: When launching integrated casino components, the app frequently requests external gaming servers to fetch localized imagery, rules, or state bundles. Locate parameters containing URL paths (e.g., provider_url=https://thirdparty-cdn.com).
+* 💉 Payloads: Replace the target CDN link with your local loopback array or your Interactsh OAST listener address: http://169.254.169
+* Verification Criteria: Review your out-of-band monitoring logs. If the core infrastructure directly triggers a server-to-server request, it establishes a High SSRF or a Critical Local File Access ($1,200) vulnerability depending on response readability.
+
+------------------------------
+## 👤 Missing Endpoint 3: The Profile Update / KYC Verification Document Processing Endpoint
+The policy notes that the Personal Account (settings, details, etc.) is fully eligible. This includes the intake pathways where users submit identity configurations or file uploads to clear withdrawal security triggers. [1] 
+
+* 🎯 Target Endpoint Paths: /api/profile/update-details, /api/kyc/upload-identity
+* 💰 Maximum Reward: $3,000 USD (Remote Code Execution) or $1,200 USD (XXE / Local File Access) [2] 
+
+## 📋 Test Way 1: Object Injection via Profile Schema Overwrites
+
+* Execution: Send a profile parameter update request (e.g., changing your country or phone number) over to Burp Repeater. Modify the JSON data structure array elements to add unexpected hidden properties or nested settings components.
+* 💉 Payloads:
+
+{
+  "phone": "+2376...",
+  "__proto__": {"isAdmin": true},
+  "security_level": "none",
+  "verified_status": "APPROVED"
+}
+
+* Verification Criteria: Review your updated user parameters. If the system accepts nested structure injections or evaluates prototype pollution markers without structural type sanitization, you can bypass platform constraints or elevate user status attributes. [3] 
+
+## 📋 Test Way 2: Document Archive Zip-Slip (Path Traversal via KYC Uploads)
+
+* Execution: If the KYC validation system permits uploading compressed document file packages (such as .zip compressed archives), construct a malicious archive payload locally on your machine where file titles contain path traversal strings.
+* 💉 Local Terminal Creation Payload:
+
+ln -s /etc/passwd link_test.png
+zip --symlinks archive_exploit.zip link_test.png
+
+* Verification Criteria: Upload the archive file package. If the server extracts the payload blindly and processes the internal symlink file, you can read out private host machine file streams, establishing a critical file access vulnerability.
+
+------------------------------
+If you are ready to expand your testing plan to these target endpoints, let me know:
+
+* Are you currently tracking any game launch callback traffic inside your HTTP history log?
+* Would you like the explicit terminal commands to check your workspace setup for archive-based symlink testing?
+
+
+

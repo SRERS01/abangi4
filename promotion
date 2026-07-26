@@ -1,0 +1,264 @@
+Here is the complete Voucher and Promo Code Processing Endpoint Testing Playbook designed to maximize payouts under the program’s severity framework. This outlines the targets, tools, exact payloads, execution steps, and verification criteria for every known technical, business logic, and cryptographic attack vector affecting voucher systems.
+------------------------------
+## 🛠️ Phase 0: Setup and Global Limits (Pre-Hunting)
+To ensure compliance with the program’s strict rate limits across all automated and manual tools combined: [1] 
+
+   1. Open Burp Suite's global settings and navigate to Tools -> HTTP -> Handling.
+   2. Check Set maximum concurrent requests and change the value to 5.
+   3. Check Delay between requests (ms) and set it to 200 (ensuring exactly 5 requests/sec max across all tools).
+   4. Establish two test accounts (Account A and Account B) via separate isolated browser environments.
+
+------------------------------
+## 1️⃣ Test Way 1: Multi-Claim Voucher Race Conditions (Double-Crediting)
+This checks if the platform contains an asynchronous validation gap between when a single-use voucher code is submitted and when the database marks it as "claimed."
+
+* 🎯 Target Parameters: Master voucher activation POST request.
+* 📋 Step-by-Step Execution:
+1. Obtain a valid, single-use promo code or voucher. Enter it into the field but do not submit.
+   2. Intercept the redemption request inside Burp Suite Proxy and send it to Turbo Intruder.
+   3. Configure a Python script deploying the concurrentRequestGate() mechanism to release exactly 5 requests simultaneously (the absolute program maximum). [2, 3, 4, 5, 6] 
+* 💉 Turbo Intruder Setup Script:
+
+def queueRequests(target, wordlist):
+    engine = RequestEngine(endpoint=target.endpoint,
+                           concurrentConnections=5, # Strict Program Limit
+                           requestsPerConnection=1,
+                           pipeline=False)
+    gate = engine.gate()
+    for i in range(5):
+        engine.queue(target.req, gate=gate)
+    engine.openGate(gate)
+def handleResponse(req, interesting):
+    table.add(req)
+
+* 🔍 Response Verification Criteria: Click Attack. Review the HTTP response codes and your wallet statement. If multiple requests return an HTTP 200 OK success code and your wallet ledger increases by multiple increments for that single code, a severe concurrency bug is present. [7] 
+* 💰 Policy Match / Reward: Payment verification bypass or double-credit — $1,500–$2,500 USD (Critical Severity)
+
+------------------------------
+## 2️⃣ Test Way 2: Broken Object Level Authorization (IDOR/BOLA on Voucher Claiming Contexts)
+This checks if an attacker can manipulate ownership parameters to claim or burn a specialized promotional voucher assigned exclusively to a target victim's account. [8] 
+
+* 🎯 Target Parameters: user_id, wallet_id, account_num, voucher_id.
+* 📋 Step-by-Step Execution:
+1. Trigger a legitimate voucher validation request on Account A and intercept it.
+   2. Locate the tracking identifiers mapping the source account profile or destination wallet.
+   3. Swap out Account A's unique identifying parameters with the identifiers collected from Account B.
+* 💉 Payloads: Change identifiers in parameters or JSON structures:
+
+{
+  "voucher_code": "VIP_BONUS_2026",
+  "target_user_id": "REPLACE_ATTACKER_ID_WITH_VICTIM_ID"
+}
+
+* 🔍 Response Verification Criteria: Forward the request. A high-severity flaw is confirmed if the system processes the query successfully, routing the voucher value or code context directly into the attacker's balance, or stealing a targeted reward from the victim.
+* 💰 Policy Match / Reward: Unauthorized fund movement or balance crediting — $1,500–$2,500 USD (Critical Severity)
+
+------------------------------
+## 3️⃣ Test Way 3: Base-Currency Voucher Discrepancy (Arbitrage Exploitation)
+This tests if the backend logic assigns a fixed integer value across different currencies without conversion, allowing users to exploit conversion rate differences.
+
+* 🎯 Target Parameters: currency, wallet_type, amount.
+* 📋 Step-by-Step Execution:
+1. Setup Account A with a high-value currency setting (e.g., USD). Setup Account B with a lower-value local currency setting (e.g., VND).
+   2. Input a generic promo code (e.g., WELCOME50) on Account A and view the interception packet.
+   3. Manipulate the request variables or type descriptors to force the currency processor to issue the high-value flat multiplier to a lower-value wallet base.
+* 💉 Payloads:
+
+{"code": "WELCOME50", "currency_override": "USD", "wallet_target": "VND_WALLET_ID"}
+
+* 🔍 Response Verification Criteria: Hit Send. If the application adds 50 USD directly to your VND account (crediting you an inflated value because it dropped conversion math checks), a critical business logic flaw is present. [9] 
+* 💰 Policy Match / Reward: Financial business-logic bypass with quantifiable gain — $200–$400 USD (Medium Severity) (Can scale to $1,500–$2,500 Critical Severity if massive balance inflation is achieved).
+
+------------------------------
+## 4️⃣ Test Way 4: Parameter Pollution via Form Arrays (Multi-Voucher Stacking)
+This checks if the voucher parameter parser can be desynchronized by sending inputs as an unexpected array object, causing the validator component to evaluate one code while processing multiple codes into the ledger.
+
+* 🎯 Target Parameters: promo_code, voucher_id.
+* 📋 Step-by-Step Execution:
+1. Send your voucher activation request parameters to Burp Repeater.
+   2. Replace the flat text numerical properties with a structured parameter array layout containing conflicting or stacked keys. [10, 11] 
+* 💉 Payloads:
+* HTTP Parameter Pollution (Form Data): promo_code=BONUS10&promo_code=BONUS50
+   * JSON Object Array Pollution:
+   
+   {"promo_code": ["BONUS10", "BONUS50"]}
+   
+   * 🔍 Response Verification Criteria: Hit Send. If the application checks the first low value to validate the transaction criteria but maps both code values to the ledger statement, stacking the credits into your wallet simultaneously, parameter pollution is confirmed.
+* 💰 Policy Match / Reward: Financial business-logic bypass with quantifiable gain — $200–$400 USD (Medium Severity) (Can scale to Critical if severe). [12] 
+
+------------------------------
+## 5️⃣ Test Way 5: SQL Injection (SQLi) via Code Fields
+This tests if user-controlled voucher string identifiers are passed unsanitized into backend raw database relational queries during validation steps.
+
+* 🎯 Target Parameters: promo_code, voucher_id, coupon.
+* 📋 Step-by-Step Execution:
+1. Navigate to the voucher activation input field and capture the submission request.
+   2. Send it over to Burp Repeater and inject structured SQL logical breakers directly into the parameters. [13] 
+* 💉 Payloads:
+* Error-Based Trigger: BONUS50' OR EXTRACTVALUE(1, CONCAT(0x7e, (SELECT @@version)))--
+   * Time-Based Blind Trigger: BONUS50' AND (SELECT 2342 FROM (SELECT(SLEEP(5)))AND 'XYZ'='XYZ
+* 🔍 Response Verification Criteria: A database injection vulnerability is confirmed if the response delays noticeably (matching your sleep execution block length) or drops explicit database diagnostic output detailing server schema properties. [14] 
+* 💰 Policy Match / Reward: Injections (SQLi or equivalent) — $1,500 USD (Critical Severity)
+
+------------------------------
+## 6️⃣ Test Way 6: Low-Entropy Voucher Guessing / Predictability (Token Brute-Force)
+This checks if unique voucher codes generated by the system (e.g., custom voucher keys issued via referral links) lack strong cryptographic random generation properties, allowing them to be predicted.
+
+* 🎯 Target Parameters: voucher_id, code.
+* 📋 Step-by-Step Execution:
+1. Generate 5 sequential gift codes or promotional tokens using your test account dashboard. Keep total automated requests strictly under 5 per second.
+   2. Copy the generated codes into a text editor and use CyberChef to check for predictable patterns (e.g., timestamps masked in Hex or linear sequential increments like WIN-1002, WIN-1003). [15, 16, 17] 
+* 🔍 Response Verification Criteria: If the values increment predictably, you can calculate valid, unredeemed voucher sequences belonging to other users. Run a limited fuzzing loop via Burp Intruder or FFuF (capped at -rate 5) to test the predicted range. If the server validates the calculated sequences and returns an HTTP 200 OK balance update, a critical predictability flaw is present.
+* 💰 Policy Match / Reward: Unauthorized fund movement or balance crediting — $1,500–$2,500 USD (Critical Severity)
+
+------------------------------
+## 7️⃣ Test Way 7: Response Manipulation / Client-Side Code Verification Overrides
+This tests if the final decision to add promotional credit is executed securely completely on the server-side, or if the server relies on the client's web browser interface to pass the final approval flag back to the wallet API queue.
+
+* 🎯 Target Parameters: Intercepted Server Response Body.
+* 📋 Step-by-Step Execution:
+1. Input an expired or completely invalid promo code (e.g., EXPIRED_CODE_999). Hit submit.
+   2. Turn on Response Interception inside your Burp Suite Proxy (Action -> Intercept response to this request).
+   3. When the server returns its refusal response payload, wipe it out and rewrite the status flags to a successful mock state. [18, 19, 20, 21] 
+* 💉 Payloads (Response Rewrite): Replace an error block like {"status": "INVALID_CODE", "activated": false} with:
+
+{"status": "SUCCESS", "activated": true, "bonus_amount": 500.00, "apply_to_ledger": true}
+
+* 🔍 Response Verification Criteria: Click Forward. If the front-end application interface passes your modified successful state parameters back to a downstream sync menu, and that script updates your real wallet balance statement, an absolute client-side logic vulnerability is present.
+* 💰 Policy Match / Reward: Unauthorized fund movement or balance crediting — $1,500–$2,500 USD (Critical Severity)
+
+------------------------------
+## 8️⃣ Test Way 8: Type Juggling Logic Overrides on Expiration / Activation Constraints
+This checks if supplying alternate data array configurations inside the promo activation payload body tricks loose type checking properties into bypassing activation boundaries (such as activation limits or expiration dates).
+
+* 🎯 Target Parameters: promo_code, activation_count, is_expired.
+* 📋 Step-by-Step Execution:
+1. Intercept your voucher activation payload inside Burp Repeater.
+   2. Inject data flags or swap string indicators for active booleans or arrays to attempt verification state bypasses. [22] 
+* 💉 Payloads:
+
+{"promo_code": "EXPIRED_CODE", "expiry_check": false}
+
+{"promo_code": {"$ne": "EXPIRED_CODE"}}
+
+* 🔍 Response Verification Criteria: Hit Send. If the application evaluates the query or boolean bypass successfully, allowing you to reactivate an old, expired, or locked voucher code to claim free balance credits, an explicit type juggling flaw is present. [23] 
+* 💰 Policy Match / Reward: Financial business-logic bypass with quantifiable gain — $200–$400 USD (Medium Severity) (Can scale to Critical $1,500–$2,500 depending on financial impact).
+
+------------------------------
+## 9️⃣ Test Way 9: XML External Entity (XXE) Injection on Bulk Voucher Uploads
+If the dashboard permits administrative, affiliate, or partner profiles to upload bulk voucher manifest lists using structured documents (like XML or Excel .xlsx configurations), this checks for document parsing vulnerabilities.
+
+* 🎯 Target Parameters: Content-Type Header and bulk upload data streams. [24] 
+* 📋 Step-by-Step Execution:
+1. Locate the bulk document upload template for voucher/gift manifest imports.
+   2. Alter the standard header parameter to read: Content-Type: application/xml.
+   3. Replace the data body with an XML structure containing local file read traversal paths. [25, 26] 
+* 💉 Payloads:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE vouchers [  
+  <!ENTITY xxe SYSTEM "file:///etc/hostname"> 
+]>
+<voucherImport>
+  <code_prefix>GIFT</code_prefix>
+  <debug_log>&xxe;</debug_log>
+</voucherImport>
+
+[27] 
+* 🔍 Response Verification Criteria: Hit Send. Analyze the output response strings or look at the updated variables in your dashboard. If the application server parses the XML schema natively and reflects backend system configuration lines on your screen or inside the log error reports, XXE is confirmed. [28] 
+* 💰 Policy Match / Reward: Local file access / manipulation (LFR, RFI, XXE) — $1,200 USD (Critical Severity) [29, 30] 
+
+------------------------------
+## 🔟 Test Way 10: Negative/Overflow Value Voucher Activations (Balance Drain Checking)
+This checks if input filters fail to reject negative values inside specialized customizable gift card activation panels, causing the core ledger database logic to invert arithmetic properties.
+
+* 🎯 Target Parameters: value, amount, custom_balance.
+* 📋 Step-by-Step Execution:
+1. If the platform contains a feature to create or activate a custom-value voucher code, locate the initialization request inside Burp Repeater.
+   2. Modify the numerical value property string to include a negative operator or extreme integer boundaries.
+* 💉 Payloads:
+
+custom_value=-500.00
+
+{"voucher_amount": 2147483648}
+
+* 🔍 Response Verification Criteria: Hit Send. Review your wallet balance statement. A vulnerability is confirmed if submitting negative balance indicators or integer overflows shifts financial tallies abnormally (e.g., generating free credits or dropping system verification checking entirely). [31] 
+* 💰 Policy Match / Reward: Unauthorized fund movement or balance crediting — $1,500–$2,500 USD (Critical Severity)
+
+------------------------------
+If you are ready to apply these ten methodologies to your environment setup, let me know:
+
+* Have you discovered a specific behavior change (like an HTTP 500 error or unique response length) when running any of these templates?
+* Would you like a custom Markdown report template to structure your final submission layout for a critical payout?
+
+
+
+To round out your playbook for the Voucher / Promo Code Processing Endpoint, here are the final four advanced, edge-case attack vectors that complete every technically possible testing path. These cover desynchronization across distributed architectures, parameter shifting, and template injection, mapping up to $3,000 USD.
+------------------------------
+## 1️⃣1️⃣ Test Way 11: Multi-Wallet Activation Shifting (Bonus vs. Real Balance Forgery)
+This tests if an attacker can manipulate structural transaction routing parameters to force a promo code meant for a restricted "Bonus Wallet" to execute straight into the "Withdrawable Real Cash Wallet."
+
+* 🎯 Target Parameters: wallet_type, balance_pool, destination_account.
+* 📋 Step-by-Step Execution:
+1. Input a standard promo code that yields locked bonus points (e.g., BONUS200). Intercept the request in Burp Proxy.
+   2. Locate hidden variables specifying where the funds drop.
+   3. Swap the target parameter string values to reference the primary withdrawable cash index. [1] 
+* 💉 Payloads:
+
+{"code": "BONUS200", "wallet_target": "main_real_cash"}
+
+code=BONUS200&account_pool=withdrawable_ledger
+
+* 🔍 Response Verification Criteria: Forward the request and inspect your dashboard. A critical logic flaw is confirmed if the system processes the voucher but places the money into your withdrawable real balance pool, allowing you to cash out promotional points immediately without meeting wagering requirements.
+* 💰 Policy Match / Reward: Unauthorized fund movement or balance crediting — $1,500–$2,500 USD (Critical Severity)
+
+------------------------------
+## 1️⃣2️⃣ Test Way 12: Distributed Cache Replication Lag (Voucher Replay Attack)
+This checks if the platform handles high-speed transactions securely across distributed Redis/Memcached storage systems. It tests if a single-use code can be applied multiple times sequentially before the master node propagates its "used" state to all edge clusters.
+
+* 🎯 Target Parameters: Master voucher activation POST request.
+* 📋 Step-by-Step Execution:
+1. Copy a valid, unredeemed voucher activation request string into Burp Suite Repeater.
+   2. Construct a high-frequency sequential pipeline script (maintaining your strict -rate 5 cap to avoid breaking the program rules).
+   3. Fire the identical request 5 times back-to-back within milliseconds. [2, 3] 
+* 🔍 Response Verification Criteria: Review your wallet history. If replication delays across regional cloud servers allow multiple validation nodes to accept the code before it is globally flagged as burned, your wallet balance will increase by multiple increments for a single voucher.
+* 💰 Policy Match / Reward: Payment verification bypass or double-credit — $1,500–$2,500 USD (Critical Severity)
+
+------------------------------
+## 1️⃣3️⃣ Test Way 13: Server-Side Template Injection (SSTI) via Dynamic Promo Metadata
+Many modern promotional platforms dynamically generate customized success messages or localized landing pages by pulling metadata directly from the promo code string itself. This tests if forcing template evaluation expressions inside the text parameters executes code on the server. [4] 
+
+* 🎯 Target Parameters: promo_code, voucher_id.
+* 📋 Step-by-Step Execution:
+1. Navigate to the voucher entry box.
+   2. Input targeted mathematical template injection expressions directly as the code name string and submit. [5] 
+* 💉 Payloads:
+* Generic Engine Test: {{7*7}}
+   * Mako/Jinja Variant: ${7*7} or *{7*7}
+* 🔍 Response Verification Criteria: Look closely at the error message returned on your screen or inside the log response body. If the application returns a validation error that reads "Voucher 49 not found" instead of literally echoing back your string {{7*7}}, SSTI is confirmed. If you can leverage this to execute system instructions, it establishes a critical command flaw. [6, 7] 
+* 💰 Policy Match / Reward: Remote code execution (RCE) — $3,000 USD (Critical Severity)
+
+------------------------------
+## 1️⃣4️⃣ Test Way 14: Crypto-Signature Parameter Pollution (Callback Forgery)
+If vouchers are bought or generated via third-party digital payment platforms, this checks if the server validates the incoming activation notification by strictly processing the signed parameter string sequence or if it can be broken by variable padding.
+
+* 🎯 Target Parameters: signature, hash, URL query strings.
+* 📋 Step-by-Step Execution:
+1. Capture a valid, signed partner webhook request that issues a voucher to an account profile. Send it to Burp Repeater.
+   2. Leave the authentic validation signature value untouched, but append secondary variables or duplicate structural fields inside the payload mapping. [8] 
+* 💉 Payloads:
+
+GET /api/vouchers/partner-webhook?code=FREE10&signature=VALID_HASH&code=FREE500
+
+* 🔍 Response Verification Criteria: Hit Send. If the application validates the signature using the first parameter group (FREE10) but the backend voucher engine awards your account with the secondary polluted value (FREE500), a catastrophic parameter handling error is present. [9] 
+* 💰 Policy Match / Reward: Payment verification bypass or double-credit — $1,500–$2,500 USD (Critical Severity)
+
+------------------------------
+This officially concludes every single technically known attack vector and scenario across all core authentication, user management, and transactional logic engines within the program scope.
+If you are ready to prepare a submission or organize your notes, let me know:
+
+* Which vulnerability category or finding you want to format into a formal report.
+* If you need help structuring your Reproduction Steps or Proof of Concept lines to ensure rapid triage by the security analysts.
+
+
+

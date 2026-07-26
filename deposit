@@ -1,0 +1,272 @@
+Here is the complete Deposit Endpoint Testing Playbook designed to maximize payouts under the program’s severity framework. This outlines the targets, tools, exact payloads, execution steps, and verification criteria for every known technical, business logic, and cryptographic attack vector affecting deposit functionalities.
+------------------------------
+## 🛠️ Phase 0: Setup and Global Limits (Pre-Hunting)
+To ensure compliance with the program’s strict rate limits across all automated and manual tools combined:
+
+   1. Open Burp Suite's global settings and navigate to Tools -> HTTP -> Handling.
+   2. Check Set maximum concurrent requests and change the value to 5.
+   3. Check Delay between requests (ms) and set it to 200 (ensuring exactly 5 requests/sec max across all tools).
+   4. Prepare an isolated test account (AccountA) containing minimum valid funds to execute real checkout triggers safely.
+
+------------------------------
+## 1️⃣ Test Way 1: Parameter Tampering / Low-Value Fraud Injection
+This checks if the platform verifies the final paid value on the server-side, or if it trusts client-supplied variables passed down to the payment gateway handler.
+
+* 🎯 Target Parameters: amount, price, subtotal, value.
+* 📋 Step-by-Step Execution:
+1. Go to the deposit menu and initiate a transaction of $100.00.
+   2. Turn Intercept is On inside your Burp Suite Proxy and click the final confirm/checkout button.
+   3. Locate the numerical currency properties inside the raw HTTP request parameters. [1] 
+* 💉 Payloads: Change the high currency value field to a minimal or fractional layout:
+
+amount=0.01
+
+amount=0.00
+
+* 🔍 Response Verification Criteria: Forward the request. Complete the transaction on the payment provider interface for $0.01. A critical vulnerability is confirmed if your target account balance is credited with the full original value ($100.00) instead of the penny actually charged.
+* 💰 Policy Match / Reward: Payment verification bypass or double-credit — $1,500–$2,500 USD (Critical Severity)
+
+------------------------------
+## 2️⃣ Test Way 2: Negative Integer Balance Addition (Underflow Exploitation)
+This tests if input filters fail to reject negative values, causing the core ledger database logic to invert operations.
+
+* 🎯 Target Parameters: amount, total.
+* 📋 Step-by-Step Execution:
+1. Capture a clean deposit initialization request inside Burp Repeater.
+   2. Modify the numerical value property string to include a negative operator.
+* 💉 Payloads:
+
+amount=-50.00
+
+{"deposit_amount": -100}
+
+* 🔍 Response Verification Criteria: Hit Send. Review your wallet balance statement. A vulnerability is confirmed if the backend logic interprets the negative subtraction parameter incorrectly, resulting in your main account balance increasing rather than failing validation.
+* 💰 Policy Match / Reward: Unauthorized fund movement or balance crediting — $1,500–$2,500 USD (Critical Severity)
+
+------------------------------
+## 3️⃣ Test Way 3: Webhook Notification Signature Stripping / Cryptographic Gaps
+This checks if the internal callback API endpoint validates cryptographic signatures or hashes sent by payment processors to verify successful payment events.
+
+* 🎯 Target Parameters: Request Headers (X-Signature, X-Callback-Hash, Authorization) and transaction state body fields.
+* 📋 Step-by-Step Execution:
+1. Locate historical proxy logs for inbound merchant notification endpoints containing paths like /api/payment/callback or /webhooks/deposit.
+   2. Send a successful baseline notification request payload over to Burp Repeater.
+   3. Intentionally change transaction status text identifiers to success configurations while stripping security headers. [2] 
+* 💉 Payloads: Modify body states to "status": "SUCCESS" or "payment_status": "completed" and alter headers:
+
+X-Payment-Signature: null
+
+X-Payment-Signature: 00000000000000000000000000000000
+
+[3] 
+* 🔍 Response Verification Criteria: Hit Send. An authentication bypass vulnerability is present if the webhook path processes your request and returns an HTTP 200 OK or {"status":"processed"} confirmation code, directly crediting your balance without validating a real payment signature. [4] 
+* 💰 Policy Match / Reward: Payment verification bypass or double-credit — $1,500–$2,500 USD (Critical Severity)
+
+------------------------------
+## 4️⃣ Test Way 4: Callback Hash Collision / Predictable Secret Brute-Forcing
+If the payment callback validates the signature using an inline MD5 or SHA256 string combination, this checks if the hashing pattern relies on simple, predictable variables.
+
+* 🎯 Target Parameters: Body tracking keys and signature hash structures.
+* 📋 Step-by-Step Execution:
+1. Analyze a valid webhook notification payload and trace how the signature string is structured.
+   2. Use CyberChef to check if the signature hash is a combination of predictable attributes (e.g., md5(transaction_id + amount + secret_key)). [5, 6, 7] 
+* 💉 Testing Configuration: If the secret key used by developers turns out to be a default word or predictable company string (e.g., 123456, test, 1win), forge a modified payment request using a locally computed signature. Send this fake callback to the server via Burp Repeater.
+* 🔍 Response Verification Criteria: A critical security gap exists if the server accepts your locally calculated signature string and updates your wallet balance dashboard.
+* 💰 Policy Match / Reward: Payment verification bypass or double-credit — $1,500–$2,500 USD (Critical Severity)
+
+------------------------------
+## 5️⃣ Test Way 5: Currency Juggling via Type Exchange
+This checks if changing the currency tracking type variable tricks the server into processing a low-value local currency transaction while crediting your wallet with a high-value currency.
+
+* 🎯 Target Parameters: currency, currency_code, iso_code.
+* 📋 Step-by-Step Execution:
+1. Initiate a standard checkout request for 10 units (e.g., $10.00 USD). Intercept it in Burp Proxy.
+   2. Leave the amount numerical property as 10.00 but modify the currency descriptor field to a currency with a significantly lower conversion rate.
+* 💉 Payloads: Swap currency indicators while keeping values fixed:
+
+amount=10.00&currency=VND
+
+{"amount": 10.00, "currency": "INR"}
+
+* 🔍 Response Verification Criteria: Forward the request. Pay the lower local currency equivalent on the processor interface. A vulnerability exists if the core platform incorrectly credits your digital profile wallet with $10.00 USD rather than the lower local currency value actually processed.
+* 💰 Policy Match / Reward: Financial business-logic bypass with quantifiable gain — $200–$400 USD (Medium Severity) (Can scale to Critical $1,500–$2,500 if severe).
+
+------------------------------
+## 6️⃣ Test Way 6: Race Conditions on Deposit Confirmations (Double-Credit)
+This tests if sending multiple identical callback signals simultaneously breaks transaction execution limits, leading to a single deposit being credited multiple times.
+
+* 🎯 Target Parameters: Master payment notification callback request.
+* 📋 Step-by-Step Execution:
+1. Intercept a legitimate successful deposit notification callback or copy a valid request string into Turbo Intruder.
+   2. Write a Python concurrency script deploying the concurrentRequestGate() execution mechanism to release exactly 5 requests simultaneously (the maximum program limit).
+* 💉 Turbo Intruder Setup Script:
+
+def queueRequests(target, wordlist):
+    engine = RequestEngine(endpoint=target.endpoint,
+                           concurrentConnections=5, # Strict Program Limit
+                           requestsPerConnection=1,
+                           pipeline=False)
+    gate = engine.gate()
+    for i in range(5):
+        engine.queue(target.req, gate=gate)
+    engine.openGate(gate)
+def handleResponse(req, interesting):
+    table.add(req)
+
+* 🔍 Response Verification Criteria: Click Attack. Review the responses and your wallet ledger history. A vulnerability is confirmed if multiple requests return an HTTP 200 OK or confirmation status code, resulting in your balance being credited multiple times for a single real payment.
+* 💰 Policy Match / Reward: Payment verification bypass or double-credit — $1,500–$2,500 USD (Critical Severity)
+
+------------------------------
+## 7️⃣ Test Way 7: SQL Injection (SQLi) via Transaction Reference Parameters
+This tests if user-controlled transaction string identifiers are passed unsanitized into backend SQL database storage procedures during deposit processing.
+
+* 🎯 Target Parameters: transaction_id, payment_ref, description, order_id.
+* 📋 Step-by-Step Execution:
+1. Intercept a deposit initialization query or callback string request in Burp Proxy.
+   2. Inject structured SQL logical breakers directly into the tracking reference parameters.
+* 💉 Payloads:
+* Error-Based Trigger: TRX_999' OR EXTRACTVALUE(1, CONCAT(0x7e, (SELECT @@version)))--
+   * Time-Based Blind Trigger: TRX_999' AND (SELECT 2342 FROM (SELECT(SLEEP(5)))AND 'XYZ'='XYZ
+* 🔍 Response Verification Criteria: A database injection flaw is confirmed if the response delays noticeably (matching your sleep injection length) or breaks tracking streams, throwing structural database logs containing explicit server data. [8] 
+* 💰 Policy Match / Reward: Injections (SQLi or equivalent) — $1,500 USD (Critical Severity)
+
+------------------------------
+## 8️⃣ Test Way 8: Large Integer Overflow / Exponential Number Stuffing
+This checks if the platform's input boundary check can be broken by passing immense numbers or alternative notations, triggering arithmetic evaluation anomalies in financial account balances.
+
+* 🎯 Target Parameters: amount.
+* 📋 Step-by-Step Execution:
+1. Send a standard deposit request over to Burp Repeater.
+   2. Substitute standard text numerical variables for system maximum numbers or scientific exponential representations. [9] 
+* 💉 Payloads:
+
+amount=2147483648
+
+amount=999999999999999999
+
+{"amount": 1e+5}
+
+* 🔍 Response Verification Criteria: Hit Send. Review how the transaction engine converts the values. If the application processes the immense parameters without strict limits, resulting in massive system balance increases or dropping errors that disrupt balance validation entirely, an validation vulnerability is present. [10] 
+* 💰 Policy Match / Reward: Unauthorized fund movement or balance crediting — $1,500–$2,500 USD (Critical Severity) [11] 
+
+------------------------------
+## 9️⃣ Test Way 9: Blind Server-Side Request Forgery (SSRF) via Redirect URL Poisoning
+Many payment gateways require a user-supplied return URL (return_url or callback_url) to redirect users back to the platform once a payment finishes. This checks if the server attempts to parse or connect inward to this destination directly from its infrastructure. [12, 13] 
+
+* 🎯 Target Parameters: redirect_url, return_url, cancel_url.
+* 📋 Step-by-Step Execution:
+1. Initiate a deposit and locate redirect routing destinations inside your proxy parameters.
+   2. Replace the legitimate redirect link path string with an internal loopback network address or your private Interactsh domain wrapper. [14] 
+* 💉 Payloads:
+
+return_url=http://127.0.0.1:8080
+
+return_url=http://169.254.169
+
+return_url=http://oast.pro
+
+* 🔍 Response Verification Criteria: Complete or cancel the payment routine. Check your running out-of-band Interactsh console client logs. If the platform infrastructure directly initiates an automated HTTP/DNS connection token lookup back to your private logging domain, an SSRF flaw is confirmed.
+* 💰 Policy Match / Reward: SSRF, blind — $750 USD (High Severity) (Rises to $1,300 USD if response details are readable).
+
+------------------------------
+## 🔟 Test Way 10: Array Parameter Pollution on Financial Objects
+This tests if the deposit parameter parser can be desynchronized by sending an input parameter as an unexpected array object, causing the validation component to read one value while the session credit engine uses another.
+
+* 🎯 Target Parameters: amount.
+* 📋 Step-by-Step Execution:
+1. Send your deposit request parameters to Burp Repeater.
+   2. Replace the flat text numerical properties with a structured parameter array layout containing conflicting data points. [15] 
+* 💉 Payloads:
+* HTTP Parameter Pollution (Form Data): amount=100.00&amount=0.01
+   * JSON Object Array Pollution:
+   
+   {"amount": ["100.00", "0.01"]}
+   
+   * 🔍 Response Verification Criteria: Hit Send. If the application checks the low value ($0.01) to validate the checkout transaction fee but uses the high value ($100.00) when updating your dashboard account balance statement, parameter pollution is confirmed. [16] 
+* 💰 Policy Match / Reward: Payment verification bypass or double-credit — $1,500–$2,500 USD (Critical Severity)
+
+------------------------------
+If you have completed your initial test scans and need to draft your report summary, let me know:
+
+* Which vulnerability category you want to document first.
+* If you need help structuring your Reproduction Steps and Proof of Concept payload sections into a professional format to prevent triage delays.
+
+
+To ensure your playbook is 100% complete, here are the final four advanced edge-case attack vectors that exist for testing a deposit endpoint. These target specific microservice communication gaps, race states during processing transitions, and distributed database synchronization defects, mapped directly to their bug bounty rewards.
+------------------------------
+## 1️⃣1️⃣ Test Way 11: Payment Status Pending-to-Success Race Injection
+This targets the asynchronous window between when a deposit request is initialized as "PENDING" and when the payment gateway sends the final confirmation signal. It tests if an attacker can force a state transition manually by abusing race conditions.
+
+* 🎯 Target Parameters: payment_id, status, invoice_num.
+* 📋 Step-by-Step Execution:
+1. Initialize a deposit request for $100.00 to generate a real transaction ID, but do not complete the payment on the merchant gateway.
+   2. Locate the API query path where your client browser polls the server to verify the transaction status (e.g., GET /api/payment/status?id=TRX_XYZ).
+   3. Send this request to Burp Suite Proxy, alter the request method from GET to POST or PUT, and append a status modification body string.
+   4. Send this mutated packet over to Turbo Intruder and fire exactly 5 requests simultaneously (abiding by the program limit) the exact second the real gateway transaction is expected to time out or update. [1] 
+* 💉 Payloads: Force status string overrides:
+
+{"id": "TRX_XYZ", "status": "SUCCESS", "transition": "force"}
+
+* 🔍 Response Verification Criteria: Click Attack. A critical business-logic vulnerability is present if your concurrent requests return an HTTP 200 OK or {"updated": true} status message, and your wallet balance dashboard registers the $100.00 credit without a real payment ever being made.
+* 💰 Policy Match / Reward: Payment verification bypass or double-credit — $1,500–$2,500 USD (Critical Severity)
+
+------------------------------
+## 1️⃣2️⃣ Test Way 12: Distributed Database Replication Delay (Balance Inversion)
+This checks if the platform uses a distributed database architecture with lax synchronization properties, allowing an attacker to exploit database replication lag between nodes during deposit processing.
+
+* 🎯 Target Parameters: Master deposit verification callback.
+* 📋 Step-by-Step Execution:
+1. Complete a real, minimum-value deposit (e.g., $1.00) to generate a valid, signed webhook callback signal from the provider.
+   2. Send this valid webhook request to Burp Suite Repeater.
+   3. Prepare a high-frequency script that replays this identical verification callback request sequentially up to 5 times (the strict policy limit) within a fraction of a millisecond. [2] 
+* 🔍 Response Verification Criteria: Hit Send. Monitor your wallet statement across a couple of browser refreshes. If node replication delay causes multiple backend validator servers to accept and record the single callback transaction before the global master database marks the transaction_id as used/unique, your account balance will increase by $5.00 instead of $1.00. [3] 
+* 💰 Policy Match / Reward: Payment verification bypass or double-credit — $1,500–$2,500 USD (Critical Severity)
+
+------------------------------
+## 1️⃣3️⃣ Test Way 13: Cryptographic Replay Attacks via Callback Parameter Shifting
+This checks if the platform's deposit handler validates payment webhooks based on string ordering rather than cryptographically signing the complete request structure.
+
+* 🎯 Target Parameters: Webhook parameter strings and signature hashes.
+* 📋 Step-by-Step Execution:
+1. Capture a successful deposit notification request in Burp Repeater.
+   2. Leave the authentic signature or hash header parameter untouched, but append secondary variables or alter parameter positions inside the URL query or JSON text layout. [4] 
+* 💉 Payloads:
+* Parameter Shifting: Move parameters around (?amount=1.00&id=123 to ?id=123&amount=1.00) to see if signature validation logic breaks while processing continues.
+   * Garbage Parameter Append: Append junk values that might be skipped by the signature tool but evaluated by the wallet processing engine: ?id=123&amount=1.00&amount=100.00
+* 🔍 Response Verification Criteria: Hit Send. If the application parses the packet, validates the signature using the original strings, but allows the secondary parameters to override the deposit amount in your wallet ledger, a catastrophic logical configuration error is present. [5] 
+* 💰 Policy Match / Reward: Payment verification bypass or double-credit — $1,500–$2,500 USD (Critical Severity)
+
+------------------------------
+## 1️⃣4️⃣ Test Way 14: XML External Entity (XXE) Injection on Invoice Formats
+If the deposit endpoint generates, parses, or accepts structured document configurations (like XML invoices, SAML tokens, or PDF metadata profiles) during checkout initialization, this checks if forcing document format overrides leaks system properties.
+
+* 🎯 Target Parameters: Content-Type Header and Request Body. [6] 
+* 📋 Step-by-Step Execution:
+1. Capture your deposit initialization POST query request in Burp Repeater.
+   2. Change the header configuration parameter line to read: Content-Type: application/xml.
+   3. Replace the entire request payload body text layout with an XML structure hosting an external local system path extraction command script. [7, 8, 9] 
+* 💉 Payloads:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE invoice [  
+  <!ENTITY xxe SYSTEM "file:///etc/passwd"> 
+]>
+<depositInvoice>
+  <amount>10.00</amount>
+  <currency>USD</currency>
+  <reference>&xxe;</reference>
+</depositInvoice>
+
+[10] 
+* 🔍 Response Verification Criteria: Hit Send. Review the server's output response stream or invoice metadata generation properties. If the application processes the XML structure and returns system files (like your local machine's /etc/passwd file strings or local network identifiers), a critical configuration error is present. [11, 12] 
+* 💰 Policy Match / Reward: Local file access / manipulation (LFR, RFI, XXE) — $1,200 USD (Critical Severity) [13, 14] 
+
+------------------------------
+This officially concludes every technically documented attack vector targeting authentication, account configuration, financial transactions (deposits and withdrawals), and platform inputs across the entire scope of this program.
+If you are currently evaluating these methods on your test environment, let me know:
+
+* Have you observed a specific system response (such as an HTTP 500 or unique error messages) that you need help interpreting?
+* Do you need help formatting a formal bug bounty disclosure report template to structure your final findings for a critical payout?
+
+
+

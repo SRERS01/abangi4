@@ -1,0 +1,221 @@
+In sports betting and casino platforms, the Settle Endpoint is responsible for evaluating the final outcome of a game or sporting event and adjusting the user's wallet balance based on whether they won or lost. Because this endpoint directly updates financial ledgers, vulnerabilities here lead to high-paying critical categories.
+Here is the complete Settle Endpoint Testing Playbook designed to maximize payouts under the program’s severity framework.
+------------------------------
+## 🛠️ Phase 0: Setup and Global Limits (Pre-Hunting)
+To ensure compliance with the program’s strict rate limits across all automated and manual tools combined:
+
+   1. Open Burp Suite's global settings and navigate to Tools -> HTTP -> Handling.
+   2. Check Set maximum concurrent requests and change the value to 5.
+   3. Check Delay between requests (ms) and set it to 200 (ensuring exactly 5 requests/sec max across all tools).
+   4. Establish two test accounts (Account A and Account B) and place minimum-value baseline wagers on an upcoming match.
+
+------------------------------
+## 1️⃣ Test Way 1: Time-Window Arbitrage (Late-Bet Settlement Race)
+This checks if the platform contains a brief synchronization gap between a real-world match event concluding (e.g., a goal being scored) and the server officially marking the betting slip or market as "suspended" or "settled."
+
+* 🎯 Target Parameters: bet_id, market_id, event_time, slip_status.
+* 📋 Step-by-Step Execution:
+1. Identify a live sports match and prepare a bet slip request payload in Burp Repeater.
+   2. Monitor the live match feeds. The exact microsecond a definitive event happens (e.g., a team scores or wins), hit Send on your bet request before the platform's feed provider can update the market state to locked.
+* 🔍 Response Verification Criteria: If the server accepts your bet after the outcome has already been determined in the physical world, and subsequently runs its settling logic to credit you with a winning payout, a massive business logic flaw is present.
+* 💰 Policy Match / Reward: Unauthorized fund movement or balance crediting — $1,500–$2,500 USD (Critical Severity)
+
+------------------------------
+## 2️⃣ Test Way 2: Client-Side State Injection on Settlement Requests
+This tests if the final evaluation of a wager (win vs. loss) is handled exclusively by secure backend oracle databases, or if the server relies on variables passed from the user's browser interface to dictate the outcome.
+
+* 🎯 Target Parameters: is_win, status, payout_multiplier, outcome.
+* 📋 Step-by-Step Execution:
+1. Place an intentionally losing wager (or run a casino slot game) and watch the polling network packets in Burp Proxy.
+   2. Locate the specific HTTP POST/PUT request or WebSocket frame that triggers the application to evaluate or finalize the game loop.
+   3. Modify the status text indicators to positive truth strings.
+* 💉 Payloads:
+
+{"bet_id": "98745", "status": "WIN", "multiplier": 50.0}
+
+outcome=WINNER&payout=500.00
+
+* 🔍 Response Verification Criteria: Forward the request. A critical vulnerability is confirmed if the backend processes your modified string parameters without server-side validation, switching a real game loss into a validated win that updates your primary wallet balance.
+* 💰 Policy Match / Reward: Payment verification bypass or double-credit — $1,500–$2,500 USD (Critical Severity)
+
+------------------------------
+## 3️⃣ Test Way 3: Concurrency Settlement Race Conditions (Double-Payout)
+This checks if triggering rapid, overlapping settlement calls causes a race condition inside the application's transactional processing thread, allowing a single winning slip to be cashed out multiple times before the row status locks as "Settled."
+
+* 🎯 Target Parameters: Master settlement execution request (e.g., POST /api/bet/settle or Cash-Out features).
+* 📋 Step-by-Step Execution:
+1. Win a legitimate bet or trigger an early partial "Cash Out" action. Intercept this final balance collection request string.
+   2. Send it over to Turbo Intruder.
+   3. Configure a Python script deploying the concurrentRequestGate() mechanism to release exactly 5 requests simultaneously (the absolute program maximum).
+* 💉 Turbo Intruder Setup Script:
+
+def queueRequests(target, wordlist):
+    engine = RequestEngine(endpoint=target.endpoint,
+                           concurrentConnections=5, # Policy Limit Max
+                           requestsPerConnection=1,
+                           pipeline=False)
+    gate = engine.gate()
+    for i in range(5):
+        engine.queue(target.req, gate=gate)
+    engine.openGate(gate)
+def handleResponse(req, interesting):
+    table.add(req)
+
+* 🔍 Response Verification Criteria: Click Attack. Review the HTTP response codes and your wallet statement. If multiple requests return an HTTP 200 OK or confirmation status code, and your wallet ledger increases by multiple increments for that single winning event, a severe concurrency bug is present.
+* 💰 Policy Match / Reward: Payment verification bypass or double-credit — $1,500–$2,500 USD (Critical Severity)
+
+------------------------------
+## 4️⃣ Test Way 4: Parameter Pollution via Form Arrays (Odds Inversion)
+This tests if the settlement calculation components parse multi-value array parameter wrappers inconsistently, using one instance to verify the ticket's existence and the second instance to calculate the final payout multiplier.
+
+* 🎯 Target Parameters: odds, multiplier, stake.
+* 📋 Step-by-Step Execution:
+1. Capture an active bet submission or settlement polling string in Burp Repeater.
+   2. Duplicate or inject secondary keys inside the parameter block to desynchronize validation variables.
+* 💉 Payloads:
+* HTTP Parameter Pollution (Form Data): bet_id=123&odds=1.5&odds=999.0
+   * JSON Object Array Pollution:
+   
+   {"bet_id": "123", "odds": ["1.5", "999.0"]}
+   
+   * 🔍 Response Verification Criteria: Hit Send. If the application checks the low odds (1.5) to validate that the ticket matches the actual real-world game statistics, but the financial ledger component parses the secondary high property (999.0) when computing your final wallet cash payout, parameter pollution is confirmed.
+* 💰 Policy Match / Reward: Financial business-logic bypass with quantifiable gain — $200–$400 USD (Medium Severity) (Can scale to Critical $1,500–$2,500 depending on the potential wallet drainage impact).
+
+------------------------------
+## 5️⃣ Test Way 5: Broken Object Level Authorization (IDOR/BOLA on Ticket Collections)
+This checks if an attacker can manipulate ownership parameters to claim and settle winning tickets belonging to other players on the platform.
+
+* 🎯 Target Parameters: bet_id, ticket_num, slip_id.
+* 📋 Step-by-Step Execution:
+1. Place a bet on Account B (Incognito window) and note the generated bet_id parameter code.
+   2. Log into Account A (Normal browser window) and locate a settlement request block inside your proxy logs. Send it to Burp Repeater.
+   3. Swap Account A's tracking parameters with Account B's bet_id.
+* 🔍 Response Verification Criteria: Hit Send. A critical logic flaw is confirmed if the system processes the query successfully, marking Account B's ticket as settled while routing the resulting financial winnings directly into Account A's profile balance.
+* 💰 Policy Match / Reward: Unauthorized fund movement or balance crediting — $1,500–$2,500 USD (Critical Severity)
+
+------------------------------
+## 6️⃣ Test Way 6: Response Manipulation / Intercepted Settlement Status Overrides
+This tests if the client-side single-page application framework handles session state updates insecurely, allowing an attacker to force a local interface bypass that triggers downstream credit modifications.
+
+* 🎯 Target Parameters: Intercepted Server Response Body.
+* 📋 Step-by-Step Execution:
+1. Locate a completed bet that resulted in a loss. Click on the ticket details to view it.
+   2. Turn on Response Interception inside your Burp Suite Proxy (Action -> Intercept response to this request). Refresh the page.
+   3. When the server returns the ticket status metadata mapping a loss, wipe it out and replace it with a winning dictionary structure. [1] 
+* 💉 Payloads (Response Body Patching): Replace an error/loss block like {"bet_status": "LOST", "payout": 0.00} directly with:
+
+{"bet_status": "WON", "payout": 500.00, "is_settled": true, "credit_applied": true}
+
+* 🔍 Response Verification Criteria: Click Forward. If the front-end interface processes your updated winning flags, re-evaluates local session state files, and passes a secondary confirmation sync token back to the central engine that updates your wallet balance, an authentication state bypass is present.
+* 💰 Policy Match / Reward: Unauthorized fund movement or balance crediting — $1,500–$2,500 USD (Critical Severity)
+
+------------------------------
+## 7️⃣ Test Way 7: SQL Injection (SQLi) via Settlement Lookup Sorting Parameters
+This tests if user-controlled sorting filters or text strings on historical wager lookup tables are passed unsanitized into backend raw database relational queries during the calculation steps.
+
+* 🎯 Target Parameters: filter_by, sort_order, bet_id, date_range. [2] 
+* 📋 Step-by-Step Execution:
+1. Navigate to your bet history layout panel. Select a filter options button and capture the request string in Burp.
+   2. Send it over to Burp Repeater and inject structured SQL logical breakers directly into the parameters. [3] 
+* 💉 Payloads:
+* Error-Based Trigger: bet_id=98745' OR EXTRACTVALUE(1, CONCAT(0x7e, (SELECT @@version)))--
+   * Time-Based Blind Trigger: bet_id=98745' AND (SELECT 2342 FROM (SELECT(SLEEP(5)))AND 'XYZ'='XYZ
+* 🔍 Response Verification Criteria: A database injection vulnerability is confirmed if the response delays noticeably (matching your sleep execution block length) or drops explicit database diagnostic output detailing server schema properties. [4] 
+* 💰 Policy Match / Reward: Injections (SQLi or equivalent) — $1,500 USD (Critical Severity)
+
+------------------------------
+## 8️⃣ Test Way 8: Integer Underflow / Fractional Rounding on Cash-Out Fractions
+This checks if the mathematical calculations governing cash-out settling computations break down when handling miniature fraction structures, allowing an attacker to generate micro-cents that never subtract from the platform's ledger tracking arrays.
+
+* 🎯 Target Parameters: amount, fractional_stake.
+* 📋 Step-by-Step Execution:
+1. Find a live bet that allows fractional cash-outs (withdrawing a piece of your bet before the game finishes).
+   2. Send the cash-out execution query to Burp Repeater.
+   3. Append lengthy floating-point decimal precise values into the execution parameters. [5] 
+* 💉 Payloads:
+
+amount=0.00000001
+
+{"cashout_amount": 0.001}
+
+* 🔍 Response Verification Criteria: Hit Send. If the calculation logic rounds the payout up to the nearest penny ($0.01) on your wallet ledger but rounds the deduction down to nothing ($0.00) on your live ticket tracking stakes, you can run an automated replay script to drain the platform continuously.
+* 💰 Policy Match / Reward: Financial business-logic bypass with quantifiable gain — $200–$400 USD (Medium Severity) (Can scale to Critical $1,500–$2,500 if high-volume automated drainage can be successfully demonstrated).
+
+------------------------------
+If you are currently evaluating these settlement methods on your targets, let me know:
+
+* Is your platform processing settlements via stateless REST API HTTP endpoints or streaming state packets over WebSockets?
+* Do you need help formatting a formal bug bounty finding report draft for any of these testing steps?
+
+
+To finalize your master playbook, here are the remaining four advanced edge-case attack vectors that complete every technically possible variation for testing a settlement endpoint. These target underlying microservice race conditions, out-of-order execution flows, database type-juggling inconsistencies, and external oracle synchronization gaps.
+------------------------------
+## 9️⃣ Test Way 9: Out-of-Order Message Processing (Settle-Before-Place Race)
+This checks if the platform handles asynchronous queue messages securely. It tests if an attacker can manipulate or replay a game evaluation "settlement" message before the server's message broker has finalized the "place bet" or "deduct funds" transaction ledger entries.
+
+* 🎯 Target Parameters: bet_id, sequence_id, queue_routing_key.
+* 📋 Step-by-Step Execution:
+1. Capture a standard betting transaction workflow inside Burp. Isolate the request that sends the final game result or ticket settlement query.
+   2. Send this request over to Turbo Intruder.
+   3. Intentionally open a new game stream or slot spin request block, copy its expected or pre-calculated transaction bet_id (if predictable or sequential), and fire the settlement packet containing that new ID simultaneously with the initial spin click.
+* 🔍 Response Verification Criteria: Click Attack. A severe logic vulnerability is present if the backend system processes the "win/payout" settlement action before the "deduct stake" transaction finishes, resulting in the wallet balance updating with a profit without ever checking or deducting the user's initial wager stakes.
+* 💰 Policy Match / Reward: Unauthorized fund movement or balance crediting — $1,500–$2,500 USD (Critical Severity)
+
+------------------------------
+## 🔟 Test Way 10: Settle Status Type Juggling / Boolean Confusion
+This checks if the settlement evaluation endpoint relies on weak or loose typing comparison filters, allowing an attacker to swap standard literal text status fields for boolean parameters to trick the validation arrays.
+
+* 🎯 Target Parameters: status, is_cancelled, is_loss.
+* 📋 Step-by-Step Execution:
+1. Send a standard settlement evaluation request payload to Burp Repeater.
+   2. Locate the tracking variable that dictates outcome statistics (e.g., "status": "LOST" or "settlement_code": "0").
+   3. Swap the text or integer values for active booleans, empty structures, or wildcards to trigger verification state confusion.
+* 💉 Payloads:
+
+{"bet_id": "12345", "status": true}
+
+{"bet_id": "12345", "status": {"$ne": "LOST"}}
+
+{"bet_id": "12345", "is_loss": false}
+
+* 🔍 Response Verification Criteria: Hit Send. Review your wallet ledgers. If the server's processing script interprets a boolean true or a NoSQL wildcard object matching a non-loss state as an automatic validation success, and subsequently drops down into a winner crediting pipeline routine, an input validation flaw is present.
+* 💰 Policy Match / Reward: Injections (SQLi or equivalent) — $1,500 USD (Critical Severity) (Can also fall under Admin Bypass for $1,500).
+
+------------------------------
+## 1️⃣1️⃣ Test Way 11: Multi-Market Event Cache Invalidation (The Abandoned Play Flaw)
+In sports betting, when an athletic match is officially cancelled or abandoned due to severe weather or stadium disruptions, all open wagers are supposed to be voided and refunded. This checks for synchronization gaps when clearing the regional memory caches across distributed servers.
+
+* 🎯 Target Parameters: market_status, void_bet_id, refund_trigger.
+* 📋 Step-by-Step Execution:
+1. Locate an event that has been delayed or abandoned in real-time, or place an open live bet on a volatile market.
+   2. The exact moment an official "abandonment" declaration goes live, open Burp Repeater and sequentially send multiple overlapping requests to the settlement cash-out route and the cancellation refund route inside the brief server syncing window.
+* 🔍 Response Verification Criteria: A critical balance crediting vulnerability is confirmed if the system desynchronizes its memory cache states, processing a full 100% refund of your original wager capital while simultaneously executing a partial cash-out or winning evaluation payload before the ticket fully locks in the master ledger database.
+* 💰 Policy Match / Reward: Payment verification bypass or double-credit — $1,500–$2,500 USD (Critical Severity)
+
+------------------------------
+## 1️⃣2️⃣ Test Way 12: Oracle Feed Impersonation / Fake Provider Callback Forge
+Many modern web gaming structures use external API engines or third-party sports data oracles to fetch and push final settle results. This checks if the endpoint handling these external updates validates the sender's origin or permits direct payload injection.
+
+* 🎯 Target Parameters: IP address validation, incoming tracking tokens, request headers (X-Oracle-Signature, X-Provider-ID).
+* 📋 Step-by-Step Execution:
+1. Look back through your historical Burp proxy traffic maps to locate endpoints where external result grids are delivered (e.g., /api/v1/settle-callback/provider-name).
+   2. Send a valid transaction baseline over to Burp Repeater.
+   3. Attempt to manipulate the source identity attributes within headers or body parameters, or try to strip out tracking signature fields entirely.
+* 💉 Payloads:
+
+POST /api/v1/settle-callback/provider-name HTTP/1.1
+X-Oracle-Signature: none
+X-Forwarded-For: 127.0.0.1
+
+* 🔍 Response Verification Criteria: Hit Send. If the application parses your callback request, accepts the fake game data block, and calculates the wallet settlement winnings based on your forged outcomes without throwing an authentication or signature error, a catastrophic oracle bypass is present.
+* 💰 Policy Match / Reward: Payment verification bypass or double-credit — $1,500–$2,500 USD (Critical Severity)
+
+------------------------------
+This completely covers every technically documented attack vector and scenario across every core authentication, account, financial, and betting transaction logic engine endpoint within this entire program scope.
+If you are ready to proceed with formatting your final security logs, let me know:
+
+* Which endpoint behavior or specific payload response you want to break down into a formal bug bounty report layout.
+* If you want help structuring your Impact Assessment block to clearly justify the highest possible payout tier.
+
+
+

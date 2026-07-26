@@ -1,0 +1,150 @@
+To hunt for logout vulnerabilities that lead to high-paying categories like Account Takeover or Information Disclosure, you must test how the server, browser, and tokens handle session destruction.
+Here is the exact step-by-step playbook covering all possible ways to hunt for these flaws.
+------------------------------
+## 1️⃣ Test Way 1: Server-Side Session Persistence (The Core Flaw)
+This checks if the logout function only visually logs you out but leaves the session active in the backend database.
+## 📋 Step-by-Step Execution
+
+   1. Log into your test account using your main browser window.
+   2. Open Burp Suite. Navigate to Proxy -> HTTP history.
+   3. Perform a highly sensitive action in the dashboard (e.g., loading the withdrawal screen or changing profile settings).
+   4. Find that request in your HTTP history, right-click it, and select Send to Repeater.
+   5. Go back to your browser window and click the Logout button normally.
+   6. Open Burp Repeater and click Send on the sensitive request you captured in step 3. [1] 
+
+## 🔍 Response Verification Criteria
+
+* Vulnerable Outcome ($1,500 Takeover Path): The server responds with HTTP 200 OK or HTTP 204 No Content and successfully executes the action or returns your private data. This proves the token is still alive in the database.
+* Secure Outcome: The server responds with HTTP 401 Unauthorized or HTTP 403 Forbidden.
+
+------------------------------
+## 2️⃣ Test Way 2: Stateless JWT Expiration and Denylist Gaps
+Many platforms use JSON Web Tokens (JWTs). Because they are stateless, clicking logout doesn't stop the token from working unless the backend explicitly blocks it.
+## 📋 Step-by-Step Execution
+
+   1. Log into your account and open your browser's Developer Tools (F12).
+   2. Go to the Application or Storage tab, click Local Storage or Cookies, and copy your active Bearer eyJ... JWT authentication token.
+   3. Click Logout on the website.
+   4. Open Burp Repeater, construct a manual HTTP request to an API endpoint (e.g., https://1win.com), and insert your copied token header:
+   
+   Authorization: Bearer <PASTE_YOUR_OLD_JWT_HERE>
+   
+   5. Wait 5 minutes, 15 minutes, and 30 minutes, clicking Send each time. [2] 
+
+## 🔍 Response Verification Criteria
+
+* Vulnerable Outcome: If the token continues to pull data or perform actions up until its natural cryptographic expiration time (exp claim), the developers failed to implement a server-side denylist.
+* To Maximize Payout: Prove that an attacker with this token can immediately change the account password or email address after the victim logged out.
+
+------------------------------
+## 3️⃣ Test Way 3: Multi-Session and Concurrent Device Isolation
+This checks if logging out of one active session properly terminates or syncs with other connected clients, or if a global logout is completely broken.
+## 📋 Step-by-Step Execution
+
+   1. Open your normal browser tab and log into your account to establish Session A. Copy the session cookie string.
+   2. Open an Incognito window and log into the exact same account to establish Session B.
+   3. In Session A, click the Logout button.
+   4. Switch to your Incognito window (Session B) and attempt to place a bet, make a deposit, or change profile settings.
+   5. Alternatively, if the app has a "Log out of all other devices" option, check if old active session tokens captured in Burp still work after triggering it. [3] 
+
+## 🔍 Response Verification Criteria
+
+* Vulnerable Outcome: If Session B remains completely active and can execute trades or modify settings after Session A logged out, the system fails to handle multi-device synchronization or global session revoking.
+
+------------------------------
+## 4️⃣ Test Way 4: Browser Cache and History Manipulation
+This checks if sensitive user data is leaked to a shared or public computer because the server didn't tell the browser to destroy its local memory cache.
+## 📋 Step-by-Step Execution
+
+   1. Log into your account and navigate to a highly sensitive page, such as your transaction history, passport verification data, or main financial balance dashboard.
+   2. Click the Logout button on the page.
+   3. Immediately click the web browser's Back Arrow Button to navigate backward into the account history.
+
+## 🔍 Response Verification Criteria
+
+* Vulnerable Outcome ($750 - $1,000 Info Disclosure Path): The browser pulls the sensitive data page from its local cache and displays your private financial data or personal settings visually on the screen, even though you are logged out.
+* How to Verify the Technical Root Cause: Inspect the HTTP headers of the sensitive data page inside your Burp History. The bug is confirmed if the response is missing these security headers:
+
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Expires: 0
+
+
+------------------------------
+## 5️⃣ Test Way 5: Session Token Fixation via Defective Logout Logic
+This checks if the application recycles the exact same session tracking ID string before and after the logout event takes place. [4] 
+## 📋 Step-by-Step Execution
+
+   1. Open Burp Suite. Log into your test account and note down the precise cookie/token value string (e.g., session_id=XYZ123).
+   2. Click the Logout button. Intercept the request to ensure it passes through.
+   3. Log right back into the same account, or look at the cookie the browser issues immediately after the logout event. [5, 6] 
+
+## 🔍 Response Verification Criteria
+
+* Vulnerable Outcome: If the application issues the exact same session_id=XYZ123 value after logging out or logging back in, it is vulnerable to session fixation. An attacker who sets that cookie value on a victim's machine before they log in or out will maintain permanent access. [7, 8] 
+
+------------------------------
+If you are currently executing one of these test scenarios on your target environment, let me know:
+
+* Is the target platform returning session cookies or JWT tokens inside your Burp request panels?
+* Do you need help formatting a Proof of Concept script to demonstrate session persistence over time?
+
+
+Yes, there are three additional advanced exploitation paths directly involving the logout mechanism or its immediate handling that can achieve high payouts ($750 – $1,500 USD).
+Here is the finalized additions to your playbook, containing the step-by-step setup and verification criteria for the remaining techniques.
+------------------------------
+## 6️⃣ Test Way 6: Persistent WebSocket Channel Leakage
+Platforms with live elements (like casino games or betting slips) often maintain persistent backend streams. This test checks if logging out of the HTTP session leaves the underlying full-duplex socket channel completely open.
+## 📋 Step-by-Step Execution
+
+   1. Open Burp Suite and navigate to the Proxy -> WebSockets history tab.
+   2. Log into your account and open a live casino dashboard or active profile stream to initialize the WebSocket connection.
+   3. Keep the browser window running, go back to Burp, locate the active binary or text WebSocket channel stream, and click Send to Repeater.
+   4. In your browser window, click Logout to kill your HTTP session.
+   5. In Burp WebSocket Repeater, draft an outbound message block onto the channel (e.g., executing a casino spin or pulling live user balance queries) and click Send.
+
+## 🔍 Response Verification Criteria
+
+* Vulnerable Outcome ($1,000 - $1,500 High/Critical): The WebSocket stream accepts your payload message, responds with live data blocks, or updates account states over the socket link. This proves the transport layer socket is completely decoupled from the HTTP session management termination logic, enabling unauthorized actions after an official user exit.
+* Secure Outcome: The socket disconnects immediately upon logout, or responds with a Close frame.
+
+------------------------------
+## 7️⃣ Test Way 7: HTTP Parameter Pollution & Session Desynchronization
+This checks if multi-parameter processing allows an attacker to manipulate the logout flow, triggering a partial logout where sub-tokens or specialized session data structures remain completely intact.
+## 📋 Step-by-Step Execution
+
+   1. Log into your account and open Burp Proxy. Click the Logout button and intercept the outbound HTTP request packet.
+   2. Identify the core session tracking variable parameter names (e.g., token, session, uid, or device_id).
+   3. Inject secondary duplicated values or alternate arguments into the query string or JSON payload wrapper block.
+   * HPP Query Parameter Format: GET /logout?token=VALID_TOKEN&token=INVALID_TOKEN
+      * Array JSON Format:
+      
+      {"token": ["VALID_TOKEN", "INVALID_TOKEN"]}
+      
+      * Parameter Shifting: Try appending a null payload string to the secondary target indicator: token=VALID_TOKEN&destroy=false
+   4. Click Forward to send the polluted data block to the server.
+   5. Check your main browser tab to see if you appear logged out visually. Then, paste your unmodified VALID_TOKEN value back into Burp Repeater to request financial profile pathways.
+
+## 🔍 Response Verification Criteria
+
+* Vulnerable Outcome ($1,500 Account Takeover Path): The frontend user interface logs out because it evaluated the error/second parameter, but the backend server failed to clear the master authentication index associated with the initial token. The old session credentials remain fully active.
+
+------------------------------
+## 8️⃣ Test Way 8: DOM Storage & Local Credential Leakage
+Many modern applications copy fallback session validation keys, backup parameters, or sensitive profile settings directly into browser DOM storage locations that survive simple cookie deletions.
+## 📋 Step-by-Step Execution
+
+   1. Open your browser tab, authenticate your account, and hit F12 to toggle the Developer Console.
+   2. Go to the Application or Storage pane tab on your console.
+   3. Click through the drop-down listings for Local Storage and Session Storage. Note down every custom key/value pair (e.g., user_profile_cache, refresh_token, or cached_balance).
+   4. Click the website Logout button natively.
+   5. Do not close or refresh the window. Immediately review the Local Storage table values again to check which attributes were actively cleaned.
+
+## 🔍 Response Verification Criteria
+
+* Vulnerable Outcome ($750 - $1,000 Information Disclosure Path): Highly confidential fields (such as identity details or active tokens used to query authorization profiles) remain inside the browser's persistent DOM registry after the UI signals a successful logout event. An attacker at a public internet café or shared computer can read your Local Storage variables directly out of the machine to extract your data or re-authenticate your account.
+
+------------------------------
+Let me know if you would like to move on to drafting your report structure or if you want to verify the WebSocket responses you see in your log files.
+
+
