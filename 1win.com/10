@@ -1,0 +1,74 @@
+Here is the exact terminal setup script to install every required tool on your Ubuntu system, fully configured to support your testing workflow.
+------------------------------
+## 🛠️ Section 1: Standard System Utilities
+Open your Ubuntu terminal and run the following command block to update your system packages and install basic development requirements, Git, and Java (which is needed to run Burp Suite).
+
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y curl git default-jdk build-essential libimage-exiftool-perl python3 python3-pip python3-venv
+
+------------------------------
+## 💻 Section 2: Go Language Runtime Installation
+Many modern testing tools require Go. Run these commands sequentially to download, install, and configure Go on your system.
+
+# Download the Go binary archive
+curl -OL https://go.dev
+# Extract it to your system directory
+sudo tar -C /usr/local -xzf go1.22.2.linux-amd64.tar.gz
+# Clean up the downloaded file
+rm go1.22.2.linux-amd64.tar.gz
+# Append Go environment paths to your shell profile
+echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
+echo 'export PATH=$PATH:$HOME/go/bin' >> ~/.bashrc
+# Reload your shell configurations
+source ~/.bashrc
+
+------------------------------
+## 🔍 Section 3: Tool-Specific Setup Instructions## 1. Burp Suite Community Edition (Area 1, 2, 3, & 4)
+Ubuntu provides a straightforward automated installer script for Burp Suite.
+
+# Download the official Linux installer script
+curl -o burpsuite_community.sh "https://portswigger-cdn.net"
+# Grant execution permissions
+chmod +x burpsuite_community.sh
+# Execute the installer wizard
+./burpsuite_community.sh
+
+
+* Post-Installation Step (Extensions): Open Burp Suite → Navigate to Extensions tab → Click BApp Store → Search for and install Autorize and Turbo Intruder.
+
+## 2. Interactsh Client (Area 3 & 4)
+This manages out-of-band interaction logging for your SSRF and Blind XSS tests.
+
+# Install the binary using Go
+go install -v ://github.com
+
+## 3. OWASP ZAP (Area 2 Alternate)
+If you want to use ZAP instead of Burp for breakpoints, install the official community snap package.
+
+sudo snap install owasp-zap --classic
+
+## 4. CyberChef Offline Edition (Area 2)
+Running CyberChef locally on Ubuntu keeps your cryptographic testing private and efficient.
+
+# Create a dedicated directory
+mkdir -p ~/tools/cyberchef && cd ~/tools/cyberchef
+# Pull down the latest standalone package structure
+curl -OL https://github.com
+# Install unzip utility and extract packages
+sudo apt install unzip -y
+unzip CyberChef_v10.19.4.zip
+# Open the HTML application in your default Ubuntu browser
+xdg-open CyberChef_v10.19.4.html
+
+## 5. Exiftool (Area 4 Image Modification)
+Exiftool was successfully installed via the system package command in Section 1. You can instantly run and verify its deployment in your terminal workspace:
+
+exiftool -ver
+
+------------------------------
+If you run into any dependency pathing errors or need help testing your connection through Burp Suite on Ubuntu, let me know:
+
+* Which specific tool setup log or command output you need to verify.
+* If you want to configure your Firefox system proxy to route your traffic correctly through Burp on your localhost network.
+
+

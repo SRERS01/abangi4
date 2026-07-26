@@ -1,0 +1,60 @@
+Here is the complete Testing Structure and Response Verification Criteria for all four target areas. This maps exactly what actions to execute and how to analyze the application's responses to confirm a vulnerability under the program's rules.
+------------------------------
+## 1️⃣ Area 1: Authentication & Account Management## 📋 Testing Structure
+
+* Dynamic Baselining: Record a standard, successful transaction pattern (e.g., successful login or profile save) to establish expected response sizes, HTTP status codes, and keys.
+* Target Isolation: Target individual HTTP request properties sequentially (username first, then password, then custom parameters) to isolate the source of any changes in application behavior.
+* Dual-Session Segregation: Keep active browser tabs completely separate. Use Account A strictly to generate modification links/requests, and Account B strictly to harvest session identifier data.
+
+## 🔍 Response Verification Criteria
+
+* SQLi / NoSQLi Confirmation: Look for structural variations in backend behavior. A vulnerability exists if inputting an injection pattern changes an error screen into a successful page redirect, shifts response length significantly, or logs you into a profile without matching valid criteria.
+* Auth Bypass Confirmation: Look for state indicators in client-side applications. A vulnerability exists if altering a raw gateway response payload (e.g., forcing a false state to true) forces the browser interface to load authenticated sub-menus, even if backend APIs fail to return data.
+* BOLA / IDOR Confirmation: Check data modification outcomes. A vulnerability exists if the backend replies with an HTTP 200 OK or {"status":"updated"} signature after changing an identifier code to match Account B's information, and Account B's actual physical dashboard profile updates.
+
+------------------------------
+## 2️⃣ Area 2: Financial Operations (Deposits, Withdrawals, & Payments)## 📋 Testing Structure
+
+* Intercept-at-Handshake: Place breakpoints or active proxy halts precisely at the moment the client hands off parameters to internal core processing queues, right before payment gateway redirects happen.
+* State Verification Flow: Follow every transaction from its initiation down to its terminal state. Document how the host app records incomplete, processing, or failed callbacks.
+* Bounded Testing Operations: Use the lowest possible monetary value units (such as $0.01) during active testing to ensure financial limits are not inadvertently crossed.
+
+## 🔍 Response Verification Criteria
+
+* Parameter Tampering Confirmation: Observe final credit tallies. A vulnerability is present if a transaction initially configured for $0.01 processes correctly through a third-party pipeline and results in your primary wallet balance increasing by a completely different specified value (e.g., $10.00).
+* Negative/Overflow Value Confirmation: Analyze wallet ledger updates. A vulnerability exists if submitting negative value limits shifts financial tallies abnormally (e.g., reducing a balance addition parameter down to a negative number adds credit to the source wallet instead of withdrawing it).
+* Signature Bypass Confirmation: Inspect API validation mechanisms. A vulnerability exists if stripping cryptographic signature values completely, or replacing them with garbage data, results in the webhook route replying with an HTTP 200 OK instead of an authentication refusal code (like HTTP 401 or 403).
+
+------------------------------
+## 3️⃣ Area 3: Casino & Betting Core Features## 📋 Testing Structure
+
+* Asynchronous Stream Analysis: Isolate active WebSocket connection states. Separate transactional betting frames from background interface polling activities.
+* Time-Slice Capture: Isolate sports betting frames down to fractions of a second. Target the exact window when an athletic play concludes but before the server sets the betting line to suspended status.
+* Injection Surface Tracking: Document every text block that displays text back to administrative operators or general chat rooms.
+
+## 🔍 Response Verification Criteria
+
+* Odds/Multiplier Tampering Confirmation: Check bet receipts. A vulnerability is confirmed if modifying outgoing WebSocket strings properties causes the resulting bet validation receipt to register high odds values or high multiplier variables that do not match the real-time baseline rules.
+* Client-Side Validation Flaw Confirmation: Check state dependencies. A vulnerability exists if arbitrary text properties or outcome fields (like forced success markers) sent from your computer dictate win payouts directly, rather than relying on server-side logic calculations.
+* XSS Execution Confirmation: Look for unauthorized out-of-band communication. A vulnerability is confirmed when your out-of-band interaction log captures a connection from a corporate domain containing information like page locations, internal tokens, or user cookies.
+
+------------------------------
+## 4️⃣ Area 4: Infrastructure & Input Handling## 📋 Testing Structure
+
+* Blind Interaction Auditing: Use unique out-of-band domain tokens for every individual query box to trace exactly which field triggers external network traffic.
+* KYC Document Structure Manipulation: Inject payloads directly inside standard document file properties without altering structural components (like magic bytes or header components) to prevent basic validation filters from blocking them.
+* Safe Traversal Tracking: Look only for safe system configurations (like system hostnames or local path structures) to prove vulnerabilities like file access or command execution without downloading sensitive target data.
+
+## 🔍 Response Verification Criteria
+
+* SSRF Confirmation: Review DNS/HTTP logs. A vulnerability is confirmed if an internal system router reaches out to your tracking server or returns internal data blocks (like AWS metadata strings) inside its standard server response body.
+* XXE / LFR Confirmation: Inspect response output files. A vulnerability is confirmed if a file upload result returns explicit configuration strings (like text blocks matching system password file styles or localized machine information).
+* RCE Confirmation: Check command feedback loops. A vulnerability is confirmed if the target system returns explicit system command text output (such as current system identity responses) directly within page text blocks or within raw headers.
+
+------------------------------
+If you are ready to prepare your first test run, let me know:
+
+* Which target module you plan to map out first using your test accounts.
+* If you need the exact syntax to configure Burp Suite's match-and-replace strings for a specific parameter.
+
+

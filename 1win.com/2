@@ -1,0 +1,87 @@
+Here is a comprehensive, step-by-step guide to hunting for vulnerabilities across the specified 1win.com scopes while strictly adhering to the program's rules.
+------------------------------
+## Phase 1: Reconnaissance & Environment Setup
+Before sending any traffic, you must configure your tools to comply with the program's strict rate limits.
+## 1. Rate Limit Configuration
+The policy mandates a maximum of 5 requests per second (300 requests/min) and 5 concurrent requests across all tools combined.
+
+* Burp Suite: Go to Settings -> Tools -> Repeater/Scanner and set the concurrent request limit to 5. Use a throttle/delay of 200ms between requests.
+* FFuF / Dirsearch: Set the threads flag strictly: ffuf -t 5 -rate 5 ...
+
+## 2. Asset & Scope Mapping
+Based on the policy, your active targets are:
+
+* https://1win.com/casino (All casino games)
+* https://1win.com/betting (Sportsbook functionalities)
+* Main Platform Features: Registration, Login, Deposit, Withdrawal, Personal Account (settings, vouchers, details).
+* Payment Gateways: Payment forms, redirect responses, and processing callbacks hosted on 1win.com.
+
+## 3. Test Account Creation
+
+* Register accounts using only your own data and phone numbers.
+* Create at least two distinct accounts to test for multi-user isolation (IDOR/BOLA).
+* Important Rule: When testing contact forms or support channels, your message subject must include the word "Test" and use your HackerOne email alias. [1, 2, 3, 4] 
+
+------------------------------
+## Phase 2: Vulnerability Hunting Steps by Scope## Step 1: Authentication & Account Management (Registration, Login, Settings)
+Focus on Account Takeover, Injections, and BOLA ($1,000–$1,500 payouts). [5, 6] 
+
+* Registration & Login:
+* Test for SQL Injection (SQLi) in the username/email fields during login.
+   * Check for NoSQL Injection if the backend uses MongoDB (common in modern web apps).
+   * Look for authentication bypasses (e.g., manipulating OAuth responses or response codes like changing {"success":false} to true). [7] 
+* Personal Account Settings:
+* Try changing your account details (email, phone number) and intercept the request. Change the user_id parameter to your second account's ID to check for IDOR/BOLA.
+   * Look for Admin/Support Interface Bypass: Inspect JavaScript files for hidden administrative pathways (e.g., /admin, /internal/support). Try accessing them unauthorized.
+* Vouchers & Promo Codes:
+* Test for race conditions when applying a voucher code by sending 5 concurrent requests simultaneously using Burp Suite Turbo Intruder (keeping total concurrency under 5).
+
+## Step 2: Financial Operations (Deposit, Withdrawal, & Payment Forms)
+Focus on Unauthorized Fund Movement and Payment Bypass ($1,500–$2,500 payouts).
+
+* Payment Gateways & Callbacks:
+* Initiate a deposit and intercept the outbound request to the payment gateway. Look for hidden parameters like amount, currency, or status.
+   * Attempt Parameter Tampering: Change a deposit of $100 to $1.00 in the request intercept, complete the payment, and see if your account balances $100 (Payment verification bypass).
+   * Analyze the webhook/callback URL from the payment provider. If it relies on a predictable hashing algorithm or lacks signature validation, attempt to forge a successful payment callback request directly to 1win.com. [8] 
+* Withdrawals:
+* Attempt a negative value withdrawal (e.g., amount = -100) to see if it increases your balance.
+   * Try a Double-Credit / Replay Attack: Intercept a successful withdrawal callback or request and replay it to see if the system processes the transaction twice.
+
+## Step 3: Casino & Betting Core Features
+Focus on Business-Logic Bypass and XSS ($150–$400 payouts).
+
+* Game & Betting State Tampering:
+* Place a bet on a sports match or spin a casino game slot. Intercept the WebSocket or HTTP traffic.
+   * Try altering the bet amount after the game outcome is decided, or changing the odds parameter (odds=2.5 to odds=50) before the server processes the bet slip.
+* Stored Cross-Site Scripting (XSS):
+* Input standard XSS payloads into input fields like "Bet Slip Name," "Custom Avatar Names," or "Public Chat Profiles."
+   * Note: Self-XSS and Clickjacking are explicitly out of scope. The XSS must affect other users or admins to be eligible ($150 for regular, $1,500 for Admin Blind XSS). [9, 10] 
+
+## Step 4: Infrastructure & Input Handling (Platform-wide)
+Focus on RCE, Injections, SSRF, and XXE ($750–$3,000 payouts). [11, 12] 
+
+* Server-Side Request Forgery (SSRF):
+* Identify fields that load external data (e.g., loading profile pictures from a URL, adding external RSS feeds, or webhook integrations).
+   * Change the URL to target internal infrastructure (e.g., http://127.0.0.1:80 or cloud metadata endpoints like http://169.254.169.254). Non-blind readable SSRF pays $1,300.
+* File Uploads (LFR / RFI / XXE):
+* If the platform allows document uploads for KYC verification (ID/Passport copies), test the upload mechanism.
+   * Upload malicious XML files inside SVG or DOCX formats to test for XML External Entity (XXE) injection.
+   * Attempt to upload a web shell (e.g., .php, .jsp) disguised as an image to achieve Remote Code Execution (RCE). [13] 
+
+------------------------------
+## Phase 3: Reporting Requirements
+If you find a valid vulnerability, ensure your report meets the submission standard to avoid delays: [14, 15] 
+
+   1. Written Description: Clearly explain the vulnerability and its real-world impact.
+   2. Step-by-Step Replication: Write clean, concise steps. Do not rely solely on video/images.
+   3. Proof of Concept (PoC): Provide the exact request payload or script used to trigger the bug.
+   4. No Post-Exploitation: Once you prove the bug exists (e.g., reading a benign system file name via XXE), stop immediately. Do not attempt to download sensitive database content. [16, 17, 18, 19, 20] 
+
+------------------------------
+If you want to focus on a specific area, let me know:
+
+* Which target feature you want to attack first (e.g., Payment forms, Login/Auth, or Casino games)?
+* What specific vulnerability type (e.g., IDOR, SSRF, or Parameter Tampering) you want deep-dive payloads for?
+
+
+

