@@ -1,0 +1,44 @@
+## Web Application API Discovery
+To find hidden API paths, execute this terminal pipeline to gather historical URLs, scrape JavaScript files, and brute-force directories.
+
+# 1. Gather all historical URLs from the Wayback Machine and AlienVault
+echo "target.com" | gau | grep -E "\.json|\/api\/|\/v[0-9]\/" > api_urls.txt
+# 2. Extract endpoints hidden inside JavaScript files# Download target JS files first, then run LinkFinder
+python3 linkfinder.py -i https://target.com -o cli
+# 3. Fuzz for hidden API documentation and routes using SecLists
+ffuf -u https://target.com -w /path/to/SecLists/Discovery/Web-Content/api-endpoints.txt -mc 200,204,301,302,401,403
+
+------------------------------
+## Cloud Infrastructure Discovery
+To map out the target's cloud perimeter, execute this pipeline to discover subdomains, check for active hosts, and search for exposed cloud assets on Shodan.
+
+# 1. Passive and active subdomain orchestration
+subfinder -d target.com -o subdomains.txt
+# 2. Filter out dead hosts and find active web servers
+cat subdomains.txt | httpx -title -tech-detect -status-code -o active_hosts.txt
+# 3. CLI search for infrastructure leaks via Shodan (Requires Shodan API Key)
+shodan search "ssl:'target.com' port:443" --fields ip_str,port,org
+
+------------------------------
+## Dual-Focus Automation Script
+Save this code block as hunt.sh. It automatically links both techniques by taking a domain, finding its cloud assets, filtering for APIs, and scanning for active endpoints.
+
+#!/bin/bash
+DOMAIN=$1
+
+echo "[+] Starting Cloud Subdomain Discovery..."
+subfinder -d $DOMAIN -silent > subs.txt
+
+echo "[+] Filtering for Live Cloud Web Assets..."
+cat subs.txt | httpx -silent -sc -title > live_assets.txt
+
+echo "[+] Extracting API Endpoints from History..."
+cat subs.txt | gau | grep -E "(/api/|/v1/|/v2/|/graphql)" > discovered_apis.txt
+
+echo "[+] Fuzzing Live Assets for Hidden API Docs..."while read -r url; do
+    ffuf -u "$url/FUZZ" -w /path/to/SecLists/Discovery/Web-Content/common.txt -mc 200,301 -silent >> fuzz_results.txtdone < <(cat subs.txt | httpx -silent)
+
+echo "[+] Recon complete. Check live_assets.txt, discovered_apis.txt, and fuzz_results.txt"
+
+Which operating system (Linux, macOS, or WSL) are you running this on so we can install any missing tools?
+

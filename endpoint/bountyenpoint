@@ -1,0 +1,49 @@
+To find these different endpoints for a bug bounty program, you need to use specific reconnaissance and discovery methodologies tailored to each category.
+Here is how to locate them step-by-step:
+## API & Software Endpoints
+Finding hidden, undocumented, or vulnerable API paths is the highest-value activity in bug bounties.
+## Finding Public & REST/GraphQL Endpoints
+
+* JavaScript Recon: Run LinkFinder or SecretFinder against target .js files to scrape hidden API routes.
+* Passive Repositories: Query Waybackurls or Gau (GetAllUrls) to pull historical URLs that platforms previously logged.
+* Fuzzing Content: Use ffuf or Gobuster with wordlists like SecLists (api-endpoints.txt) to brute-force directories.
+* Documentation Leaks: Look for exposed /swagger.json, /v1/swagger, or /graphiql playgrounds by searching common directories.
+
+## Catching Shadow & Zombie Endpoints
+
+* Param Mining: Use Arjun to discover hidden parameters on old endpoints that developers forgot to remove.
+* Version Guessing: If you find /api/v3/login, manually test /api/v1/login or /api/v2/login to find unpatched logic.
+
+------------------------------
+## Cloud Network Endpoints
+Discovering misconfigured cloud infrastructure allows you to find open storage buckets or internal entry points.
+## Finding Public & Edge Endpoints
+
+* Subdomain Enumeration: Use Subfinder, Amass, or Assetfinder to discover all public-facing assets.
+* DNS Brute-Forcing: Use PureDNS with massive wordlists to find active cloud-hosted subdomains.
+
+## Locating Private Endpoints
+
+* SSRF Exploitation: If the target app has a "fetch URL" feature, exploit Server-Side Request Forgery (SSRF) to scan internal metadata addresses (e.g., http://169.254.169.254).
+* DNS Wildcarding: Look for internal naming conventions like ://target.com or ://target.com.
+
+------------------------------
+## Network & Device Endpoints
+Note: Physical assets are rarely in scope for bug bounties unless specified as a hardware/IoT target.
+## Finding Host Devices & Peripherals
+
+* Port Scanning: Use Nmap or Masscan on the target's IP ranges (CIDR blocks) to find open infrastructure ports like 22 (SSH), 3389 (RDP), or 9100 (Printers).
+* Shodan & Censys: Search Shodan using target filters (e.g., ssl:"TargetCorp") to find exposed servers, webcams, or corporate routers on the internet.
+
+------------------------------
+## Clinical Trial Endpoints
+Note: You cannot hack a medical endpoint protocol, but you can find the software portals hosting this sensitive data.
+## Finding Clinical Systems
+
+* Google Dorking: Search for exposed medical data platforms using specific search operators:
+* site:target.com inurl:clinical
+   * site:target.com intitle:"eCRF" (Electronic Case Report Forms)
+   * site:target.com "clinical trial" ext:pdf
+
+If you want to start hunting right now, tell me: Do you want to focus on web application APIs or cloud infrastructure? I can give you the exact terminal commands to run.
+

@@ -1,0 +1,54 @@
+Because the term endpoint is used heavily across different tech sectors, the "types" vary depending on the context.
+The types of endpoints can be broadly categorized into Network & Device Endpoints, API & Software Endpoints, Cloud Network Endpoints, and Clinical Trial Endpoints. [1, 2, 3] 
+------------------------------
+## Network & Device Endpoints
+In computer networking and cybersecurity, an endpoint is any physical device that connects to and communicates with a network. These are categorized by their usage: [4] 
+
+* End-User Devices: Laptops, desktops, smartphones, and tablets used by humans daily.
+* Servers & Host Devices: Physical or virtual servers, databases, and mainframes that store data.
+* IoT (Internet of Things) Devices: Smart thermostats, security cameras, smart watches, and medical equipment.
+* Specialized Hardware: Point-of-Sale (POS) systems, retail kiosks, and automated teller machines (ATMs).
+* Peripherals: Networked printers, scanners, and external storage drives. [2, 4, 5, 6, 7, 8, 9] 
+
+------------------------------
+## API & Software Endpoints
+In software development, an API endpoint is a specific URL/URI path where a software application interacts with a server to perform operations. [10, 11, 12] 
+## Categorized by Protocol/Architecture
+
+* REST Endpoints: Uniform Resource Identifiers (URIs) that use stateless HTTP methods (like GET or POST) to manage data.
+* GraphQL Endpoints: A single, universal endpoint URL where clients query or mutate specific, customizable datasets.
+* SOAP Endpoints: Direct web URLs utilizing XML-based messaging protocol for strict, enterprise-level communication.
+* Webhooks (Reverse Endpoints): Endpoints provided by a client application that wait for an external server to push real-time event updates. [11, 13, 14, 15, 16] 
+
+## Categorized by HTTP Method (CRUD) [17] 
+
+* GET Endpoints: Used exclusively to read or retrieve data.
+* POST Endpoints: Used to send data to create a new resource.
+* PUT/PATCH Endpoints: Used to update or modify an existing resource.
+* DELETE Endpoints: Used to remove a resource from the server. [10, 17] 
+
+## Categorized by Security Lifecycle [18, 19] 
+
+* Shadow Endpoints: Unmanaged and undocumented API URLs created by developers that pose security risks.
+* Zombie Endpoints: Deprecated, abandoned, or outdated API endpoints that were never shut down. [18] 
+
+------------------------------
+## Cloud Network Endpoints
+In cloud computing architectures (like [AWS](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-endpoint-types.html) or [IBM Cloud](https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-endpoints)), endpoints represent routing destinations for internet traffic: [20, 21, 22] 
+
+* Public Endpoints: Accessible directly from anywhere on the public internet.
+* Private Endpoints: Strictly restricted to internal Virtual Private Clouds (VPCs); hidden from the public internet.
+* Edge-Optimized Endpoints: Route traffic through global content delivery network (CDN) edge locations to lower latency.
+* Regional Endpoints: Intended for traffic originating from within the exact same geographical cloud region. [20, 21, 23] 
+
+------------------------------
+## Clinical Trial Endpoints (Medical Science)
+In medicine and clinical research, an endpoint refers to the target outcome used to measure if a treatment works: [24, 25, 26, 27] 
+
+* Primary Endpoints: The single most critical outcome evaluated in a study to judge a drug's success (e.g., survival rate).
+* Secondary Endpoints: Additional outcomes monitored to provide secondary data (e.g., side effects or quality of life).
+* Surrogate Endpoints: Lab values or physical signs used as a substitute for a true clinical endpoint (e.g., lowering blood pressure as a surrogate for preventing heart attacks). [24, 28, 29, 30] 
+
+Which of these fields are you working in? If you are building a system or securing a network, I can give you specific best practices for that type of endpoint.
+
+
