@@ -1,0 +1,31 @@
+To extract high-value bugs and sensitive data from your raw gau output, you can use specialized grep filters. Since gau provides thousands of historical URLs, running these pattern filters helps you instantly isolate critical attack surfaces.
+Run these specific filtering commands against your saved URL file (e.g., target_urls.txt or directly piped from gau):
+## 1. Find Hidden API Endpoints & GraphQL Playgrounds
+This isolates backend paths, versions, and interactive query panels that often contain broken authorization controls.
+
+cat target_urls.txt | grep -E "(/api/|/v[0-9]/|/graphql|/graphiql|/swagger|/v1/|/v2/)"
+
+## 2. Isolate Sensitive Param Queries (XSS, SQLi, Open Redirect)
+Look for URLs that accept direct parameter inputs. These are prime targets for injection attacks or unauthorized data access.
+
+# Finds parameters like ?url=, ?redirect=, ?id=, ?file=, ?debug=
+cat target_urls.txt | grep -E "(\?|\=)" | grep -E "(url|redirect|next|dest|id|file|dir|debug|admin)"
+
+## 3. Hunt for Exposed Backup Files & Configuration Dumps
+Developers occasionally leave configuration archives on public web roots. This string extracts sensitive formats:
+
+cat target_urls.txt | grep -E "\.(zip|tar\.gz|bak|log|sql|env|ini|conf|json|yml|yaml)$"
+
+## 4. Extract Secret Hardcoded Tokens & API Keys
+When JavaScript files or API responses are logged in history, their URLs sometimes leak active session keys or third-party client secrets.
+
+cat target_urls.txt | grep -Ei "(token=|auth=|apikey=|secret=|key=|bearer=|password=)"
+
+------------------------------
+## Pro-Tip: The Ultimate "Juicy" One-Liner Pipeline
+If you want to run gau live, filter out all useless asset noise (like images or CSS), clean up duplicate lines, and immediately pull out sensitive parameters all in one shot, use this combined pipeline:
+
+gau --subs target.com | grep -E -v "\.(png|jpg|jpeg|gif|css|woff|svg|pdf|js)" | grep -E "(\?|\=)" | sort -u > juicy_parameters.txt
+
+Do you want to see how to automatically feed this filtered juicy_parameters.txt file into ffuf or another tool to test them for active vulnerabilities like SQL Injection or SSRF?
+
