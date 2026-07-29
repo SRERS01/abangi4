@@ -1,0 +1,14 @@
+The file size and timestamp confirm that the updater successfully swapped out your old file with the new 0.57.1 binary.
+Because this is a completely new AppImage binary, it will face the exact same Ubuntu 24.04 AppArmor/Chromium sandbox restrictions we saw earlier.
+You can launch your newly updated version right now using the bypass command:
+
+~/.local/bin/caido --no-sandbox
+
+## Pro-Tip: Make the fix permanent
+To avoid typing --no-sandbox every single time or dealing with this on future automatic updates, apply the system-wide AppArmor adjustment:
+
+echo "kernel.apparmor_restrict_unprivileged_userns=0" | sudo tee /etc/sysctl.d/60-apparmor-namespace.conf
+sudo sysctl --system
+
+(Once you run this system command once, you can just start Caido by typing caido or ~/.local/bin/caido normally without any extra flags).
+Did the updated application open up successfully for you, or are you seeing any new log outputs?
