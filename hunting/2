@@ -1,0 +1,16 @@
+Perfect! The scanner successfully caught all the vulnerabilities inside the jquery-1.12.4.js file. This output confirms your Retire.js installation and your local jsrepository.json database are configured properly and working perfectly.
+## Breaking Down the Vulnerability Report
+The report flagged several severe issues inside that old jQuery version:
+
+* End-of-Life (EOL) Warning: Version 1.x is dead and no longer gets security updates.
+* Prototype Pollution (CVE-2019-11358): Attackers can trick jQuery.extend() into modifying global JavaScript object properties, crashing the application or altering behavior.
+* Cross-Site Scripting / XSS (CVE-2020-11022 & CVE-2020-11023): Malicious code sent inside simple HTML fragments passed to functions like .html() or .append() can run automatically in user browsers.
+
+------------------------------
+## How to Clean Up and Reset Your Lab Directory
+Since you are done testing, you can delete the vulnerable file so it does not blend into any real project code:
+
+rm jquery-1.12.4.js
+
+Would you like to learn how to hook this scanner up to automatically scan your projects every time you push code using GitHub Actions, or do you want to analyze another tool?
+

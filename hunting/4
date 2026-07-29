@@ -1,0 +1,57 @@
+To look up Proof of Concept (PoC) exploit strings for the vulnerabilities flagged by Retire.js, use a methodical three-step investigation workflow. [1] 
+Bug bounty triagers on platforms like [YesWeHack](https://www.yeswehack.com/) require a working PoC payload demonstrating impact before approving a payout. [2] 
+------------------------------
+## Step 1: Query Aggregation Databases
+Take the specific CVE identifier flagged in your scanner output (for example, CVE-2020-11022) and query platforms dedicated to mapping exploits: [3] 
+
+* GitHub Search Engine: Developers frequently publish replication repositories. Search GitHub specifically using dork syntax:
+
+"CVE-2020-11022" exploit OR "PoC"
+
+* Sploitus / Exploit-DB: Navigate to [Sploitus](https://sploitus.com/) or the [Offensive Security Exploit-DB Portal](https://www.exploit-db.com/) to find curated scripts.
+* AttackerKB: Search the [AttackerKB Database](https://attackerkb.com/) to read analyses by security researchers explaining exactly how a specific vulnerability triggers in production. [2, 4] 
+
+------------------------------
+## Step 2: Extract the Functional PoC Payload
+For the CVE-2020-11022 DOM XSS vulnerability flagged in your laboratory test environment, researchers discovered that jQuery's old htmlPrefilter method breaks self-closing tags improperly. [5, 6] 
+The exact public functional exploit payload string looks like this: [7] 
+
+<div data-image="<svg><p><style><img src=x onerror=alert(document.domain)></style>"></p></svg>"></div>
+
+------------------------------
+## Step 3: Map the Target Interaction Vector
+To claim a bug bounty, you must find where your target's live web page passes user input into the vulnerable jQuery sink. [8] 
+
+   1. Find Inputs: Search the target website for parameters, query strings (?search=), or hash values (#index) that reflect text directly onto the page. [9] 
+   2. Inspect the Sink: Look through the application's native script files to see if those input fields feed directly into jQuery's DOM manipulation sinks:
+   
+   // Vulnerable implementation examplevar userInput = window.location.hash;
+   $("div.content").html(userInput); // Trigger point
+   
+   [8] 
+   3. Inject the String: Inject the HTML payload into that parameter fields via your browser tab. If an alert box pops up containing the target's origin host domain, your exploit vector is validated.
+
+------------------------------
+## Step 4: Write the Bug Bounty Report Layout
+Structure your vulnerability submission document professionally to prevent triagers from rejecting it as "Informational": [2] 
+
+| Section | Required Content |
+|---|---|
+| Title | DOM-Based Cross-Site Scripting via Outdated jQuery (CVE-2020-11022) |
+| Vulnerable URL | https://target.com[PAYLOAD] |
+| Component | Static library asset located at /assets/js/jquery-1.12.4.js |
+| Impact | Session hijacking, cookie theft, and arbitrary script execution |
+| Steps to Reproduce | 1. Navigate to the URL. 2. Observe the executable alert payload trigger. |
+| Remediation | Update library references directly to jQuery v3.5.0 or later. |
+
+Would you like to step through an actual live manual browser inspection to find dynamic inputs on a mock web page, or analyze how to search for a different class of vulnerability?
+
+[1] [https://dev.to](https://dev.to/crud5th-273-/how-to-investigate-a-cve-a-practical-workflow-for-engineers-29f)
+[2] [https://www.penligent.ai](https://www.penligent.ai/hackinglabs/the-definitive-guide-to-exploit-db-attack-patterns-cves-and-defense-strategies/)
+[3] [https://github.com](https://github.com/TIBCOSoftware/TIBCO-LABS/issues/10)
+[4] [https://www.youtube.com](https://www.youtube.com/watch?v=DsRPWsN67LY)
+[5] [https://github.com](https://github.com/sureng-sandbox/sureng-ghe/issues/12)
+[6] [https://www.ibm.com](https://www.ibm.com/support/pages/security-bulletin-multiple-cross-site-scripting-vulnerabilities-jquery-affect-ibm-infosphere-information-server)
+[7] [https://github.com](https://github.com/EmptyHeart5292/jQuery-XSS)
+[8] [https://www.sentinelone.com](https://www.sentinelone.com/vulnerability-database/cve-2020-11022/)
+[9] [https://www.huntress.com](https://www.huntress.com/threat-library/vulnerabilities/cve-2020-11022)

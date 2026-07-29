@@ -1,0 +1,64 @@
+Here is a professional template for reporting a critical Server-Side Request Forgery (SSRF) vulnerability, followed by a guide on how to hunt for Subdomain Takeovers, which are high-value targets in bug bounty programs.
+------------------------------
+## Part 1: Writing a High-Value Critical SSRF Report
+When you discover an SSRF that exposes internal cloud metadata (like AWS keys), you must document it perfectly. Platforms like YesWeHack or HackerOne will award a Critical (P1) severity payout only if you clearly demonstrate the business risk.
+Use this structured format for your submission:
+
+### Title
+Critical SSRF on [://target.com] leading to AWS Cloud Infrastructure Takeover
+
+### Vulnerability Description
+A Server-Side Request Forgery (SSRF) vulnerability exists in the image preview component of the application. The `url` parameter does not validate or restrict user-supplied inputs on the backend server. An attacker can manipulate this parameter to force the hosting infrastructure to make outbound HTTP requests to internal, non-public network interfaces.
+
+### Vulnerable Endpoint
+URL: https://://target.com.php?url=FUZZ
+Parameter: url
+
+### Proof of Concept (PoC) Steps
+1. Navigate to the vulnerable application endpoint.
+2. Inject the converted decimal payload for the AWS Cloud Metadata IP address into the `url` parameter:
+   https://://target.com.php?url=http://2852039166/latest/meta-data/iam/security-credentials/
+3. Observe the HTTP response data returned in the browser layout. 
+4. The backend bypasses standard string checks due to the decimal conversion, queries the internal cloud layer, and dumps active, unauthenticated AWS IAM role credential blocks.
+
+### Impact
+An attacker can extract active AWS Access Keys, Secret Keys, and Session Tokens. These credentials allow complete access to the company's internal cloud infrastructure, database snapshots, and private cloud storage buckets, completely compromising data confidentiality and integrity.
+
+### Remediation Guidance
+1. Implement a strict allowlist for the `url` parameter, accepting only trusted external image domains.
+2. Disable internal metadata endpoints or enforce IMDSv2 (Instance Metadata Service Version 2) on AWS, which requires a session token header to prevent simple SSRF exploits.
+
+------------------------------
+## Part 2: Hunting for Subdomain Takeovers
+A Subdomain Takeover happens when a target company points a subdomain (like ://target.com) to a third-party service (like GitHub Pages, Shopify, or Zendesk) using a DNS CNAME record, but then deletes or cancels their account with that service.
+If they forget to delete the DNS record, anyone can sign up for a free account on that service and claim the subdomain, allowing them to host a malicious site under the target company's official brand name.
+## 1. Automated Subdomain Discovery
+To hunt for takeovers, you must first gather a massive list of subdomains and inspect their DNS CNAME records.
+
+# Install the required subfinder and dnsx tools via Go
+go install -v ://github.com
+go install -v ://github.com
+# 1. Gather all subdomains for your target company
+~/go/bin/subfinder -d target.com -o subdomains.txt
+# 2. Check the CNAME pointers of those subdomains to find third-party hosts
+~/go/bin/dnsx -l subdomains.txt -cname -resp | grep "CNAME" > cnames.txt
+
+## 2. Spotting the Vulnerability Fingerprint
+Open your cnames.txt file and look at where the subdomains point. If a subdomain points to a third-party service, look for these common "Dangling DNS" fingerprints when you visit the link in your browser:
+
+| Third-Party Service | DNS CNAME Pointer | Error Message Fingerprint (Vulnerable!) |
+|---|---|---|
+| GitHub Pages | username.github.io | "There isn't a GitHub Pages site here." |
+| Shopify | ://myshopify.com | "Sorry, this shop is currently unavailable." |
+| Amazon S3 | ://amazonaws.com | "The specified bucket does not exist." |
+| Zendesk | ://zendesk.com | "No such app" or "Help Center Closed" |
+
+## 3. Executing the Takeover
+If you find a subdomain like ://target.com pointing to Zendesk, and it throws a "No such app" error:
+
+   1. Go to Zendesk.com and sign up for a free trial account.
+   2. During setup, when it asks for your desired workspace name, type the exact sub-name used by the company (e.g., target).
+   3. Once claimed, your trial dashboard will completely control ://target.com. You can now host phishing pages or steal session cookies from the main target.com domain.
+
+Would you like to learn how to automate the fingerprint checking process using a tool called Nuclei, or explore how to hunt for broken object-level authorization (BOLA/IDOR) vulnerabilities?
+

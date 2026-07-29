@@ -1,0 +1,39 @@
+The test simulation command failed because the download URL pointing to https://jquery.com pulls down a raw HTML webpage instead of the plain JavaScript dependency file (.js). Retire.js ignores standard HTML framework markups when looking for direct JavaScript signatures, causing it to return a clean result.
+## The Correct Way to Trigger a Test Vulnerability Alert
+To properly test the security engine, download an actual outdated script asset from the official jQuery CDN: [1] 
+## Step 1: Download the actual script asset file
+Execute curl targeting the exact, unminified obsolete jquery-1.12.4.js path: [2] 
+
+curl -O https://code.jquery.com/jquery-1.12.4.js
+
+## Step 2: Run Retire.js on the folder manually
+Point your offline scanner at the directory using the local security configuration file:
+
+retire --path . --jsrepo jsrepository.json
+
+------------------------------
+## What Your Security Report Looks Like
+When you supply an actual outdated library file, Retire.js will read the script signatures and print a detailed warning log mapping out vulnerabilities: [3] 
+
+retire.js v5.4.3
+
+jquery-1.12.4.js
+ ↳ jquery 1.12.4
+   ✗ severity: medium
+     tags: summary
+     summary: jQuery before 3.4.0 allows Object.prototype pollution
+     ✗ severity: medium
+     tags: cve, xss
+     summary: CVE-2019-11358 Cross-site Scripting vulnerability
+     ↳ https://nist.gov
+   ✗ severity: medium
+     tags: cve, xss
+     summary: CVE-2020-11022 Regexes used for HTML parsing may execute untrusted code
+     ↳ https://nist.gov
+
+This diagnostic layout proves your local database configurations are scanning code structures correctly.
+Would you like to learn how to automatically filter out or suppress specific non-critical CVE notices using a customized .retireignore configuration file?
+
+[1] [https://jquery.com](https://jquery.com/download/)
+[2] [https://blog.jquery.com](https://blog.jquery.com/2016/05/20/jquery-1-12-4-and-2-2-4-released/)
+[3] [https://security.snyk.io](https://security.snyk.io/package/npm/jquery/1.12.4)
