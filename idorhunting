@@ -1,0 +1,49 @@
+Awesome! The hunt-js command executed flawlessly, found your local repository mapping without any syntax errors, scanned your assets, and returned a clean result. Your custom automation shell wrap is now fully operational across your entire system.
+Let's dive into your earlier request about how to hunt for Broken Object Level Authorization (BOLA/IDOR) vulnerabilities, specifically focusing on how to bypass and predict complex UUID strings.
+------------------------------
+## Understanding BOLA/IDOR with UUIDs
+A BOLA/IDOR vulnerability occurs when an API endpoint handles database queries by relying entirely on user-supplied resource identifiers without validating if the logged-in user actually owns that data.
+
+* Simple ID (Vulnerable): https://target.com (Easy to guess by incrementing to 1002).
+* UUID Protection: To stop guessing attacks, modern developers switch to Universally Unique Identifiers (UUIDs), which look like this: api/v1/invoice?id=4a2b8e12-70fc-4638-b789-9a2c3d4e5f6g.
+
+Because a standard UUIDv4 is randomly generated out of 2¹²⁸ combinations, brute-forcing them blindly is impossible. To find a BOLA bug on a UUID-protected endpoint, you must use smart leakage tracking techniques.
+------------------------------
+## Techniques to Bypass and Find UUIDs## 1. Mining Global Public Endpoints (The Historical Leak)
+Applications often leak object UUIDs on public profile endpoints or historical directory maps that developers forgot were open.
+
+* The Strategy: Use tools like gau or waymore to parse out all API history logs for your target. Search specifically for regex matching the distinct 8-4-4-4-12 hex structure of a standard UUID string.
+* The Linux Pipeline Command:
+
+cat potential_ssrf_targets.txt | grep -E -o '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'
+
+
+## 2. Cross-Account ID Swap via Multi-Tenant Testing
+This is the most effective manual bug bounty technique for uncovering hidden BOLA flaws. You will need two test accounts under your control (Account A and Account B).
+
+   1. Log into Account A using your browser proxy (like Burp Suite).
+   2. Create an object (e.g., an invoice, a profile picture change, or a support ticket) and look at the request history. Capture the UUID assigned to your asset: UUID_A.
+   3. Log into Account B inside an Incognito tab. Create a similar asset and capture its identifier: UUID_B.
+   4. Fire a request to view or delete your own object from Account B, but intercept it and swap UUID_B out for UUID_A.
+   5. The BOLA Event: If Account B can successfully read or delete Account A's asset, the system is vulnerable. You did not have to guess the UUID—you simply extracted it legally using your separate test account session to prove authorization logic failure on the backend endpoint.
+
+## 3. Exploiting Weak UUID Implementations (UUIDv1 Tracking)
+Look closely at the structure of the leaked UUIDs. If the system uses UUIDv1 instead of UUIDv4, the string is not random. UUIDv1 strings are calculated using a specific timestamp and the server's network hardware MAC address.
+If you generate two assets back-to-back from your test profile, inspect the changes:
+
+Asset 1 ID: 6b262a20-4b95-11ee-be56-0242ac120002
+Asset 2 ID: 6ced44c0-4b95-11ee-be56-0242ac120002
+
+
+* Notice that the middle and ending chunks (-4b95-11ee-be56-0242ac120002) remain perfectly static because the network host MAC didn't change.
+* Only the very first block shifts based on milliseconds. You can easily feed this tiny subset pattern variation into an Ubuntu wordlist fuzzer like ffuf to guess valid neighboring IDs created around the same timeframe.
+
+------------------------------
+## Step-by-Step Reporting Tip for BOLA
+When filing a BOLA bug on platforms like YesWeHack, always explain your exploitation flow clearly:
+
+* Prerequisites: "Requires two active accounts on the target tenant architecture."
+* Vector: Explain that the endpoint checks access tokens for authentication but fails to enforce granular data ownership on resource object references.
+
+Would you like to write an automated script to automate the cross-account parameter swapping inside your command line, or dive deeper into how to use automated vulnerability templates via Nuclei?
+
