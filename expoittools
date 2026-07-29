@@ -1,0 +1,56 @@
+While it is impossible to list every single custom script written by hackers, here is the absolute definitive list of all major, universally recognized exploitation tools used in modern bug bounty hunting.
+This comprehensive directory maps every major tool to its specific exploitation purpose.
+------------------------------
+## 🌐 Web & API Exploitation (Most Common)
+
+* Burp Suite Professional: The industry-standard intercepting proxy for manually rewriting traffic, injecting payloads, and breaking business logic.
+* OWASP ZAP: The leading open-source alternative to Burp, featuring an interactive HUD for on-the-fly exploitation.
+* Caido: A lightweight, modern, rust-based intercepting proxy designed to handle huge traffic flows.
+* SQLmap: The ultimate automated engine used to take over database servers via SQL injection.
+* XSStrike: Advanced Cross-Site Scripting (XSS) suite that bypasses WAFs using contextual analysis.
+* Commix: Automated command injection and exploitation tool for operating system takeovers.
+* Kiterunner: Best-in-class tool for routing, fuzzing, and exploiting hidden REST, GraphQL, and gRPC API endpoints.
+* JWT_Tool: Used specifically to crack, forge, and exploit flawed JSON Web Tokens.
+* LFISuite: Automatically detects and exploits Local File Inclusion (LFI) vulnerabilities to gain Remote Code Execution (RCE).
+* tplmap: Detects and exploits Server-Side Template Injection (SSTI) across multiple web engines.
+* ssrf_proxy: A proxy tool used to tunnel network traffic through an exploited SSRF vulnerability. [1, 2, 3] 
+
+------------------------------
+## ☁️ Cloud & Infrastructure Exploitation
+
+* Pacu: The primary exploitation framework targeting misconfigured AWS accounts and resources.
+* Leonidas: A framework providing an automated playground for executing web-based attacks on cloud environments.
+* Kube-hunter: Exploits microservice architecture weaknesses within active Kubernetes clusters.
+* CloudGenie: Specifically identifies and instantly exploits/claims dangling DNS entries (Subdomain Takeovers).
+* GCPBucketBrute: Automatically enumerates and takes over insecurely configured Google Cloud storage buckets.
+* Azure-Exploitation-Tools: A collection of community scripts aimed at privilege escalation inside Azure environments. [4] 
+
+------------------------------
+## 🛡️ Network & Active Directory Exploitation
+
+* Metasploit Framework: The legendary framework used to find, test, and run public exploit payloads against unpatched network ports.
+* Nmap: Though commonly a scanner, its Scripting Engine (NSE) allows researchers to run direct vulnerability exploits.
+* CrackMapExec: A post-exploitation tool used to assess security networks, execute commands, and dump credentials over SMB/WinRM.
+* Responder: Poisoner tool used to exploit LLMNR, NBT-NS, and MDNS protocols to capture network hashes.
+* Mimikatz: The gold standard for harvesting credentials, dumping memory, and creating golden tickets in Windows environments.
+* Impacket: A powerhouse collection of Python classes used to programmatically craft network packets and exploit protocol flaws. [5, 6] 
+
+------------------------------
+## 🗃️ CMS & Platform-Specific Exploiters
+
+* WPScan: Directly targets WordPress installations to exploit vulnerable plugins and core versions.
+* Droopescan: A specialized exploiter targeting security holes in Drupal and Joomla installations.
+* JoomScan: Purpose-built to scan and exploit vulnerabilities specifically inside Joomla CMS.
+
+------------------------------
+## 🔨 Automated Automation & Shell-Gen Tools
+
+* Nuclei: Uses highly optimized, community-powered YAML templates to massively exploit newly disclosed CVEs at scale.
+* Hydra: A highly parallelized login cracker used for automated brute-forcing of over 50 protocols (SSH, FTP, HTTP, etc.).
+* Shellpop: An automated script used to instantly generate interactive, obfuscated reverse and bind shell commands.
+* msfvenom: Part of Metasploit, utilized to build custom standalone exploit payloads and standalone executables. [1, 4] 
+
+------------------------------
+Which vulnerability category are you planning to target next? I can provide you with the exact setup syntax and command strings for any tool listed above.
+
+
