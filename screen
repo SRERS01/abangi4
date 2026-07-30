@@ -1,0 +1,20 @@
+Your scan ran successfully! The log have-screenshot=true and status-code=200 confirms that gowitness loaded the website and captured the image.
+However, look closely at the warning message: no writers have been configured. to persist probe results.... Because gowitness version 3+ uses a modular writing system, it processed the image in its memory but did not save it to your disk because no storage flags were specified.
+## The Fix: Add the --write-db and --write-screenshot Flags
+To make sure gowitness saves both the screenshot image file and the log entries, run the command again with the appropriate saving flags:
+
+gowitness scan single -u https://www.1win.com --write-db --write-screenshot
+
+## What gets created?
+Once that command finishes running, check your current directory (ls). You will see two new items:
+
+   1. A folder called screenshots/ containing the actual .png image of the webpage.
+   2. A database file called gowitness.db that saves the page text, title, and metadata.
+
+------------------------------
+## Viewing Your Saved Screenshot
+You can open the screenshot directly from your terminal using Ubuntu's default image viewer:
+
+xdg-open screenshots/*.png
+
+Please let me know if the image opens correctly or if you want to see how to launch the visual web dashboard using that saved database!
