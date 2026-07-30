@@ -1,0 +1,38 @@
+Once you complete a DNS brute-force scan with theHarvester -d 1win.com -c, your terminal will display a list of discovered, active subdomains (e.g., ://1win.com, ://1win.com, ://1win.com) along with their public IP addresses.
+The next phase of reconnaissance transitions from passive discovery to active verification and mapping. Follow these industry-standard next steps:
+## 1. Filter and Extract Alive Hosts
+Brute-force scans can sometimes return dead links, old DNS artifacts, or wildcard redirects. You must verify which subdomains are actually running live web servers.
+Use httpx to quickly probe the list for live HTTP/HTTPS ports (80 and 443):
+
+# Install httpx via apt
+sudo apt install httpx -y
+# If you saved your targets to a text file, probe them:
+httpx -l discovered_hosts.txt -silent
+
+## 2. Take Visual Screenshots (Automated)
+Reviewing hundreds of subdomains manually takes too long. Security analysts use automated screenshot tools to visually inspect what each live subdomain looks like (e.g., login pages, exposed dashboards, 404 errors). [1] 
+Use gowitness or eyewitness:
+
+# Example using gowitness to screenshot all live urls
+gowitness file -f alive_urls.txt
+
+This builds an interactive HTML report of images so you can spot interesting entry points instantly.
+## 3. Conduct Port Scanning and Service Detection
+For the specific IP addresses discovered during your brute-force scan, check what other network services are running beyond standard web traffic (like SSH, FTP, or databases).
+Run a fast nmap scan against the discovered infrastructure:
+
+# Scan for the top 1000 standard ports and detect service versions
+nmap -sV --top-ports 1000 -T4 -iL discovered_ips.txt
+
+## 4. Search for Directory Directories & Files
+If you identify an interesting, live subdomain (like a development or staging server), use a directory brute-forcer to look for hidden paths, configuration backups, or exposed .git folders.
+Use dirsearch or gobuster:
+
+# Install dirsearch
+sudo apt install dirsearch -y
+# Scan a specific target subdomain
+dirsearch -u https://1win.com
+
+## 5. Check for Subdomain Takeovers
+Look closely at the brute-force results. If any subdomain points to a third-party service (like AWS S3, GitHub Pages, or Zendesk) but returns a "404 Not Found" error page, it might be vulnerable to a subdomain takeover, allowing an attacker to claim that asset.
+What specific types of subdomains (e.g., login portals, API gateways, storage buckets) did your brute-force run manage to uncover? Let me know so we can tailor the next step!
