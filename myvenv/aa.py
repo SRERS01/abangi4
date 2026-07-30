@@ -14,7 +14,7 @@ headers = {
 }
 
 payload = {
-    "phoneNumber": "678392088",
+    "phoneNumber": "652223518",
     "resetMethodName": "SMS"
 }
 
