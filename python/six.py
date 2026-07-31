@@ -1,0 +1,148 @@
+from playwright.sync_api import sync_playwright
+from urllib.parse import urlparse, urljoin
+import os
+
+def stable_network_interaction_crawler(start_url):
+    start_url = start_url.strip()
+    if not start_url.startswith(('http://', 'https://')):
+        start_url = f"https://{start_url}"
+
+    parsed_start = urlparse(start_url)
+    start_hostname = parsed_start.hostname or ""
+    start_parts = start_hostname.split('.')
+    target_root_domain = ".".join(start_parts[-2:]) if len(start_parts) >= 2 else start_hostname
+
+    print(f"\n🕸️  Initializing Settlement-Aware Spider for: {target_root_domain}")
+    print("⏳ Launching browser... Synchronizing state machines.")
+
+    ui_routes = set()
+    api_endpoints = set()
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(
+            headless=False,  # Set to True if you want it to run completely hidden
+            args=["--disable-blink-features=AutomationControlled", "--no-sandbox"]
+        )
+        context = browser.new_context(
+            viewport={"width": 1280, "height": 850},
+            user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+        )
+        page = context.new_page()
+        page.add_init_script("Object.defineProperty(navigator, 'webdriver', { get: () => undefined });")
+
+        # Global Request Sniffer Pipeline
+        def log_request(request):
+            url = request.url
+            if any(x in url for x in ["google", "facebook", "doubleclick", "sentry"]):
+                return
+
+            parsed_url = urlparse(url)
+            host = parsed_url.hostname or ""
+            parts = host.split('.')
+            current_domain = ".".join(parts[-2:]) if len(parts) >= 2 else host
+
+            if current_domain == target_root_domain:
+                if request.resource_type in ["document", "stylesheet", "script"]:
+                    if not any(url.endswith(ext) for ext in [".js", ".css", ".png", ".jpg", ".svg", ".ico"]):
+                        ui_routes.add(url)
+                else:
+                    api_endpoints.add(url)
+
+        page.on("request", log_request)
+
+        try:
+            # Step 1: Core Navigation Handshake
+            print(f"🎯 Directing browser frame to: {start_url}")
+            page.goto(start_url, wait_until="commit", timeout=25000)
+            
+            # Step 2: Allow the application routing wrapper to settle cleanly
+            print("⏳ Waiting for client-side layout nodes to mount...")
+            page.wait_for_load_state("load")
+            page.wait_for_timeout(4000)
+            
+            # CRITICAL FIX: Dynamically identify a content container and wait until it is live
+            # This ensures we aren't scanning a blank skeleton screen.
+            try:
+                page.wait_for_selector("a, button, [role='button']", timeout=5000)
+                print("✅ Framework structural element confirmed active.")
+            except Exception:
+                print("⚠️  Timeout waiting for specific element, proceeding with available layout tree.")
+
+            final_url = page.url
+            print(f"📍 Confirmed active landing node: {final_url}")
+            ui_routes.add(final_url)
+
+            # Step 3: Extract interactive layout nodes using Playwright's native shadow-piercing engine
+            broad_selectors = "a, button, [role='button'], [class*='btn'], [class*='sport']"
+            elements_locator = page.locator(broad_selectors)
+            all_elements = elements_locator.all()
+            
+            print(f"🖱️  Successfully extracted {len(all_elements)} active interactable nodes!")
+
+            clicked_count = 0
+            # Iterate and fire simulated clicks against the first 15 structural navigation endpoints
+            for element in all_elements[:15]:
+                try:
+                    if not element.is_visible() or not element.is_enabled():
+                        continue
+                        
+                    text = element.inner_text().strip().replace('\n', ' ')
+                    if not text:
+                        # Fallback to grab target directory properties if it's an icon link
+                        href_attr = element.get_attribute("href")
+                        text = f"Link Path: {href_attr}" if href_attr else "Structural Layout Element"
+                        
+                    print(f"      -> Simulation Click Action: [{text[:30]}]")
+                    
+                    element.scroll_into_view_if_needed()
+                    element.click(force=True, timeout=2000)
+                    
+                    page.wait_for_timeout(2000)
+                    ui_routes.add(page.url)
+                    clicked_count += 1
+                except Exception:
+                    continue
+
+            # Step 4: Step-down layout sweep to pull lazy endpoints 
+            print("📜 Performing step-down viewport sweep...")
+            for _ in range(4):
+                page.evaluate("window.scrollBy(0, 500);")
+                page.wait_for_timeout(1500)
+
+            browser.close()
+        except Exception as e:
+            print(f"❌ Automation Engine Halt: {e}")
+            browser.close()
+            return
+
+    # --- WRITE DATA OUT TO FILES ---
+    with open("ui_paths.txt", "w") as f:
+        for item in sorted(ui_routes):
+            f.write(f"{item}\n")
+            
+    with open("api_endpoints.txt", "w") as f:
+        for item in sorted(api_endpoints):
+            f.write(f"{item}\n")
+
+    print("\n" + "="*90)
+    print(f"💾 Logs successfully dumped to disk!")
+    print(f" -> Check 'ui_paths.txt' for all navigated browser paths.")
+    print(f" -> Check 'api_endpoints.txt' for all intercepted API data streams.")
+    print("="*90)
+    print(f"📦 Unique UI Routes/Paths Captured: {len(ui_routes)}")
+    print(f"⚡ Unique API Endpoints Sniffed: {len(api_endpoints)}")
+
+# --- Interactive Entry Prompter Loop ---
+print("🚀 Custom Element Network Asset Spider Engine Active.")
+print("Type 'exit' to shut down.")
+
+while True:
+    user_input = input("\nEnter starting site domain (e.g., www.betpawa.cm): ")
+    if user_input.strip().lower() == 'exit':
+        print("Goodbye!")
+        break
+    if not user_input.strip():
+        print("⚠️ Input cannot be empty.")
+        continue
+        
+    stable_network_interaction_crawler(user_input)

@@ -1,0 +1,40 @@
+(myvenv) user@user-Latitude-3380:~/0/python$ python3 six.py
+🚀 Custom Element Network Asset Spider Engine Active.
+Type 'exit' to shut down.
+
+Enter starting site domain (e.g., www.betpawa.cm): https://www.betpawa.cm
+
+🕸️  Initializing Settlement-Aware Spider for: betpawa.cm
+⏳ Launching browser... Synchronizing state machines.
+🎯 Directing browser frame to: https://www.betpawa.cm
+⏳ Waiting for client-side layout nodes to mount...
+✅ Framework structural element confirmed active.
+📍 Confirmed active landing node: https://www.betpawa.cm/
+🖱️  Successfully extracted 73 active interactable nodes!
+      -> Simulation Click Action: [Structural Layout Element]
+      -> Simulation Click Action: [Link Path: /]
+      -> Simulation Click Action: [Structural Layout Element]
+      -> Simulation Click Action: [LOGIN]
+      -> Simulation Click Action: [LOGIN]
+      -> Simulation Click Action: [JOIN NOW]
+      -> Simulation Click Action: [JOIN NOW]
+      -> Simulation Click Action: [Structural Layout Element]
+      -> Simulation Click Action: [Deposit]
+      -> Simulation Click Action: [SPORTS]
+      -> Simulation Click Action: [LIVE]
+      -> Simulation Click Action: [OUTRIGHTS]
+      -> Simulation Click Action: [Structural Layout Element]
+      -> Simulation Click Action: [Football 6]
+      -> Simulation Click Action: [Premier League 26/27]
+📜 Performing step-down viewport sweep...
+
+==========================================================================================
+💾 Logs successfully dumped to disk!
+ -> Check 'ui_paths.txt' for all navigated browser paths.
+ -> Check 'api_endpoints.txt' for all intercepted API data streams.
+==========================================================================================
+📦 Unique UI Routes/Paths Captured: 9
+⚡ Unique API Endpoints Sniffed: 70
+
+Enter starting site domain (e.g., www.betpawa.cm): 
+
