@@ -1,0 +1,25 @@
+No, Python itself does not use only Chromium.
+The tool you used in your script—Playwright—defaults to Chromium, but it natively supports three major browser engines:
+
+   1. Chromium (The engine behind Google Chrome, Brave, Opera, and Microsoft Edge) [1]
+   2. Firefox (Mozilla's engine) [1]
+   3. WebKit (Apple's engine behind Safari) [1]
+
+## 🌐 How to Switch Browsers in Python
+If you wanted to run your security audit scripts on Firefox or Safari instead of Chrome to see if the website blocks them differently, you only need to change one line of code.
+Here is how you would modify the browser launch block inside your Python script:
+## To use Firefox:
+
+# Switch p.chromium to p.firefoxbrowser = p.firefox.launch(headless=False)
+
+## To use Safari (WebKit):
+
+# Switch p.chromium to p.webkitbrowser = p.webkit.launch(headless=False)
+
+## 📋 Other Browser Automation Tools in Python
+Depending on the library you install in your Ubuntu environment, Python can interact with completely different browser setups:
+
+* Selenium: The oldest and most flexible tool. It can connect to any physical browser installed on your Ubuntu system (including Google Chrome, stable Firefox, or Tor) as long as you have the corresponding driver (like geckodriver or chromedriver).
+* Requests / Requests-HTML: These are completely text-based and use no browser at all (or use a lightweight hidden layout engine called PyQuery). They are much faster but fail on heavy JavaScript apps like the betting site you just audited.
+
+Would you like to know how to install the Firefox or WebKit binaries in your myvenv virtual environment to test how the site reacts to a Safari user agent, or are you ready to close this automation project?
