@@ -1,0 +1,54 @@
+More Vulnerabilities That Can Be Paid (631–640)
+631. Improper Validation of API Rate Limits per User
+Per‑User Rate Limit Bypass
+Applications enforce rate limits globally but not per user, allowing attackers to abuse APIs using multiple accounts.
+💰 Typical payout: $300 – $6,000
+632. Insecure Handling of Temporary Session Tokens
+Temporary Session Token Exposure
+Temporary session tokens remain valid longer than intended or can be reused.
+💰 Typical payout: $300 – $5,000
+633. Improper Validation of Webhook Payloads
+Webhook Payload Manipulation
+Webhook payloads are not verified properly, allowing attackers to send forged requests.
+💰 Typical payout: $400 – $7,000
+634. Insecure Handling of API Response Headers
+Sensitive Header Information Disclosure
+Response headers leak server details, internal IPs, or software versions.
+💰 Typical payout: $200 – $4,000
+635. Improper Validation of Third-Party Integrations
+Third‑Party Integration Authorization Bypass
+External integrations access user data without proper permission validation.
+💰 Typical payout: $500 – $8,000
+636. Insecure Handling of Internal API Documentation
+Internal API Documentation Exposure
+Private documentation endpoints reveal internal APIs and parameters.
+💰 Typical payout: $300 – $6,000
+637. Improper Validation of Data Import APIs
+Data Import Manipulation
+Attackers manipulate imported data to affect backend processing or bypass validation.
+💰 Typical payout: $400 – $7,000
+638. Insecure Handling of Password Reset Notifications
+Password Reset Notification Leak
+Password reset notifications expose sensitive links or tokens.
+💰 Typical payout: $300 – $5,000
+639. Improper Validation of Subscription Upgrade APIs
+Subscription Upgrade Manipulation
+Attackers upgrade accounts to premium services without payment.
+💰 Typical payout: $700 – $12,000
+640. Insecure Handling of System Audit Logs
+Audit Log Exposure
+Audit logs expose sensitive system activity or administrative operations.
+💰 Typical payout: $400 – $8,000
+✅ Important reality in bug bounty
+Even though there are 640+ vulnerabilities, most big payouts come from these core issues:
+Remote Code Execution
+Server‑Side Request Forgery
+SQL Injection
+Broken Access Control
+Cross‑Site Scripting
+Common tools used by bug hunters include:
+Burp Suite
+Nmap
+OWASP ZAP
+FFUF
+Subfinder

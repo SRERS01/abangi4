@@ -1,0 +1,48 @@
+💰 Vulnerabilities That Usually Get Paid
+1. SQL Injection
+Impact: Access or modify database data.
+Typical payout: $1,000 – $10,000+
+2. Cross-Site Scripting
+Impact: Run malicious JavaScript in users’ browsers.
+Typical payout: $100 – $5,000
+3. Remote Code Execution
+Impact: Execute commands on the server.
+Typical payout: $5,000 – $50,000+
+4. Server-Side Request Forgery
+Impact: Access internal systems from the server.
+Typical payout: $500 – $10,000
+5. Insecure Direct Object Reference
+Impact: Access other users’ private data.
+Typical payout: $300 – $5,000
+6. Authentication Bypass
+Impact: Log in without password.
+Typical payout: $1,000 – $10,000
+7. Privilege Escalation
+Impact: Normal user becomes admin.
+Typical payout: $1,000 – $15,000
+8. Command Injection
+Impact: Execute system commands on server.
+Typical payout: $1,000 – $20,000+
+9. Subdomain Takeover
+Impact: Take control of a company’s subdomain.
+Typical payout: $300 – $5,000
+10. Cross-Site Request Forgery
+Impact: Perform actions on behalf of a user.
+Typical payout: $100 – $3,000
+11. Sensitive Data Exposure
+Impact: Leak passwords, API keys, private data.
+Typical payout: $100 – $5,000
+12. Unrestricted File Upload
+Impact: Upload malicious files to server.
+Typical payout: $500 – $10,000
+⚠️ Bugs that usually DO NOT get paid
+Many programs do not pay for these:
+Missing security headers
+Clickjacking
+Self-XSS
+Version disclosure
+Information without real impact
+✅ Platforms where you report these bugs:
+HackerOne
+Bugcrowd
+Intigriti

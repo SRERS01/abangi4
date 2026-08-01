@@ -1,0 +1,52 @@
+301. XML External Entity Injection
+XML External Entity Injection
+Improper XML parsing allows attackers to access local files or internal systems.
+💰 Typical payout: $500 – $8,000
+302. Server-Side Template Injection
+Server-Side Template Injection
+User input processed inside templates can lead to server command execution.
+💰 Typical payout: $1,000 – $15,000
+303. Prototype Pollution
+Prototype Pollution
+Attackers manipulate JavaScript object prototypes, affecting application logic.
+💰 Typical payout: $500 – $8,000
+304. JWT Signature Verification Bypass
+JWT Signature Verification Bypass
+Applications incorrectly validate JSON Web Tokens, allowing forged authentication.
+💰 Typical payout: $1,000 – $10,000
+305. HTTP Parameter Pollution
+HTTP Parameter Pollution
+Duplicate parameters manipulate backend application behavior.
+💰 Typical payout: $300 – $5,000
+306. Subdomain Takeover
+Subdomain Takeover
+Unused DNS records point to services that attackers can claim.
+💰 Typical payout: $500 – $5,000
+307. DNS Zone Transfer Exposure
+DNS Zone Transfer
+Misconfigured DNS servers allow attackers to download entire domain records.
+💰 Typical payout: $300 – $4,000
+308. HTTP Response Splitting
+HTTP Response Splitting
+Improper input validation allows attackers to manipulate HTTP responses.
+💰 Typical payout: $300 – $5,000
+309. Unsafe File Deletion
+Unsafe File Deletion Vulnerability
+Attackers can delete arbitrary files by manipulating file paths.
+💰 Typical payout: $300 – $5,000
+310. Mobile Application Reverse Engineering Exposure
+Mobile Reverse Engineering Exposure
+Sensitive logic or secrets exposed through easily reversible mobile app code.
+💰 Typical payout: $300 – $6,000
+✅ Reality in bug bounty
+Even though there are 300+ vulnerability types, the majority of high payouts still come from:
+SQL Injection
+Cross-Site Scripting
+Server-Side Request Forgery
+Broken Access Control
+Remote Code Execution
+These sometimes reach $10,000 – $100,000+ depending on the company.
+💡 If you want, I can also show you:
+The full list up to 400+ vulnerabilities
+The 20 vulnerabilities that make most bug bounty money
+A real bug-hunting workflow using tools like Burp Suite, Nmap, FFUF, and Amass.

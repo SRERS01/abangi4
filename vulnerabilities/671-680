@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid (671–680)
+671. Improper Validation of File Rename APIs
+File Rename Authorization Bypass
+Attackers rename files belonging to other users due to missing permission checks.
+💰 Typical payout: $300 – $6,000
+672. Insecure Handling of Session Regeneration
+Session Fixation Vulnerability
+Applications fail to regenerate session IDs after login, allowing attackers to hijack sessions.
+💰 Typical payout: $400 – $8,000
+673. Improper Validation of API Batch Requests
+Batch Request Authorization Bypass
+Batch APIs process multiple actions without verifying each request properly.
+💰 Typical payout: $400 – $7,000
+674. Insecure Handling of Application Update Servers
+Update Server Spoofing
+Attackers impersonate update servers to distribute malicious updates.
+💰 Typical payout: $700 – $12,000
+675. Improper Validation of Profile Image Uploads
+Profile Image Upload Exploit
+Attackers upload malicious files disguised as images.
+💰 Typical payout: $400 – $7,000
+676. Insecure Handling of Search Query Logs
+Search Log Data Exposure
+Search logs reveal sensitive user queries or internal system information.
+💰 Typical payout: $300 – $5,000
+677. Improper Validation of API Resource Identifiers
+Resource Identifier Manipulation
+Attackers manipulate resource IDs to access unauthorized records.
+💰 Typical payout: $400 – $7,000
+678. Insecure Handling of File Preview Generators
+File Preview Processing Exploit
+File preview services execute unsafe processing on uploaded files.
+💰 Typical payout: $500 – $9,000
+679. Improper Validation of Email Notification Links
+Email Link Authorization Bypass
+Notification links grant access to resources without verifying the user.
+💰 Typical payout: $300 – $6,000
+680. Insecure Handling of Internal API Gateways
+Internal Gateway Exposure
+Internal API gateways are accessible from the internet due to misconfiguration.
+💰 Typical payout: $600 – $10,000

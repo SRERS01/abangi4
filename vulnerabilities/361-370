@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid (361–370)
+361. Improper Input Encoding
+Improper Input Encoding
+Applications fail to encode user input correctly, allowing injection attacks.
+💰 Typical payout: $200 – $4,000
+362. Unrestricted API Data Exposure
+API Data Exposure
+APIs return excessive information that should not be visible to users.
+💰 Typical payout: $300 – $6,000
+363. Improper Object Serialization
+Insecure Object Serialization
+Serialized objects can be manipulated to alter application behavior.
+💰 Typical payout: $500 – $8,000
+364. Internal Service Discovery Exposure
+Internal Service Exposure
+Internal services become visible through misconfigured endpoints.
+💰 Typical payout: $300 – $5,000
+365. Improper Security Configuration in Containers
+Container Security Misconfiguration
+Container environments expose sensitive ports, secrets, or services.
+💰 Typical payout: $500 – $8,000
+366. Hardcoded Cryptographic Keys
+Hardcoded Cryptographic Keys
+Encryption keys embedded in application code.
+💰 Typical payout: $500 – $7,000
+367. Unauthorized Webhook Trigger
+Webhook Trigger Vulnerability
+Attackers can trigger webhooks without proper authentication.
+💰 Typical payout: $300 – $5,000
+368. Improper Input Length Validation
+Input Length Validation Vulnerability
+Applications fail to properly limit input size, potentially causing crashes or bypasses.
+💰 Typical payout: $200 – $3,000
+369. Missing Authentication on Internal APIs
+Internal API Authentication Bypass
+Internal APIs accessible without authentication.
+💰 Typical payout: $500 – $8,000
+370. Security Token Disclosure
+Security Token Exposure
+Authentication or API tokens exposed through responses or frontend code.
+💰 Typical payout: $300 – $6,000

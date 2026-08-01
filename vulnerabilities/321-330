@@ -1,0 +1,43 @@
+More Vulnerabilities That Can Be Paid (321–330)
+321. DOM-Based Cross-Site Scripting
+DOM-Based Cross-Site Scripting
+Client-side JavaScript processes user input insecurely, allowing script injection.
+💰 Typical payout: $300 – $6,000
+322. Reflected Cross-Site Scripting
+Reflected Cross-Site Scripting
+User input is immediately reflected in a webpage without proper sanitization.
+💰 Typical payout: $200 – $5,000
+323. Stored Cross-Site Scripting
+Stored Cross-Site Scripting
+Malicious scripts are stored on the server and executed for other users.
+💰 Typical payout: $500 – $10,000
+324. Weak Password Hashing
+Weak Password Hashing
+Applications store passwords using insecure hashing algorithms.
+💰 Typical payout: $300 – $5,000
+325. Broken Object Level Authorization
+Broken Object Level Authorization
+APIs fail to enforce authorization on object-level access.
+💰 Typical payout: $500 – $8,000
+326. Improper File Permission Configuration
+Improper File Permissions
+Files or directories have overly permissive access rights.
+💰 Typical payout: $200 – $3,000
+327. Unprotected Backup Files
+Backup File Exposure
+Backup files such as .bak or .zip are publicly accessible.
+💰 Typical payout: $300 – $5,000
+328. Hardcoded API Keys
+Hardcoded API Keys
+Sensitive API keys are embedded directly in source code.
+💰 Typical payout: $300 – $6,000
+329. Improper TLS Configuration
+TLS Misconfiguration
+Servers use outdated TLS versions or weak cipher suites.
+💰 Typical payout: $200 – $3,000
+330. Application Debug Interface Exposure
+Debug Interface Exposure
+Debug panels or developer interfaces accessible in production systems.
+💰 Typical payout: $300 – $5,000
+✅ Important reality about bug bounty
+Even though there are 330+ vulnerability types, most high payouts still come

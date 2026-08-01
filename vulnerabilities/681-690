@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid (681–690)
+681. Improper Validation of Password Reset Email Links
+Password Reset Link Reuse
+Password reset links remain valid after being used or can be reused by attackers.
+💰 Typical payout: $400 – $7,000
+682. Insecure Handling of API Authentication Tokens
+API Token Leakage
+Authentication tokens are exposed through logs, URLs, or browser storage.
+💰 Typical payout: $400 – $8,000
+683. Improper Validation of File Ownership
+File Ownership Authorization Bypass
+Attackers access files belonging to other users due to weak authorization checks.
+💰 Typical payout: $400 – $7,000
+684. Insecure Handling of Configuration Backup Archives
+Configuration Backup Exposure
+Backup archives containing configuration files are publicly accessible.
+💰 Typical payout: $500 – $9,000
+685. Improper Validation of Login Attempt Counters
+Login Attempt Counter Bypass
+Attackers reset login attempt counters to avoid account lockouts.
+💰 Typical payout: $300 – $6,000
+686. Insecure Handling of API Key Rotation
+API Key Rotation Failure
+Old API keys remain valid even after new keys are issued.
+💰 Typical payout: $400 – $8,000
+687. Improper Validation of Email Change Requests
+Email Change Authorization Bypass
+Attackers change another user’s email address without proper verification.
+💰 Typical payout: $500 – $8,000
+688. Insecure Handling of Application Debug Endpoints
+Debug Endpoint Exposure
+Debug endpoints reveal sensitive information such as internal variables or system configuration.
+💰 Typical payout: $400 – $7,000
+689. Improper Validation of API Resource Permissions
+Resource Permission Escalation
+Attackers gain access to restricted resources by manipulating permission parameters.
+💰 Typical payout: $500 – $9,000
+690. Insecure Handling of Backup Download APIs
+Backup Download Authorization Bypass
+Backup files can be downloaded without proper authentication.
+💰 Typical payout: $500 – $10,000

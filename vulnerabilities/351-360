@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid (351–360)
+351. Business Logic Flaw
+Business Logic Vulnerability
+Application workflows can be manipulated to gain unintended benefits.
+💰 Typical payout: $500 – $12,000
+352. Payment Workflow Manipulation
+Payment Logic Manipulation
+Attackers manipulate payment flows to reduce or bypass payment amounts.
+💰 Typical payout: $1,000 – $20,000
+353. Account Enumeration via API
+Account Enumeration
+APIs reveal whether specific usernames or emails exist.
+💰 Typical payout: $100 – $2,000
+354. Improper Access Control on File Downloads
+Unauthorized File Download
+Users can download restricted documents or files.
+💰 Typical payout: $300 – $6,000
+355. Weak Token Expiration
+Weak Token Expiration
+Authentication tokens remain valid for excessively long periods.
+💰 Typical payout: $200 – $4,000
+356. Improper Cache Control Headers
+Cache Control Misconfiguration
+Sensitive data cached by browsers or proxies.
+💰 Typical payout: $200 – $3,000
+357. Improper Password Storage in Logs
+Sensitive Data Logging
+Passwords or authentication data appear in application logs.
+💰 Typical payout: $300 – $5,000
+358. Publicly Accessible Test Accounts
+Test Account Exposure
+Test accounts remain active in production environments.
+💰 Typical payout: $200 – $4,000
+359. Unauthorized Access to Analytics Data
+Analytics Data Exposure
+Sensitive analytics or reporting data accessible without authorization.
+💰 Typical payout: $300 – $5,000
+360. Improper Data Deletion
+Improper Data Deletion
+Deleted user data remains accessible in the system.
+💰 Typical payout: $300 – $6,000

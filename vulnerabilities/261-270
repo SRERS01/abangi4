@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid (261–270)
+261. Improper Session Timeout
+Session Timeout Misconfiguration
+User sessions remain active for an excessively long time without inactivity expiration.
+💰 Typical payout: $200 – $3,000
+262. Weak Account Lockout Mechanism
+Account Lockout Bypass
+Systems fail to properly lock accounts after multiple failed login attempts.
+💰 Typical payout: $200 – $3,000
+263. API Endpoint Without Authentication
+Unauthenticated API Endpoint
+Sensitive API endpoints accessible without authentication.
+💰 Typical payout: $500 – $8,000
+264. Misconfigured Web Application Firewall
+Web Application Firewall Misconfiguration
+Security filters incorrectly configured, allowing malicious requests to pass.
+💰 Typical payout: $300 – $5,000
+265. Improper Email Verification Process
+Email Verification Bypass
+Users can access features without completing email verification.
+💰 Typical payout: $200 – $3,000
+266. Broken Multi-Step Authentication Flow
+Multi‑Step Authentication Bypass
+Attackers bypass one of the steps in a multi-step authentication process.
+💰 Typical payout: $500 – $8,000
+267. Improper Account Deletion Handling
+Improper Account Deletion
+User data remains accessible after an account is deleted.
+💰 Typical payout: $200 – $4,000
+268. Weak Email Change Verification
+Email Change Vulnerability
+Users can change account email addresses without confirming ownership.
+💰 Typical payout: $500 – $7,000
+269. Exposed API Documentation
+API Documentation Exposure
+Publicly accessible API documentation reveals internal endpoints and parameters.
+💰 Typical payout: $100 – $2,000
+270. Misconfigured Rate Limiting on Password Reset
+Password Reset Rate Limiting Bypass
+Attackers can send unlimited password reset attempts.
+💰 Typical payout: $200 – $4,000

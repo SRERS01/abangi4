@@ -1,7 +1,6 @@
-curl -X GET "https://betpawa.cm" \
-  -H "Cookie: x-pawa-token=166dd80c0de56027-8132120fe73e230e" \
-  -H "x-pawa-brand: betpawa" \
-  -H "x-pawa-language: en" \
-  -H "x-pawa-client: web" \
-  -H "x-pawa-region: CM" \
-  -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5) AppleWebKit/605.1.15"
+curl -X POST "https://www.betpawa.cm/api/user/v3/authenticate" \
+-H "User-Agent: Mozilla/5.0" \
+-H "Content-Type: application/json" \
+-H "X-Pawa-Brand: betpawa-cameroon" \
+-H "X-Pawa-Language: en" \
+-d '{"username":"652223518","password":"9012","rememberMe":false}'

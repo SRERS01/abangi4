@@ -1,0 +1,53 @@
+More Vulnerabilities That Can Be Paid (521–530)
+521. Improper Validation of API Export Functions
+API Data Export Exposure
+Export endpoints allow attackers to download large amounts of sensitive user data.
+💰 Typical payout: $500 – $8,000
+522. Insecure Handling of User Role Assignments
+Privilege Escalation via Role Manipulation
+Attackers manipulate role parameters to gain higher privileges.
+💰 Typical payout: $700 – $12,000
+523. Improper Validation of File Compression Formats
+Archive Decompression Vulnerability
+Applications decompress files without validation, allowing file overwrite or server compromise.
+💰 Typical payout: $500 – $8,000
+524. Insecure Handling of API Authentication Headers
+API Authentication Header Exposure
+Sensitive authentication headers leak through logs or error responses.
+💰 Typical payout: $300 – $6,000
+525. Improper Validation of Payment Callbacks
+Payment Callback Manipulation
+Attackers manipulate payment callback responses to mark transactions as successful.
+💰 Typical payout: $1,000 – $15,000
+526. Insecure Handling of WebSocket Authentication
+WebSocket Authentication Bypass
+Attackers connect to WebSocket channels without proper authentication.
+💰 Typical payout: $400 – $7,000
+527. Improper Validation of Content Security Policy
+Weak Content Security Policy
+Weak CSP configurations allow attackers to execute malicious scripts.
+💰 Typical payout: $300 – $6,000
+528. Insecure Handling of Mobile Push Notifications
+Push Notification API Abuse
+Attackers send fake push notifications to users or retrieve notification data.
+💰 Typical payout: $300 – $5,000
+529. Improper Validation of URL Fragments
+URL Fragment Injection
+Applications incorrectly process URL fragments, allowing manipulation of client-side logic.
+💰 Typical payout: $200 – $4,000
+530. Insecure Handling of API Access Tokens
+API Access Token Leakage
+Access tokens exposed in URLs, logs, or client-side code allow unauthorized access.
+💰 Typical payout: $500 – $9,000
+✅ Reality in bug bounty programs
+Most successful bug hunters focus on vulnerabilities like:
+SQL Injection
+Cross-Site Scripting
+Server-Side Request Forgery
+Remote Code Execution
+Broken Access Control
+Using tools such as:
+Burp Suite
+Nmap
+FFUF
+OWASP ZAP👺👺👺👺👺

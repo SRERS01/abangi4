@@ -1,0 +1,42 @@
+More Vulnerabilities That Can Be Paid (501–510)
+501. Improper Validation of API Rate-Limit Headers
+API Rate Limit Header Manipulation
+Attackers manipulate rate-limit headers to bypass request restrictions.
+💰 Typical payout: $300 – $6,000
+502. Insecure Configuration of Reverse Proxies
+Reverse Proxy Exposure
+Reverse proxy servers expose internal endpoints or sensitive services.
+💰 Typical payout: $400 – $7,000
+503. Improper Validation of JSON Web Tokens
+JWT Signature Bypass
+Applications fail to verify JWT signatures correctly, allowing attackers to forge tokens.
+💰 Typical payout: $500 – $9,000
+504. Improper Handling of File Download Authorization
+File Download Authorization Bypass
+Users download files belonging to other users due to missing authorization checks.
+💰 Typical payout: $400 – $7,000
+505. Insecure Configuration of Cloud Metadata Services
+Cloud Metadata Exposure
+Applications allow access to cloud instance metadata that reveals credentials.
+💰 Typical payout: $1,000 – $12,000
+506. Improper Validation of API Sorting Parameters
+API Sorting Parameter Manipulation
+Attackers manipulate sorting logic to access restricted records.
+💰 Typical payout: $300 – $5,000
+507. Insecure Configuration of Logging Systems
+Logging System Information Leakage
+Logs reveal sensitive information such as tokens or internal system paths.
+💰 Typical payout: $300 – $5,000
+508. Improper Security Controls in Email Verification APIs
+Email Verification API Bypass
+Attackers bypass email verification by manipulating API requests.
+💰 Typical payout: $400 – $7,000
+509. Improper Handling of Authentication Cookies
+Authentication Cookie Misconfiguration
+Cookies lack security flags like Secure, HttpOnly, or SameSite.
+💰 Typical payout: $200 – $4,000
+510. Insecure API Gateway Configuration
+API Gateway Security Misconfiguration
+API gateways expose internal endpoints or allow unauthorized requests.
+💰 Typical payout: $500 – $9,000
+✅ Tip for bug bounty beginners

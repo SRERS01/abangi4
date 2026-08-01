@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid
+111. Prototype Pollution in APIs
+Prototype Pollution
+Manipulating JavaScript object prototypes through API requests.
+💰 Typical payout: $500 – $6,000
+112. Open Graph Injection
+Open Graph Injection
+Manipulating metadata used when links are shared on social platforms.
+💰 Typical payout: $100 – $1,000
+113. Improper Password Storage
+Improper Password Storage
+Passwords stored using weak hashing or plain text.
+💰 Typical payout: $500 – $10,000
+114. Client-Side Template Injection
+Client-Side Template Injection
+Injecting malicious code into templates rendered in the browser.
+💰 Typical payout: $300 – $5,000
+115. Service Worker Manipulation
+Service Worker Vulnerability
+Malicious manipulation of service workers to intercept requests.
+💰 Typical payout: $500 – $7,000
+116. Cache Key Injection
+Cache Key Injection
+Manipulating cache keys to poison cached responses.
+💰 Typical payout: $300 – $5,000
+117. API Endpoint Enumeration
+API Endpoint Enumeration
+Discovering hidden or undocumented API endpoints.
+💰 Typical payout: $100 – $2,000
+118. Misconfigured Webhooks
+Webhook Misconfiguration
+Webhooks accepting untrusted data without verification.
+💰 Typical payout: $300 – $4,000
+119. Improper Content-Type Validation
+Improper Content-Type Validation
+Servers accept malicious file types disguised as safe ones.
+💰 Typical payout: $200 – $3,000
+120. Analytics Token Leakage
+Analytics Token Leakage
+Exposure of tokens used for analytics or internal services.
+💰 Typical payout: $100 – $2,000

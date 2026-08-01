@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid (291–300)
+291. Clickjacking
+Clickjacking
+Attackers trick users into clicking hidden or disguised UI elements.
+💰 Typical payout: $100 – $2,000
+292. Cross-Site Script Inclusion
+Cross-Site Script Inclusion
+External scripts can be loaded from untrusted sources.
+💰 Typical payout: $200 – $3,000
+293. Improper Certificate Validation
+SSL Certificate Validation Bypass
+Applications fail to properly validate SSL/TLS certificates.
+💰 Typical payout: $500 – $7,000
+294. Path Traversal
+Directory Traversal
+Attackers access files outside intended directories using manipulated paths.
+💰 Typical payout: $500 – $8,000
+295. Unrestricted File Download
+Unrestricted File Download
+Sensitive files can be downloaded without proper authorization.
+💰 Typical payout: $300 – $5,000
+296. Application Cache Poisoning
+Web Cache Poisoning
+Attackers inject malicious responses into web caches.
+💰 Typical payout: $500 – $8,000
+297. Improper API Version Control
+API Versioning Exposure
+Older API versions remain accessible and contain vulnerabilities.
+💰 Typical payout: $300 – $4,000
+298. Unsecured GraphQL Endpoint
+GraphQL Endpoint Exposure
+GraphQL endpoints allow unauthorized queries.
+💰 Typical payout: $300 – $5,000
+299. Email Header Injection
+Email Header Injection
+Attackers manipulate email headers to send malicious emails.
+💰 Typical payout: $300 – $4,000
+300. Sensitive Data Exposure in Mobile Apps
+Mobile App Sensitive Data Exposure
+Mobile applications store or transmit sensitive data insecurely.
+💰 Typical payout: $300 – $6,000

@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid (391–400)
+391. Cross-Origin Resource Sharing Misconfiguration
+Cross-Origin Resource Sharing Misconfiguration
+Improper CORS configuration allows unauthorized domains to access sensitive resources.
+💰 Typical payout: $300 – $6,000
+392. Improper Referrer Policy
+Referrer Policy Misconfiguration
+Sensitive URLs are leaked through the HTTP referrer header to third-party sites.
+💰 Typical payout: $200 – $3,000
+393. Insecure Dependency Versions
+Vulnerable Dependency Usage
+Applications use outdated libraries that contain known vulnerabilities.
+💰 Typical payout: $300 – $5,000
+394. Improper WebSocket Authentication
+WebSocket Authentication Bypass
+WebSocket connections allow actions without proper authentication checks.
+💰 Typical payout: $500 – $8,000
+395. Unrestricted GraphQL Introspection
+GraphQL Introspection Exposure
+GraphQL introspection enabled in production reveals sensitive API structure.
+💰 Typical payout: $300 – $5,000
+396. Misconfigured Content Security Policy
+Content Security Policy Misconfiguration
+Weak or incorrect CSP rules allow script injection attacks.
+💰 Typical payout: $200 – $4,000
+397. Improper Handling of HTTP Headers
+HTTP Header Injection
+Attackers manipulate headers to alter application behavior.
+💰 Typical payout: $300 – $5,000
+398. Unsecured Webhook Endpoints
+Webhook Endpoint Exposure
+Webhook endpoints accept requests without verifying the source.
+💰 Typical payout: $300 – $5,000
+399. Improper Rate Limit Implementation
+Rate Limiting Misconfiguration
+Rate limiting can be bypassed, allowing brute-force or abuse attacks.
+💰 Typical payout: $200 – $4,000
+400. Insecure Error Handling
+Verbose Error Message Disclosure
+Detailed error messages reveal stack traces, database queries, or internal paths.
+💰 Typical payout: $200 – $4,000

@@ -1,0 +1,48 @@
+More Vulnerabilities That Can Be Paid (851–860)
+851. Improper Validation of API Version Parameters
+API Version Manipulation
+Attackers change API version numbers to access deprecated or insecure endpoints.
+💰 Typical payout: $300 – $6,000
+852. Insecure Handling of Notification Delivery Systems
+Notification System Manipulation
+Attackers exploit notification systems to send unauthorized alerts or hide important notifications.
+💰 Typical payout: $300 – $5,000
+853. Improper Validation of Image Processing APIs
+Image Processing API Vulnerability
+Image manipulation APIs process untrusted input, allowing code execution or system compromise.
+💰 Typical payout: $500 – $9,000
+854. Insecure Handling of Temporary File Storage
+Temporary File Exposure
+Temporary files stored on servers expose sensitive data to unauthorized users.
+💰 Typical payout: $300 – $6,000
+855. Improper Validation of User Session Revocation
+Session Revocation Failure
+User sessions remain active even after logout or password changes.
+💰 Typical payout: $400 – $7,000
+856. Insecure Handling of Chat Message APIs
+Chat API Authorization Bypass
+Attackers read or send messages belonging to other users.
+💰 Typical payout: $300 – $6,000
+857. Improper Validation of User Avatar Uploads
+Avatar Upload Vulnerability
+Malicious files uploaded as avatars execute scripts or expose server files.
+💰 Typical payout: $400 – $8,000
+858. Insecure Handling of Report Generation Services
+Report Generation Data Exposure
+Report generation APIs expose sensitive data or internal system information.
+💰 Typical payout: $300 – $6,000
+859. Improper Validation of API Filtering Rules
+API Filter Manipulation
+Attackers modify filtering rules to reveal hidden or restricted records.
+💰 Typical payout: $300 – $6,000
+860. Insecure Handling of Background Job Queues
+Background Job Queue Exposure
+Attackers manipulate queued background jobs to execute unauthorized actions.
+💰 Typical payout: $400 – $8,000
+✅ Vulnerabilities that often pay the most money on platforms like HackerOne and Bugcrowd include:
+Remote Code Execution
+SQL Injection
+Server-Side Request Forgery
+Broken Access Control
+Cross-Site Scripting
+Researchers commonly test for these using tools like Burp Suite, OWASP ZAP, Nmap, and FFUF.

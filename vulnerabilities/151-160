@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid
+151. XML Injection
+XML Injection
+Attackers inject malicious XML data into applications that process XML input.
+💰 Typical payout: $300 – $5,000
+152. JSON Injection
+JSON Injection
+Malicious JSON input manipulates application logic or API responses.
+💰 Typical payout: $300 – $4,000
+153. HTML Injection
+HTML Injection
+Injecting HTML content into a web page to manipulate the UI or trick users.
+💰 Typical payout: $100 – $2,000
+154. Improper Token Revocation
+Improper Token Revocation
+Access tokens remain valid even after logout or account changes.
+💰 Typical payout: $300 – $5,000
+155. File Overwrite Vulnerability
+File Overwrite Vulnerability
+Uploaded files overwrite existing server files.
+💰 Typical payout: $500 – $7,000
+156. Local Storage Data Leakage
+Local Storage Data Leakage
+Sensitive data stored insecurely in browser local storage.
+💰 Typical payout: $200 – $3,000
+157. Clipboard Data Exposure
+Clipboard Data Exposure
+Applications expose sensitive data through clipboard functionality.
+💰 Typical payout: $100 – $2,000
+158. Improper Role Assignment
+Improper Role Assignment
+Users can assign themselves elevated privileges.
+💰 Typical payout: $500 – $10,000
+159. Default Credentials
+Default Credentials
+Systems left with default usernames and passwords.
+💰 Typical payout: $200 – $4,000
+160. Improper Logout Notification
+Improper Logout Notification
+Users are not notified when sessions are terminated or reused.
+💰 Typical payout: $100 – $2,000

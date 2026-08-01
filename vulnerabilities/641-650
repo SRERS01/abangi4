@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid (641–650)
+641. Improper Validation of User ID Parameters
+User ID Parameter Manipulation
+Attackers modify user ID parameters in requests to access other users’ information.
+💰 Typical payout: $400 – $7,000
+642. Insecure Handling of Application Secrets
+Application Secret Exposure
+Secrets stored in configuration files or repositories are accessible to attackers.
+💰 Typical payout: $500 – $9,000
+643. Improper Validation of API Request Signatures
+API Signature Verification Bypass
+Applications fail to verify API request signatures properly, allowing forged requests.
+💰 Typical payout: $500 – $9,000
+644. Insecure Handling of Access Control Lists
+ACL Authorization Bypass
+Misconfigured access control lists allow unauthorized access to resources.
+💰 Typical payout: $500 – $10,000
+645. Improper Validation of Device Authentication
+Device Authentication Bypass
+Attackers impersonate trusted devices due to weak authentication checks.
+💰 Typical payout: $400 – $8,000
+646. Insecure Handling of Media Upload Services
+Media Upload Security Weakness
+Media upload systems fail to properly validate files, potentially exposing internal systems.
+💰 Typical payout: $400 – $7,000
+647. Improper Validation of API Permission Scopes
+API Permission Scope Escalation
+Attackers manipulate API scope parameters to gain higher privileges.
+💰 Typical payout: $600 – $10,000
+648. Insecure Handling of Session Storage
+Session Storage Exposure
+Session data stored insecurely in browsers or mobile applications can be stolen.
+💰 Typical payout: $300 – $6,000
+649. Improper Validation of Background Job APIs
+Background Job Authorization Bypass
+Attackers trigger background jobs without the required permissions.
+💰 Typical payout: $400 – $7,000
+650. Insecure Handling of API Error Responses
+Verbose Error Message Disclosure
+Detailed error responses reveal internal server information, database queries, or stack traces.
+💰 Typical payout: $200 – $5,000

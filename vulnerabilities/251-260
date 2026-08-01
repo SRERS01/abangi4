@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid (251–260)
+251. Insecure Cookie Configuration
+Insecure Cookie Configuration
+Cookies missing flags like Secure, HttpOnly, or SameSite, making them easier to steal.
+💰 Typical payout: $100 – $1,500
+252. Session Token in URL
+Session Token Exposure
+Session IDs appear in URLs, allowing attackers to capture them via logs or referrers.
+💰 Typical payout: $200 – $3,000
+253. Password Reset via Username Only
+Password Reset Vulnerability
+Resetting passwords using only a username without proper verification.
+💰 Typical payout: $500 – $8,000
+254. Improper Logout Handling
+Improper Session Invalidation
+Sessions remain active even after a user logs out.
+💰 Typical payout: $200 – $3,000
+255. Referrer Header Data Leakage
+Referrer Data Leakage
+Sensitive information leaks through the HTTP referrer header.
+💰 Typical payout: $100 – $2,000
+256. Browser Cache Sensitive Data
+Sensitive Data Stored in Browser Cache
+Private data stored in browser cache accessible after logout.
+💰 Typical payout: $200 – $3,000
+257. Hidden Parameter Manipulation
+Hidden Parameter Manipulation
+Hidden form fields modified by attackers to change application behavior.
+💰 Typical payout: $300 – $4,000
+258. Improper Access to Logs
+Log File Exposure
+Application logs publicly accessible and contain sensitive information.
+💰 Typical payout: $200 – $3,000
+259. API Debug Mode Enabled
+API Debug Mode Exposure
+APIs running in debug mode reveal internal system details.
+💰 Typical payout: $200 – $3,000
+260. Unsafe Redirect Handling
+Open Redirect Vulnerability
+Applications allow redirection to arbitrary external websites.
+💰 Typical payout: $50 – $500

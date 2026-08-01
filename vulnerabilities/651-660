@@ -1,0 +1,43 @@
+More Vulnerabilities That Can Be Paid (651–660)
+651. Improper Validation of Password Reset Attempts
+Password Reset Rate Limit Bypass
+Attackers repeatedly trigger password reset attempts due to missing rate limits.
+💰 Typical payout: $300 – $6,000
+652. Insecure Handling of Web Application Firewalls
+Web Application Firewall Bypass
+Attackers bypass protections implemented by a web application firewall.
+💰 Typical payout: $500 – $9,000
+653. Improper Validation of API Sorting and Filtering
+API Filter Authorization Bypass
+Attackers manipulate sorting or filtering parameters to access restricted records.
+💰 Typical payout: $300 – $6,000
+654. Insecure Handling of Internal Service Ports
+Internal Port Exposure
+Internal service ports become accessible from the internet due to misconfiguration.
+💰 Typical payout: $500 – $10,000
+655. Improper Validation of Password Change Requests
+Password Change Authorization Bypass
+Attackers change user passwords without verifying the current password.
+💰 Typical payout: $500 – $8,000
+656. Insecure Handling of API Gateway Routing
+API Gateway Route Manipulation
+Improper routing rules allow attackers to access internal APIs.
+💰 Typical payout: $600 – $10,000
+657. Improper Validation of User Activity Logs
+User Activity Log Exposure
+Attackers access activity logs belonging to other users.
+💰 Typical payout: $300 – $5,000
+658. Insecure Handling of Application Metrics APIs
+Metrics API Information Disclosure
+Metrics endpoints reveal system performance data and internal architecture.
+💰 Typical payout: $300 – $6,000
+659. Improper Validation of File Preview Permissions
+File Preview Authorization Bypass
+Users preview files belonging to other users due to missing permission checks.
+💰 Typical payout: $300 – $6,000
+660. Insecure Handling of Authentication Cookies
+Authentication Cookie Security Weakness
+Authentication cookies lack Secure or SameSite flags, making them easier to steal.
+💰 Typical payout: $300 – $6,000
+✅ Key insight for bug bounty hunters
+Although there are hundreds

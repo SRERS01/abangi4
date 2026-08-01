@@ -1,0 +1,42 @@
+More Vulnerabilities That Can Be Paid
+101. DOM Clobbering
+DOM Clobbering
+Manipulating HTML elements to overwrite JavaScript variables and change application behavior.
+💰 Typical payout: $300 – $4,000
+102. Template Injection
+Server-Side Template Injection
+Injecting malicious code into server-side templates to execute commands.
+💰 Typical payout: $1,000 – $15,000
+103. CRLF Injection
+CRLF Injection
+Injecting carriage return and line feed characters into HTTP headers.
+💰 Typical payout: $300 – $4,000
+104. Subresource Integrity Bypass
+Subresource Integrity Bypass
+Manipulating external scripts loaded by the application.
+💰 Typical payout: $200 – $3,000
+105. Unsafe File Parsing
+Unsafe File Parsing Vulnerability
+Improper parsing of uploaded files leading to system compromise.
+💰 Typical payout: $500 – $7,000
+106. Log Injection
+Log Injection
+Injecting malicious content into application logs.
+💰 Typical payout: $100 – $2,000
+107. Email Header Injection
+Email Header Injection
+Manipulating email headers to send spam or phishing messages.
+💰 Typical payout: $200 – $3,000
+108. Password Reset Token Leakage
+Password Reset Token Leakage
+Password reset tokens exposed in logs, URLs, or responses.
+💰 Typical payout: $500 – $8,000
+109. Improper Session Expiration
+Improper Session Expiration
+Sessions remain valid longer than intended.
+💰 Typical payout: $200 – $3,000
+110. Publicly Accessible Admin Panel
+Exposed Admin Panel
+Administrative interfaces accessible without proper protection.
+💰 Typical payout: $500 – $6,000
+

@@ -1,0 +1,48 @@
+More Vulnerabilities That Can Be Paid (821–830)
+821. Improper Validation of API Batch Requests
+Batch Request Authorization Bypass
+Attackers execute multiple operations in a batch request without proper permission checks.
+💰 Typical payout: $400 – $8,000
+822. Insecure Handling of Mobile Push Notification Tokens
+Push Notification Token Exposure
+Push notification tokens are leaked or reused, allowing attackers to send fake notifications.
+💰 Typical payout: $300 – $6,000
+823. Improper Validation of File Preview Access
+File Preview Authorization Bypass
+Users can preview files they should not have permission to access.
+💰 Typical payout: $300 – $6,000
+824. Insecure Handling of Password Reset Notifications
+Password Reset Notification Abuse
+Attackers trigger excessive password reset emails to disrupt users.
+💰 Typical payout: $200 – $4,000
+825. Improper Validation of User Status APIs
+User Status Manipulation
+Attackers modify online/offline status or activity data of other users.
+💰 Typical payout: $200 – $4,000
+826. Insecure Handling of Application Telemetry APIs
+Telemetry Data Exposure
+Telemetry APIs expose internal application metrics or usage data.
+💰 Typical payout: $300 – $6,000
+827. Improper Validation of Organization Settings APIs
+Organization Settings Authorization Bypass
+Attackers modify organization-level settings without proper privileges.
+💰 Typical payout: $500 – $10,000
+828. Insecure Handling of API Gateway Logs
+API Gateway Log Exposure
+Logs from API gateways expose sensitive requests or authentication tokens.
+💰 Typical payout: $300 – $6,000
+829. Improper Validation of Account Privacy Settings
+Privacy Settings Authorization Bypass
+Attackers change privacy settings belonging to other users.
+💰 Typical payout: $200 – $4,000
+830. Insecure Handling of Server Monitoring Dashboards
+Monitoring Dashboard Exposure
+Public monitoring dashboards reveal server health and infrastructure details.
+💰 Typical payout: $400 – $8,000
+✅ High-impact vulnerabilities that usually pay the most on platforms like HackerOne and Bugcrowd include:
+Remote Code Execution
+Server-Side Request Forgery
+SQL Injection
+Broken Access Control
+Cross-Site Scripting
+Tools often used by security researchers include Burp Suite, Nmap, OWASP ZAP, and FFUF.

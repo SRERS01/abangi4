@@ -1,0 +1,8 @@
+Important bug-bounty reality
+Even though there are 470+ vulnerability types, the highest-paying reports usually come from a few critical ones:
+SQL Injection
+Cross‑Site Scripting
+Server‑Side Request Forgery
+Broken Access Control
+Remote Code Execution
+These can sometimes reach $10,000 – $100,000+ depending on the company.

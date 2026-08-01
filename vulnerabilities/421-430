@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid (421–430)
+421. Improper Host Header Validation
+Host Header Injection
+Applications trust the Host header, allowing attackers to manipulate links, password reset URLs, or redirects.
+💰 Typical payout: $300 – $6,000
+422. Insecure Password Reset Token
+Password Reset Token Weakness
+Password reset tokens are predictable or never expire.
+💰 Typical payout: $500 – $8,000
+423. Improper Validation of Email Inputs
+Email Input Validation Vulnerability
+Email fields accept malicious payloads or scripts.
+💰 Typical payout: $200 – $4,000
+424. API Endpoint Enumeration
+API Endpoint Enumeration
+Attackers can discover hidden API endpoints due to poor security controls.
+💰 Typical payout: $200 – $4,000
+425. Insecure Cookie Storage
+Cookie Storage Vulnerability
+Sensitive cookies stored without Secure or HttpOnly flags.
+💰 Typical payout: $200 – $3,000
+426. Improper Webhook Validation
+Webhook Validation Failure
+Webhooks accept requests from untrusted sources without verification.
+💰 Typical payout: $300 – $5,000
+427. Unauthorized Access to User Profiles
+User Profile Authorization Bypass
+Users can access other users’ profiles or personal information.
+💰 Typical payout: $300 – $6,000
+428. Improper Filtering of Special Characters
+Special Character Injection
+Applications fail to sanitize special characters in user input.
+💰 Typical payout: $300 – $5,000
+429. Insecure API Pagination Controls
+API Pagination Manipulation
+Attackers manipulate pagination parameters to extract additional data.
+💰 Typical payout: $300 – $5,000
+430. Unrestricted Resource Consumption
+Denial of Service via Resource Exhaustion
+Applications allow excessive requests or heavy operations that consume server resources.
+💰 Typical payout: $300 – $6,000

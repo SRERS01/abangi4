@@ -1,0 +1,48 @@
+More Vulnerabilities That Can Be Paid (861–870)
+861. Improper Validation of File Preview APIs
+File Preview Authorization Bypass
+File preview features allow attackers to view documents belonging to other users.
+💰 Typical payout: $300 – $6,000
+862. Insecure Handling of Subscription Management APIs
+Subscription Management Manipulation
+Attackers modify subscription plans or billing settings without authorization.
+💰 Typical payout: $400 – $8,000
+863. Improper Validation of Search Result Permissions
+Search Result Authorization Bypass
+Applications display results that include restricted or private data.
+💰 Typical payout: $300 – $6,000
+864. Insecure Handling of Account Activity Logs
+Account Activity Log Exposure
+Attackers access logs revealing sensitive user activity.
+💰 Typical payout: $300 – $5,000
+865. Improper Validation of Data Export Filters
+Data Export Filter Manipulation
+Attackers manipulate export filters to download unauthorized datasets.
+💰 Typical payout: $400 – $7,000
+866. Insecure Handling of System Status Dashboards
+System Dashboard Information Disclosure
+Status dashboards reveal infrastructure details or internal system information.
+💰 Typical payout: $300 – $6,000
+867. Improper Validation of Webhook Event Subscriptions
+Webhook Event Authorization Bypass
+Attackers subscribe to events belonging to other users or organizations.
+💰 Typical payout: $300 – $6,000
+868. Insecure Handling of Configuration Import Features
+Configuration Import Vulnerability
+Attackers import malicious configuration files to modify system behavior.
+💰 Typical payout: $400 – $8,000
+869. Improper Validation of Billing APIs
+Billing API Manipulation
+Attackers alter billing information or view financial data belonging to other users.
+💰 Typical payout: $400 – $8,000
+870. Insecure Handling of User Tagging Systems
+User Tagging Authorization Bypass
+Attackers tag or mention users in unauthorized contexts, triggering unintended actions.
+💰 Typical payout: $200 – $5,000
+✅ The most profitable vulnerability types reported on HackerOne and Bugcrowd still include:
+Remote Code Execution
+Server-Side Request Forgery
+SQL Injection
+Broken Access Control
+Cross-Site Scripting
+Security researchers often test using tools like Burp Suite, OWASP ZAP, Nmap, and FFUF.

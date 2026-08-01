@@ -1,0 +1,48 @@
+More Vulnerabilities That Can Be Paid (881–890)
+881. Improper Validation of Password Strength Enforcement
+Weak Password Policy
+Applications allow weak passwords that can be easily guessed or brute-forced.
+💰 Typical payout: $200 – $4,000
+882. Insecure Handling of User Role Assignment APIs
+User Role Escalation
+Attackers assign themselves higher privileges such as admin roles.
+💰 Typical payout: $500 – $9,000
+883. Improper Validation of File Sharing Permissions
+File Sharing Authorization Bypass
+Attackers access files shared between other users.
+💰 Typical payout: $300 – $6,000
+884. Insecure Handling of Temporary Download Links
+Temporary Link Exposure
+Temporary download URLs remain valid longer than intended or can be guessed.
+💰 Typical payout: $300 – $6,000
+885. Improper Validation of API Bulk Operations
+Bulk API Authorization Bypass
+Bulk endpoints perform actions on multiple accounts without proper permission checks.
+💰 Typical payout: $400 – $8,000
+886. Insecure Handling of User Import Tools
+User Import Vulnerability
+Malicious CSV or data imports trigger system errors or inject unwanted records.
+💰 Typical payout: $300 – $6,000
+887. Improper Validation of Application Settings APIs
+Settings Manipulation Vulnerability
+Attackers change application settings belonging to other users or organizations.
+💰 Typical payout: $300 – $6,000
+888. Insecure Handling of Comment Moderation APIs
+Comment Moderation Bypass
+Attackers bypass comment filters or moderation systems.
+💰 Typical payout: $200 – $4,000
+889. Improper Validation of User Profile Visibility
+Private Profile Information Disclosure
+Private user profile data becomes visible to unauthorized users.
+💰 Typical payout: $300 – $5,000
+890. Insecure Handling of Activity Feed APIs
+Activity Feed Data Exposure
+Attackers access activity feeds belonging to other users.
+💰 Typical payout: $300 – $6,000
+✅ Highest-paying vulnerabilities reported on HackerOne and Bugcrowd usually include:
+Remote Code Execution
+Server-Side Request Forgery
+SQL Injection
+Broken Access Control
+Cross-Site Scripting
+Researchers often test these using tools like Burp Suite, OWASP ZAP, Nmap, and FFUF.

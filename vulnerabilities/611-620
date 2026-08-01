@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid (611–620)
+611. Improper Validation of User Account Status
+Account Status Validation Bypass
+Disabled or suspended accounts can still access certain features or APIs.
+💰 Typical payout: $300 – $6,000
+612. Insecure Handling of Configuration Endpoints
+Configuration Endpoint Exposure
+Public configuration endpoints reveal environment settings or system information.
+💰 Typical payout: $400 – $7,000
+613. Improper Validation of API Authentication Flow
+Authentication Flow Manipulation
+Attackers manipulate steps in the authentication process to bypass login checks.
+💰 Typical payout: $500 – $9,000
+614. Insecure Handling of Application Logs
+Application Log Information Disclosure
+Application logs expose sensitive information such as tokens or internal endpoints.
+💰 Typical payout: $300 – $6,000
+615. Improper Validation of WebSocket Connections
+WebSocket Authorization Bypass
+WebSocket connections fail to validate user permissions, allowing unauthorized actions.
+💰 Typical payout: $500 – $8,000
+616. Insecure Handling of Environment Variables
+Environment Variable Exposure
+Sensitive credentials stored in environment variables become publicly accessible.
+💰 Typical payout: $500 – $9,000
+617. Improper Validation of File Preview APIs
+File Preview Authorization Bypass
+Users can preview files belonging to other users due to missing permission checks.
+💰 Typical payout: $300 – $6,000
+618. Insecure Handling of System Status APIs
+System Status Information Disclosure
+Status APIs reveal internal server metrics or infrastructure details.
+💰 Typical payout: $300 – $5,000
+619. Improper Validation of Notification Delivery APIs
+Notification Delivery Authorization Bypass
+Attackers send or intercept notifications belonging to other users.
+💰 Typical payout: $300 – $6,000
+620. Insecure Handling of Scheduled Task APIs
+Scheduled Task Manipulation
+Attackers manipulate scheduled tasks to trigger unauthorized operations.
+💰 Typical payout: $400 – $7,000

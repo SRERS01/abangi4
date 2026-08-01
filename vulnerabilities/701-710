@@ -1,0 +1,53 @@
+More Vulnerabilities That Can Be Paid (701–710)
+701. Improper Validation of Two-Factor Authentication Tokens
+Two-Factor Authentication Bypass
+Attackers bypass two-factor authentication due to weak token validation.
+💰 Typical payout: $800 – $12,000
+702. Insecure Handling of API Request Caching
+Sensitive API Cache Exposure
+Sensitive API responses are cached and served to unauthorized users.
+💰 Typical payout: $400 – $7,000
+703. Improper Validation of Password Recovery Questions
+Security Question Authentication Weakness
+Weak or predictable recovery questions allow attackers to reset accounts.
+💰 Typical payout: $400 – $8,000
+704. Insecure Handling of File Compression Services
+Archive Processing Vulnerability
+File compression or extraction services allow malicious archive exploitation.
+💰 Typical payout: $500 – $9,000
+705. Improper Validation of API Authentication Parameters
+Authentication Parameter Manipulation
+Attackers modify authentication parameters to bypass login verification.
+💰 Typical payout: $500 – $9,000
+706. Insecure Handling of WebSocket Authentication
+WebSocket Authentication Bypass
+WebSocket connections allow unauthorized users to connect without proper authentication.
+💰 Typical payout: $500 – $8,000
+707. Improper Validation of User Notification Settings
+Notification Settings Authorization Bypass
+Users modify notification settings belonging to other users.
+💰 Typical payout: $300 – $6,000
+708. Insecure Handling of Cloud Instance Metadata
+Cloud Metadata Exposure
+Cloud metadata endpoints reveal sensitive credentials or internal information.
+💰 Typical payout: $1,000 – $15,000
+709. Improper Validation of Resource Sharing Links
+Resource Sharing Link Guessing
+Attackers guess or reuse sharing links to access private resources.
+💰 Typical payout: $400 – $7,000
+710. Insecure Handling of API Response Compression
+Compression Side-Channel Attack
+Improper compression handling allows attackers to infer sensitive data.
+💰 Typical payout: $500 – $9,000
+✅ Important bug bounty insight
+Although there are 700+ vulnerability types, the highest-paying reports usually involve:
+Remote Code Execution
+Server-Side Request Forgery
+SQL Injection
+Broken Access Control
+Cross-Site Scripting
+Tools commonly used by researchers include:
+Burp Suite
+Nmap
+OWASP ZAP
+FFUF

@@ -1,0 +1,50 @@
+More Vulnerabilities That Can Be Paid (711–720)
+711. Improper Validation of Session Expiration
+Session Expiration Bypass
+Sessions remain active even after timeout limits, allowing attackers to continue using them.
+💰 Typical payout: $300 – $6,000
+712. Insecure Handling of OAuth Access Tokens
+OAuth Access Token Leakage
+OAuth tokens are exposed through logs, URLs, or browser storage.
+💰 Typical payout: $500 – $9,000
+713. Improper Validation of Payment Confirmation APIs
+Payment Confirmation Manipulation
+Attackers manipulate payment confirmation endpoints to falsely validate transactions.
+💰 Typical payout: $1,000 – $15,000
+714. Insecure Handling of File Preview Features
+File Preview Injection
+File preview systems execute malicious scripts embedded in uploaded files.
+💰 Typical payout: $500 – $8,000
+715. Improper Validation of User Group Permissions
+User Group Privilege Escalation
+Attackers escalate privileges by manipulating group membership.
+💰 Typical payout: $700 – $12,000
+716. Insecure Handling of Temporary Download Links
+Temporary Download Link Reuse
+Temporary links remain valid longer than intended and can be reused.
+💰 Typical payout: $300 – $6,000
+717. Improper Validation of Comment Systems
+Comment System Injection
+Comment sections allow injection of malicious scripts or code.
+💰 Typical payout: $300 – $5,000
+718. Insecure Handling of API Versioning
+Deprecated API Exposure
+Old API versions remain accessible and contain vulnerabilities.
+💰 Typical payout: $400 – $7,000
+719. Improper Validation of File Conversion Services
+File Conversion Service Exploit
+File conversion tools execute malicious payloads embedded in uploaded files.
+💰 Typical payout: $500 – $9,000
+720. Insecure Handling of Application Debug Endpoints
+Debug Endpoint Exposure
+Debug endpoints reveal stack traces, environment variables, or internal configuration.
+💰 Typical payout: $400 – $8,000
+✅ Tip for bug bounty hunters:
+Researchers usually focus on high-impact vulnerabilities like:
+Remote Code Execution
+Server-Side Request Forgery
+SQL Injection
+Broken Access Control
+Cross-Site Scripting
+Tools frequently used include Burp Suite, Nmap, and OWASP ZAP.
+💡 If you'd like, I can also

@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid
+171. GraphQL Introspection Exposure
+GraphQL Introspection Exposure
+GraphQL APIs allow introspection queries that reveal internal schema and sensitive endpoints.
+💰 Typical payout: $200 – $3,000
+172. Webhook Signature Bypass
+Webhook Signature Bypass
+Attackers bypass verification of webhook requests.
+💰 Typical payout: $300 – $4,000
+173. Payment Amount Manipulation
+Payment Amount Manipulation
+Changing parameters to reduce the payment amount.
+💰 Typical payout: $1,000 – $20,000
+174. Improper Session Binding
+Improper Session Binding
+Sessions not tied properly to IP or device, allowing reuse.
+💰 Typical payout: $300 – $5,000
+175. Email Verification Token Reuse
+Email Verification Token Reuse
+Verification tokens can be reused multiple times.
+💰 Typical payout: $200 – $3,000
+176. Improper Role-Based Access Control
+Role-Based Access Control Vulnerability
+Roles not properly enforced across application endpoints.
+💰 Typical payout: $500 – $10,000
+177. Internal IP Disclosure
+Internal IP Disclosure
+Applications reveal internal network addresses.
+💰 Typical payout: $100 – $1,500
+178. Misconfigured Reverse Proxy
+Reverse Proxy Misconfiguration
+Reverse proxy exposes backend services unintentionally.
+💰 Typical payout: $300 – $5,000
+179. Broken Rate Limiting in API Keys
+API Rate Limiting Vulnerability
+API keys allow unlimited requests without throttling.
+💰 Typical payout: $200 – $3,000
+180. Password Reset Link Leakage
+Password Reset Link Leakage
+Reset links exposed through logs, referrers, or third-party requests.
+💰 Typical payout: $500 – $8,000

@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid (511–520)
+511. Improper Validation of API Filtering Parameters
+API Filter Parameter Manipulation
+Attackers manipulate filter parameters to retrieve restricted or hidden data.
+💰 Typical payout: $300 – $5,000
+512. Insecure Handling of API Batch Requests
+API Batch Request Abuse
+Batch API endpoints allow attackers to perform unauthorized actions in bulk.
+💰 Typical payout: $400 – $7,000
+513. Improper Validation of File Upload Paths
+File Upload Path Traversal
+Applications allow uploaded files to overwrite files outside intended directories.
+💰 Typical payout: $500 – $8,000
+514. Insecure Handling of Session Expiration
+Session Expiration Bypass
+Sessions remain valid longer than expected or fail to expire after logout.
+💰 Typical payout: $300 – $6,000
+515. Improper Authorization in Reporting APIs
+Reporting API Authorization Bypass
+Attackers access sensitive reports belonging to other users.
+💰 Typical payout: $400 – $7,000
+516. Insecure Configuration of Debug Endpoints
+Debug Endpoint Exposure
+Debug endpoints reveal sensitive information or allow administrative actions.
+💰 Typical payout: $500 – $9,000
+517. Improper Validation of HTTP Origin Header
+Origin Header Validation Vulnerability
+Applications trust the Origin header, enabling cross-site request abuse.
+💰 Typical payout: $300 – $5,000
+518. Insecure Handling of API Pagination Tokens
+Pagination Token Manipulation
+Attackers manipulate pagination tokens to access unauthorized data.
+💰 Typical payout: $300 – $5,000
+519. Improper Authorization in Messaging APIs
+Messaging API Authorization Bypass
+Users send or read messages belonging to other users.
+💰 Typical payout: $400 – $7,000
+520. Insecure Configuration of Web Application Firewalls
+Web Application Firewall Bypass
+Attackers bypass WAF protections due to weak or incorrect rules.
+💰 Typical payout: $500 – $10,000

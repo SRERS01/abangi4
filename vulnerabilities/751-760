@@ -1,0 +1,53 @@
+Here are more vulnerabilities (751–760) that may sometimes receive rewards when responsibly reported through bug bounty programs on HackerOne, Bugcrowd, and Intigriti.
+More Vulnerabilities That Can Be Paid (751–760)
+751. Improper Validation of API Export Parameters
+Data Export Parameter Manipulation
+Attackers manipulate export parameters to download unauthorized datasets.
+💰 Typical payout: $400 – $8,000
+752. Insecure Handling of Media Upload APIs
+Media Upload Security Weakness
+Media upload systems allow malicious files disguised as legitimate content.
+💰 Typical payout: $300 – $6,000
+753. Improper Validation of User Search Filters
+Search Filter Authorization Bypass
+Attackers modify search filters to retrieve restricted user records.
+💰 Typical payout: $300 – $6,000
+754. Insecure Handling of API Pagination Tokens
+Pagination Token Reuse
+Pagination tokens can be reused or guessed to access hidden records.
+💰 Typical payout: $300 – $5,000
+755. Improper Validation of Email Template Inputs
+Email Template Injection
+User input inside email templates allows malicious content injection.
+💰 Typical payout: $300 – $6,000
+756. Insecure Handling of System Metrics APIs
+System Metrics Exposure
+System metrics APIs expose internal server performance data.
+💰 Typical payout: $200 – $4,000
+757. Improper Validation of Billing APIs
+Billing API Manipulation
+Attackers manipulate billing requests to change payment amounts.
+💰 Typical payout: $800 – $12,000
+758. Insecure Handling of Session Refresh Tokens
+Refresh Token Leakage
+Session refresh tokens are stored or transmitted insecurely.
+💰 Typical payout: $500 – $9,000
+759. Improper Validation of Cloud Storage Permissions
+Cloud Storage Permission Bypass
+Misconfigured permissions allow attackers to access private cloud files.
+💰 Typical payout: $500 – $10,000
+760. Insecure Handling of Backup Download APIs
+Backup File Exposure
+Backup files containing sensitive data can be downloaded without authorization.
+💰 Typical payout: $500 – $9,000
+✅ Highest-paying vulnerability categories often reported on HackerOne and Bugcrowd include:
+Remote Code Execution
+Server-Side Request Forgery
+SQL Injection
+Broken Access Control
+Cross-Site Scripting
+Security researchers often use tools like Burp Suite, Nmap, OWASP ZAP, and FFUF.
+💡 If you'd like, I can continue with:
+761–850 vulnerabilities
+The easiest vulnerabilities beginners find first
+Real bug bounty reports that paid over $50,000–$100,000.

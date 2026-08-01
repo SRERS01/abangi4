@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid (461–470)
+461. Improper Validation of Redirect URLs
+Redirect URL Validation Vulnerability
+Applications fail to validate redirect URLs correctly, enabling phishing or malicious redirection.
+💰 Typical payout: $200 – $4,000
+462. Weak Session Token Entropy
+Weak Session Token Generation
+Session tokens are predictable due to poor randomness.
+💰 Typical payout: $500 – $7,000
+463. Improper Handling of HTTP Headers in APIs
+API Header Injection
+Attackers manipulate HTTP headers to bypass security logic.
+💰 Typical payout: $300 – $5,000
+464. Unsecured Cloud Function Endpoints
+Cloud Function Endpoint Exposure
+Serverless or cloud function endpoints accessible without authentication.
+💰 Typical payout: $400 – $8,000
+465. Improper API Object Reference Validation
+Insecure Direct Object Reference
+APIs allow access to objects by modifying identifiers.
+💰 Typical payout: $500 – $9,000
+466. Insecure Storage of Access Logs
+Access Log Exposure
+Access logs reveal sensitive request information.
+💰 Typical payout: $300 – $5,000
+467. Weak CAPTCHA Implementation
+CAPTCHA Bypass
+CAPTCHA protections can be bypassed, allowing automated attacks.
+💰 Typical payout: $200 – $4,000
+468. Improper Validation of File Paths in APIs
+API File Path Manipulation
+API endpoints fail to properly validate file path parameters.
+💰 Typical payout: $400 – $7,000
+469. Insecure Default API Permissions
+Default API Permission Vulnerability
+APIs expose sensitive actions because default permissions are too permissive.
+💰 Typical payout: $400 – $8,000
+470. Improper Security Controls in Background Jobs
+Background Job Security Misconfiguration
+Background processes execute tasks without proper authorization checks.
+💰 Typical payout: $300 – $6,000

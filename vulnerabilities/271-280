@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid (271–280)
+271. Improper Authorization in API Endpoints
+API Authorization Vulnerability
+API endpoints do not properly verify whether the user has permission to access certain resources.
+💰 Typical payout: $500 – $8,000
+272. Insecure Password Recovery Questions
+Weak Security Questions
+Password recovery questions are predictable or easily guessable.
+💰 Typical payout: $200 – $3,000
+273. Insecure Direct File Access
+Direct File Access Vulnerability
+Files can be accessed directly through predictable URLs without authentication.
+💰 Typical payout: $300 – $5,000
+274. Publicly Accessible Configuration Backup
+Configuration Backup Exposure
+Backup configuration files are accessible from the internet.
+💰 Typical payout: $300 – $6,000
+275. Improper Input Sanitization
+Input Sanitization Vulnerability
+User input is not properly sanitized before processing.
+💰 Typical payout: $300 – $4,000
+276. Weak OTP Implementation
+Weak One-Time Password Implementation
+One-time passwords can be reused, predicted, or brute-forced.
+💰 Typical payout: $500 – $8,000
+277. Misconfigured Authentication Cookies
+Authentication Cookie Misconfiguration
+Authentication cookies lack proper security flags or protections.
+💰 Typical payout: $200 – $3,000
+278. Insecure Password Storage in Client Apps
+Client-Side Password Storage
+Passwords or authentication data stored insecurely in mobile or desktop apps.
+💰 Typical payout: $500 – $8,000
+279. Exposed Internal API Endpoints
+Internal API Exposure
+Internal APIs accessible from the public internet.
+💰 Typical payout: $500 – $7,000
+280. Improper Data Masking
+Sensitive Data Masking Failure
+Sensitive data such as credit card numbers or personal information not properly masked.
+💰 Typical payout: $300 – $5,000

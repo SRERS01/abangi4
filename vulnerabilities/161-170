@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid
+161. LDAP Injection
+LDAP Injection
+Malicious input manipulates LDAP queries used for authentication or directory searches.
+💰 Typical payout: $500 – $7,000
+162. XPath Injection
+XPath Injection
+Attackers modify XPath queries to access unauthorized XML data.
+💰 Typical payout: $300 – $5,000
+163. Open Database Exposure
+Database Exposure
+Databases accessible without authentication.
+💰 Typical payout: $1,000 – $15,000
+164. Misconfigured Firewall
+Firewall Misconfiguration
+Firewall rules allow unintended external access.
+💰 Typical payout: $300 – $5,000
+165. Improper Logging of Sensitive Data
+Sensitive Data in Logs
+Passwords, tokens, or personal information logged in plain text.
+💰 Typical payout: $200 – $3,000
+166. Cloud Metadata Exposure
+Cloud Metadata Exposure
+Internal cloud metadata endpoints accessible externally.
+💰 Typical payout: $500 – $8,000
+167. Improper API Pagination
+API Pagination Vulnerability
+Pagination flaws expose more data than intended.
+💰 Typical payout: $200 – $3,000
+168. Screenshot API Abuse
+Screenshot API Abuse
+Screenshot services used to capture internal or restricted pages.
+💰 Typical payout: $200 – $4,000
+169. Browser Extension Data Leakage
+Browser Extension Data Leakage
+Extensions expose sensitive user data.
+💰 Typical payout: $300 – $5,000
+170. Improper Logout From API Tokens
+API Token Logout Vulnerability
+API tokens remain valid even after logout.
+💰 Typical payout: $300 – $5,000

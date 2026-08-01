@@ -1,0 +1,48 @@
+More Vulnerabilities That Can Be Paid (901–910)
+901. Improper Validation of Login API Responses
+Login API Information Disclosure
+Login responses reveal whether usernames exist, helping attackers enumerate accounts.
+💰 Typical payout: $200 – $4,000
+902. Insecure Handling of User Group Management
+User Group Authorization Bypass
+Attackers add themselves to privileged groups without authorization.
+💰 Typical payout: $400 – $8,000
+903. Improper Validation of Document Preview APIs
+Document Preview Data Exposure
+Preview endpoints reveal sensitive document data.
+💰 Typical payout: $300 – $6,000
+904. Insecure Handling of User Feedback Systems
+Feedback System Injection
+Attackers inject malicious content into feedback forms.
+💰 Typical payout: $200 – $4,000
+905. Improper Validation of Audit Report Exports
+Audit Report Data Exposure
+Audit reports can be downloaded by unauthorized users.
+💰 Typical payout: $300 – $6,000
+906. Insecure Handling of Event Logging APIs
+Event Log Exposure
+Event logging systems expose sensitive internal information.
+💰 Typical payout: $300 – $5,000
+907. Improper Validation of User Verification APIs
+User Verification Bypass
+Attackers bypass identity verification mechanisms.
+💰 Typical payout: $400 – $8,000
+908. Insecure Handling of Payment Notification Systems
+Payment Notification Manipulation
+Attackers send fake payment notifications to manipulate system behavior.
+💰 Typical payout: $400 – $8,000
+909. Improper Validation of Team Collaboration APIs
+Team Collaboration Authorization Bypass
+Attackers access team resources belonging to other organizations.
+💰 Typical payout: $300 – $6,000
+910. Insecure Handling of Data Synchronization APIs
+Data Sync Authorization Bypass
+Attackers manipulate synchronization processes to access unauthorized data.
+💰 Typical payout: $400 – $7,000
+✅ The highest-paying vulnerabilities across platforms like HackerOne and Bugcrowd still include:
+Remote Code Execution
+Server-Side Request Forgery
+SQL Injection
+Broken Access Control
+Cross-Site Scripting
+Researchers typically use tools such as Burp Suite, OWASP ZAP, Nmap, and FFUF to find these.

@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid (691–700)
+691. Improper Validation of User Avatar Uploads
+Avatar Upload File Validation Failure
+Avatar upload features allow malicious files disguised as images.
+💰 Typical payout: $300 – $6,000
+692. Insecure Handling of Application Configuration APIs
+Configuration API Exposure
+Configuration APIs expose sensitive system settings or credentials.
+💰 Typical payout: $400 – $8,000
+693. Improper Validation of Resource Deletion APIs
+Resource Deletion Authorization Bypass
+Attackers delete resources belonging to other users due to weak authorization checks.
+💰 Typical payout: $400 – $7,000
+694. Insecure Handling of Email Template Rendering
+Email Template Injection
+User input is rendered inside email templates without sanitization.
+💰 Typical payout: $300 – $6,000
+695. Improper Validation of API Parameter Types
+Parameter Type Confusion
+Applications accept unexpected parameter types that bypass validation logic.
+💰 Typical payout: $300 – $6,000
+696. Insecure Handling of System Health Dashboards
+System Health Dashboard Exposure
+Public dashboards reveal internal system metrics and infrastructure details.
+💰 Typical payout: $400 – $7,000
+697. Improper Validation of Password Reset Requests
+Password Reset Authorization Bypass
+Attackers trigger password resets without verifying account ownership.
+💰 Typical payout: $500 – $8,000
+698. Insecure Handling of Log File Downloads
+Log File Disclosure
+Attackers download application log files containing sensitive information.
+💰 Typical payout: $300 – $6,000
+699. Improper Validation of Notification APIs
+Notification API Abuse
+Attackers send unauthorized notifications to users.
+💰 Typical payout: $300 – $5,000
+700. Insecure Handling of Administrative API Endpoints
+Administrative API Exposure
+Admin APIs are accessible without proper authentication or authorization.
+💰 Typical payout: $700 – $12,000

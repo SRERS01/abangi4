@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid (221–230)
+221. Insecure Direct Object Mapping
+Insecure Direct Object Reference
+Applications expose object identifiers that allow access to other users’ resources.
+💰 Typical payout: $500 – $10,000
+222. Cloud Metadata Exposure
+Cloud Metadata Exposure
+Applications expose access to internal cloud metadata services containing credentials.
+💰 Typical payout: $1,000 – $10,000
+223. Open S3 Bucket / Public Storage Exposure
+Cloud Storage Misconfiguration
+Sensitive files stored in publicly accessible cloud storage.
+💰 Typical payout: $500 – $10,000
+224. Subdomain Enumeration Data Leak
+Subdomain Enumeration Exposure
+Sensitive services exposed through forgotten or hidden subdomains.
+💰 Typical payout: $200 – $4,000
+225. Weak Encryption Implementation
+Weak Encryption
+Applications use outdated or insecure encryption algorithms.
+💰 Typical payout: $300 – $6,000
+226. Hardcoded Credentials
+Hardcoded Credentials
+Usernames, passwords, or tokens embedded in source code or mobile apps.
+💰 Typical payout: $500 – $8,000
+227. Exposed Environment Variables
+Environment Variable Exposure
+Sensitive configuration values like API keys exposed through environment files.
+💰 Typical payout: $300 – $5,000
+228. Source Map Exposure
+Source Map Exposure
+JavaScript source maps reveal original application code and internal logic.
+💰 Typical payout: $100 – $2,000
+229. Improper Access Control in GraphQL
+GraphQL Authorization Vulnerability
+GraphQL resolvers fail to enforce proper access permissions.
+💰 Typical payout: $500 – $8,000
+230. Mobile App Debuggable Build
+Debuggable Mobile Application
+Production mobile apps shipped with debugging enabled.
+💰 Typical payout: $200 – $3,000

@@ -1,0 +1,48 @@
+More Vulnerabilities That Can Be Paid (841–850)
+841. Improper Validation of Two-Factor Authentication Setup
+Two‑Factor Authentication Bypass
+Attackers bypass the setup process for 2FA and gain access without the second factor.
+💰 Typical payout: $500 – $8,000
+842. Insecure Handling of Backup API Endpoints
+Backup API Exposure
+Backup APIs expose sensitive system data or allow unauthorized backups.
+💰 Typical payout: $400 – $7,000
+843. Improper Validation of API Request Headers
+Header Injection Vulnerability
+Applications trust user-controlled headers, enabling manipulation of backend logic.
+💰 Typical payout: $300 – $6,000
+844. Insecure Handling of Media Processing Services
+Media Processing Service Exposure
+Media processing services allow attackers to upload malicious content that triggers vulnerabilities.
+💰 Typical payout: $500 – $9,000
+845. Improper Validation of Account Recovery Questions
+Account Recovery Bypass
+Security questions can be guessed or bypassed to recover accounts.
+💰 Typical payout: $400 – $8,000
+846. Insecure Handling of User Preference APIs
+User Preference Authorization Bypass
+Attackers modify settings belonging to other users.
+💰 Typical payout: $200 – $5,000
+847. Improper Validation of Scheduled Tasks
+Scheduled Task Manipulation
+Attackers manipulate scheduled tasks to execute unauthorized operations.
+💰 Typical payout: $400 – $7,000
+848. Insecure Handling of Search Index APIs
+Search Index Exposure
+Search indexing APIs expose internal data structures or restricted information.
+💰 Typical payout: $300 – $6,000
+849. Improper Validation of Application Theme Uploads
+Theme Upload Vulnerability
+Attackers upload malicious themes that can execute code or inject scripts.
+💰 Typical payout: $500 – $9,000
+850. Insecure Handling of Debugging Interfaces
+Debug Interface Exposure
+Debug interfaces are publicly accessible and reveal sensitive system information.
+💰 Typical payout: $400 – $8,000
+✅ Vulnerabilities with the highest payouts on platforms like HackerOne and Bugcrowd usually include:
+Remote Code Execution
+SQL Injection
+Server‑Side Request Forgery
+Broken Access Control
+Cross‑Site Scripting
+Security researchers often use tools such as Burp Suite, OWASP ZAP, Nmap, and FFUF.

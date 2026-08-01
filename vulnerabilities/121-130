@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid
+121. HTTP Method Override Abuse
+HTTP Method Override Abuse
+Attackers bypass restrictions by changing HTTP methods (GET, POST, PUT, DELETE).
+💰 Typical payout: $200 – $3,000
+122. Origin Validation Bypass
+Origin Validation Bypass
+Applications incorrectly validate request origins.
+💰 Typical payout: $300 – $5,000
+123. Cookie Tossing
+Cookie Tossing
+Injecting malicious cookies to override legitimate ones.
+💰 Typical payout: $300 – $4,000
+124. DNS Zone Transfer Exposure
+DNS Zone Transfer
+Misconfigured DNS servers reveal internal domain information.
+💰 Typical payout: $200 – $3,000
+125. Directory Listing Enabled
+Directory Listing Vulnerability
+Web servers expose lists of files in directories.
+💰 Typical payout: $100 – $1,500
+126. Improper CAPTCHA Implementation
+CAPTCHA Bypass
+CAPTCHA protections can be bypassed easily.
+💰 Typical payout: $100 – $2,000
+127. Push Notification Abuse
+Push Notification Abuse
+Attackers send malicious push notifications through the platform.
+💰 Typical payout: $200 – $3,000
+128. Improper Logout Token Handling
+Logout Token Vulnerability
+Logout tokens reused or not invalidated properly.
+💰 Typical payout: $200 – $2,500
+129. Password Autofill Abuse
+Password Autofill Abuse
+Browsers autofill credentials into malicious fields.
+💰 Typical payout: $100 – $1,500
+130. Screenshot or Preview Data Leakage
+Preview Data Leakage
+Sensitive information visible in link previews or screenshots.
+💰 Typical payout: $100 – $2,000

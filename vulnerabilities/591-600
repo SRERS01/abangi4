@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid (591–600)
+591. Improper Validation of Session Expiration
+Session Expiration Bypass
+Sessions remain active longer than intended, allowing attackers to continue using a compromised session.
+💰 Typical payout: $300 – $6,000
+592. Insecure Handling of Application Debug Modes
+Debug Mode Exposure
+Applications running in debug mode reveal stack traces, internal paths, or credentials.
+💰 Typical payout: $400 – $7,000
+593. Improper Validation of API Authentication Headers
+Authentication Header Manipulation
+Attackers manipulate authentication headers to bypass security checks.
+💰 Typical payout: $400 – $7,000
+594. Insecure Handling of File Upload Size Limits
+Upload Size Limit Bypass
+Attackers bypass upload limits to exhaust storage or crash servers.
+💰 Typical payout: $300 – $5,000
+595. Improper Validation of API Time Parameters
+Time Parameter Manipulation
+Attackers manipulate timestamps in API requests to bypass restrictions or access historical data.
+💰 Typical payout: $300 – $6,000
+596. Insecure Handling of Log Management Systems
+Log System Exposure
+Log management systems expose internal activity logs or sensitive data.
+💰 Typical payout: $400 – $7,000
+597. Improper Authorization in Comment APIs
+Comment API Authorization Bypass
+Attackers edit or delete comments belonging to other users.
+💰 Typical payout: $300 – $5,000
+598. Insecure Handling of Device Synchronization APIs
+Device Sync Data Exposure
+Device synchronization APIs leak user data across different accounts.
+💰 Typical payout: $400 – $7,000
+599. Improper Validation of Account Deletion APIs
+Account Deletion Authorization Bypass
+Attackers can delete accounts without proper authentication checks.
+💰 Typical payout: $400 – $8,000
+600. Insecure Handling of Temporary Download Links
+Temporary Link Access Bypass
+Temporary download links remain accessible after expiration or can be reused.
+💰 Typical payout: $300 – $6,000

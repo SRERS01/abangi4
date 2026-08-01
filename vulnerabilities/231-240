@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid (231–240)
+231. GraphQL Batch Attack
+GraphQL Batch Attack
+Attackers send multiple GraphQL queries in a single request to bypass rate limits.
+💰 Typical payout: $300 – $4,000
+232. Dependency Vulnerability Exposure
+Vulnerable Software Dependency
+Applications use outdated libraries with known security vulnerabilities.
+💰 Typical payout: $200 – $3,000
+233. Insecure File Processing
+Insecure File Processing
+Improper file parsing allows attackers to execute malicious code or cause system crashes.
+💰 Typical payout: $500 – $7,000
+234. Unrestricted File Rename
+Unrestricted File Rename Vulnerability
+Users can rename uploaded files to dangerous extensions like .php or .js.
+💰 Typical payout: $300 – $5,000
+235. Improper Password Reset Validation
+Password Reset Validation Flaw
+Password reset processes lack proper verification checks.
+💰 Typical payout: $500 – $8,000
+236. Insecure Temporary File Storage
+Temporary File Exposure
+Sensitive data stored in temporary directories accessible to attackers.
+💰 Typical payout: $200 – $3,000
+237. Mobile Application Code Injection
+Mobile Code Injection
+Improper validation in mobile apps allows attackers to inject malicious code.
+💰 Typical payout: $500 – $7,000
+238. Improper Mobile Certificate Validation
+Mobile Certificate Validation Bypass
+Mobile apps accept invalid or malicious SSL certificates.
+💰 Typical payout: $500 – $8,000
+239. API Key Misuse
+API Key Misuse
+API keys exposed or used incorrectly allowing unauthorized access.
+💰 Typical payout: $300 – $5,000
+240. Third-Party Script Compromise
+Third‑Party Script Injection
+Compromised external scripts loaded by the application can execute malicious code.
+💰 Typical payout: $500 – $8,000

@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid (491–500)
+491. Improper Validation of API Content Length
+Content-Length Header Manipulation
+Applications trust the Content-Length header without verification, enabling request smuggling or malformed request attacks.
+💰 Typical payout: $400 – $7,000
+492. Insecure Handling of Web Cache Keys
+Web Cache Poisoning
+Attackers manipulate cache keys to poison cached responses served to other users.
+💰 Typical payout: $500 – $10,000
+493. Improper Validation of URL Parameters
+URL Parameter Injection
+Applications fail to sanitize URL parameters, allowing manipulation of backend behavior.
+💰 Typical payout: $300 – $6,000
+494. Insecure Handling of Background API Tasks
+Background Task Authorization Bypass
+Background API tasks execute sensitive operations without proper authorization checks.
+💰 Typical payout: $400 – $7,000
+495. Improper Validation of Device Tokens
+Device Token Authentication Bypass
+Mobile or device tokens can be reused or guessed to impersonate users.
+💰 Typical payout: $400 – $7,000
+496. Insecure Handling of CDN Configuration
+CDN Security Misconfiguration
+Content Delivery Networks expose restricted files or bypass origin security controls.
+💰 Typical payout: $300 – $6,000
+497. Improper Validation of Payment API Requests
+Payment API Manipulation
+Attackers manipulate payment requests to alter transaction amounts or bypass verification.
+💰 Typical payout: $1,000 – $15,000
+498. Insecure Configuration of Email Services
+Email Service Misconfiguration
+Email servers allow spoofing or unauthorized message sending.
+💰 Typical payout: $300 – $6,000
+499. Improper Authorization in Notification APIs
+Notification API Authorization Bypass
+Attackers send or read notifications belonging to other users.
+💰 Typical payout: $300 – $5,000
+500. Insecure Handling of Backup Configuration Files
+Backup Configuration Exposure
+Backup configuration files accessible publicly expose credentials or system settings.
+💰 Typical payout: $500 – $9,000

@@ -1,0 +1,48 @@
+More Vulnerabilities That Can Be Paid (781–790)
+781. Improper Validation of API Version Headers
+API Version Header Manipulation
+Attackers manipulate API version headers to access deprecated or insecure API versions.
+💰 Typical payout: $300 – $6,000
+782. Insecure Handling of File Thumbnail Generation
+Thumbnail Processing Exploit
+Thumbnail generators process malicious files that may lead to code execution or data leakage.
+💰 Typical payout: $500 – $9,000
+783. Improper Validation of User Blocking Features
+User Block Bypass
+Blocked users can still interact with the victim due to weak enforcement.
+💰 Typical payout: $200 – $4,000
+784. Insecure Handling of Contact Import Features
+Contact Import Data Exposure
+Contact import tools leak private email addresses or phone numbers.
+💰 Typical payout: $300 – $5,000
+785. Improper Validation of Audit Log Access
+Audit Log Authorization Bypass
+Attackers access audit logs belonging to other organizations or users.
+💰 Typical payout: $400 – $8,000
+786. Insecure Handling of Notification Delivery APIs
+Notification Delivery Manipulation
+Attackers send fake system notifications to users.
+💰 Typical payout: $300 – $5,000
+787. Improper Validation of Data Import Tools
+Data Import Injection
+CSV or data import tools allow injection of malicious formulas or commands.
+💰 Typical payout: $400 – $7,000
+788. Insecure Handling of Password Strength Validation
+Weak Password Policy Enforcement
+Systems accept extremely weak passwords despite security policies.
+💰 Typical payout: $200 – $4,000
+789. Improper Validation of Account Activity APIs
+Account Activity Disclosure
+Attackers access activity history belonging to other users.
+💰 Typical payout: $300 – $6,000
+790. Insecure Handling of Service Configuration APIs
+Service Configuration Exposure
+Configuration APIs expose sensitive service settings.
+💰 Typical payout: $400 – $8,000
+✅ Bug bounty hunters often focus on high-impact vulnerabilities such as:
+Remote Code Execution
+Server-Side Request Forgery
+SQL Injection
+Broken Access Control
+Cross-Site Scripting
+Common tools used by researchers include Burp Suite, Nmap, OWASP ZAP, and FFUF.

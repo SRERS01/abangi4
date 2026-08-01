@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid (431–440)
+431. Insecure JWT Storage
+JWT Storage Vulnerability
+JSON Web Tokens stored insecurely in browsers or mobile apps, making them accessible to attackers.
+💰 Typical payout: $300 – $6,000
+432. Improper Domain Validation
+Domain Validation Vulnerability
+Applications fail to validate domain names correctly, enabling spoofing or redirection attacks.
+💰 Typical payout: $200 – $4,000
+433. Insecure Email Verification Process
+Email Verification Bypass
+Users can bypass email verification during registration or account changes.
+💰 Typical payout: $300 – $6,000
+434. Unrestricted API Search Parameters
+API Search Parameter Manipulation
+Attackers manipulate search filters to retrieve unauthorized data.
+💰 Typical payout: $300 – $5,000
+435. Improper Logout Token Invalidation
+Token Invalidation Failure
+Authentication tokens remain valid even after users log out.
+💰 Typical payout: $300 – $5,000
+436. Weak Email Change Verification
+Email Change Authorization Bypass
+Applications allow changing email addresses without proper identity verification.
+💰 Typical payout: $300 – $6,000
+437. Improper Handling of File Metadata
+Metadata Information Disclosure
+Uploaded files expose internal information through metadata.
+💰 Typical payout: $200 – $4,000
+438. Insecure API Filtering Controls
+API Filtering Manipulation
+Attackers manipulate filtering parameters to reveal hidden or restricted records.
+💰 Typical payout: $300 – $5,000
+439. Misconfigured Reverse Proxy
+Reverse Proxy Misconfiguration
+Reverse proxies incorrectly route requests, exposing internal services.
+💰 Typical payout: $400 – $7,000
+440. Improper Handling of HTTP OPTIONS Method
+HTTP OPTIONS Method Exposure
+Servers reveal sensitive information about allowed methods or API functionality.
+💰 Typical payout: $200 – $4,000

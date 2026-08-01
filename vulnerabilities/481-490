@@ -1,0 +1,54 @@
+Here are more vulnerabilities (481–490) that can sometimes receive bug-bounty rewards when responsibly reported through programs on HackerOne, Bugcrowd, and Intigriti.
+More Vulnerabilities That Can Be Paid (481–490)
+481. Improper Validation of API Request Size
+API Request Size Validation Vulnerability
+APIs fail to limit request sizes, allowing attackers to send extremely large payloads that disrupt services.
+💰 Typical payout: $300 – $6,000
+482. Insecure Token Refresh Mechanism
+Refresh Token Abuse
+Refresh tokens can be reused or stolen, allowing attackers to maintain unauthorized access.
+💰 Typical payout: $500 – $8,000
+483. Improper Validation of File Extensions
+File Extension Validation Bypass
+Applications rely only on file extensions to validate uploads, allowing malicious files.
+💰 Typical payout: $400 – $7,000
+484. Insecure Mobile API Endpoints
+Mobile API Endpoint Exposure
+Mobile application APIs expose sensitive endpoints without authentication.
+💰 Typical payout: $500 – $9,000
+485. Improper Validation of Multi-Step Authentication Flow
+Multi‑Step Authentication Bypass
+Attackers bypass multi-step verification processes during login or transactions.
+💰 Typical payout: $500 – $8,000
+486. Improper Handling of API Versioning
+Deprecated API Version Exposure
+Old API versions remain accessible and contain unpatched vulnerabilities.
+💰 Typical payout: $400 – $7,000
+487. Insecure Temporary Upload URLs
+Temporary Upload URL Exposure
+Temporary upload URLs remain active longer than intended or can be reused.
+💰 Typical payout: $300 – $5,000
+488. Improper Security Controls in File Preview Systems
+File Preview Execution Vulnerability
+File preview services execute malicious content embedded in uploaded files.
+💰 Typical payout: $500 – $8,000
+489. Improper Validation of HTTP Cache Headers
+Cache Header Information Leakage
+Sensitive responses are cached and later accessible to unauthorized users.
+💰 Typical payout: $300 – $5,000
+490. Insecure Handling of API Error Messages
+Verbose Error Message Exposure
+Applications reveal internal server information through detailed error messages.
+💰 Typical payout: $200 – $4,000
+✅ Important:
+Most bug bounty hunters focus on high-impact issues like:
+SQL Injection
+Cross-Site Scripting
+Server-Side Request Forgery
+Remote Code Execution
+Broken Access Control
+These can sometimes pay $10,000 – $100,000+ depending on the company.
+💡 If you want, I can also show you:
+491–550 vulnerabilities (very advanced bug bounty findings)
+The 25 vulnerabilities that make hackers the most money
+A beginner bug-bounty roadmap using tools like Burp Suite, Nmap, FFUF, and Amass.

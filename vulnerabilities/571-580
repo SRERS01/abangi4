@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid (571–580)
+571. Improper Validation of API Subscription Endpoints
+Subscription API Authorization Bypass
+Attackers manipulate subscription APIs to activate or modify plans without proper authorization.
+💰 Typical payout: $400 – $7,000
+572. Insecure Handling of Data Export Tokens
+Export Token Leakage
+Tokens used for exporting data are exposed or remain valid too long.
+💰 Typical payout: $400 – $7,000
+573. Improper Validation of API Search Queries
+Search Query Injection
+Search APIs allow injection or manipulation of queries to access restricted data.
+💰 Typical payout: $300 – $6,000
+574. Insecure Handling of CDN Cache Rules
+CDN Cache Rule Misconfiguration
+Improper caching rules expose sensitive data through cached responses.
+💰 Typical payout: $400 – $7,000
+575. Improper Validation of File Download Tokens
+Download Token Manipulation
+Download tokens can be guessed or reused to access restricted files.
+💰 Typical payout: $400 – $7,000
+576. Insecure Handling of Analytics APIs
+Analytics API Data Exposure
+Analytics endpoints leak internal statistics or user behavior data.
+💰 Typical payout: $300 – $5,000
+577. Improper Validation of Email Notification APIs
+Email Notification API Abuse
+Attackers abuse notification APIs to send unauthorized emails or access user data.
+💰 Typical payout: $300 – $6,000
+578. Insecure Handling of Feature Flag Systems
+Feature Flag Manipulation
+Attackers enable restricted or experimental features by manipulating feature flags.
+💰 Typical payout: $400 – $7,000
+579. Improper Validation of User Preference APIs
+User Preference Authorization Bypass
+Users modify preferences belonging to other users due to missing authorization checks.
+💰 Typical payout: $300 – $6,000
+580. Insecure Handling of Application Health Check Endpoints
+Health Check Information Disclosure
+Health-check endpoints reveal system status, internal IP addresses, or service information.
+💰 Typical payout: $300 – $5,000

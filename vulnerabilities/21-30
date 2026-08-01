@@ -1,0 +1,41 @@
+More Vulnerabilities That Can Be Paid
+21. Broken Access Control
+Broken Access Control
+Users can access features or data they should not.
+💰 Typical payout: $500 – $10,000
+22. HTTP Request Smuggling
+HTTP Request Smuggling
+Manipulates front-end and back-end servers to process requests incorrectly.
+💰 Typical payout: $1,000 – $10,000
+23. Server Misconfiguration
+Security Misconfiguration
+Incorrect server or application settings expose sensitive information.
+💰 Typical payout: $100 – $3,000
+24. Path Traversal
+Path Traversal
+Allows attackers to read restricted files from the server.
+💰 Typical payout: $500 – $5,000
+25. Clickjacking (with real impact)
+Clickjacking
+Tricks users into clicking hidden elements on a page.
+💰 Typical payout: $50 – $500
+26. Host Header Injection
+Host Header Injection
+Manipulating HTTP Host headers to exploit application behavior.
+💰 Typical payout: $300 – $5,000
+27. Cross-Origin Resource Sharing Misconfiguration
+CORS Misconfiguration
+Improper CORS settings expose sensitive resources.
+💰 Typical payout: $200 – $4,000
+28. OAuth Misconfiguration
+OAuth Misconfiguration
+Weak authentication flow allowing account takeover.
+💰 Typical payout: $500 – $10,000
+29. Account Takeover
+Account Takeover
+Attacker gains full control of a user account.
+💰 Typical payout: $1,000 – $15,000
+30. Email Spoofing (with impact)
+Email Spoofing
+Sending emails appearing to come from a trusted domain.
+💰 Typical payout: $100 – $2,000
