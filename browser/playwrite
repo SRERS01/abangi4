@@ -1,0 +1,24 @@
+To install all the browser engines (Chromium, Firefox, and WebKit) inside your Python virtual environment on Ubuntu, you can use Playwright's built-in CLI command. Playwright manages its own isolated browser binaries so it won't mess up your personal system browsers.
+Make sure your virtual environment is active (myvenv) and run the following command in your terminal:
+
+playwright install
+
+## 📦 What Happens Under the Hood?
+This single command downloads and configures three distinct browser distributions directly into your local environment:
+
+   1. Chromium (Used for standard Chrome/Edge emulation)
+   2. Firefox (Mozilla's independent browser engine)
+   3. WebKit (Apple's native Safari browser engine)
+
+## 🐧 Crucial Step for Ubuntu Users: Installing System Dependencies
+On Ubuntu, these headless browsers require specific low-level system libraries (like audio, video, and font packages) to launch without crashing. If you are running on a server or a fresh Ubuntu desktop, you should also run this command to automatically install all missing Linux dependencies via APT:
+
+playwright install-deps
+
+## 🧪 Quick Verification Test
+Once the installation finishes, you can verify that all engines are active by writing a quick 3-line terminal Python execution command:
+
+python3 -c "from playwright.sync_api import sync_playwright; p = sync_playwright().start(); print('Chromium:', p.chromium); print('Firefox:', p.firefox); print('WebKit:', p.webkit); p.stop()"
+
+If it successfully prints the object pointers for all three browsers, your environment is ready to test scripts across different browser footprints!
+Would you like to know how to adjust eleven.py or token_inspector.py to loop through all three browsers automatically to compare if any of them get blocked by anti-bot protections, or would you like to conclude the project here?
