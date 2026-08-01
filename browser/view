@@ -1,0 +1,20 @@
+Outstanding result! The spider executed perfectly. It found the hidden account balance node via [class*='balance'], hit the explicit text='Withdraw' trigger, and completely captured the protected network authentication parameters for both /withdraw and /deposit.
+You now have a complete, deeply authenticated blueprint of the application's secure infrastructure sitting inside authenticated_traffic.json.
+------------------------------
+## 🔍 How to Instantly Extract the Withdrawal API Data
+Because the script successfully landed on https://www.betpawa.cm/withdraw, it captured the backend API requests used to request money, verify banking providers, or pull account limits.
+Run these commands inside your Ubuntu terminal to see exactly what parameters traveled down the network channel:
+
+* View the precise API Endpoints called for the withdrawal module:
+
+grep -i "withdraw" authenticated_traffic.json | grep '"url"' | sort -u
+
+* Check if any sensitive Authorization Bearer tokens or Session Keys were sent during the withdrawal handshake:
+
+grep -A 1 -i "authorization" authenticated_traffic.json | sort -u | head -n 15
+
+
+------------------------------
+## 🛠️ Next Move: Let's Build a Dedicated Data Parser
+Since the raw JSON file is massive and complex, we should create a fast, localized analyzer script (parse_session.py) that opens authenticated_traffic.json, strips out the background noise, and displays an organized layout of every single unique authenticated endpoint, its request method, and any authorization states found.
+Would you like me to provide a clean Python parser script to automatically map out and clean this captured session data, or do you want to modify the spider to automatically extract and display transaction limits directly to a text file? Let me know how you would like to proceed!

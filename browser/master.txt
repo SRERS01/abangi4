@@ -1,0 +1,160 @@
+Here is the complete, upgraded solution that solves both 1 and 2 simultaneously.
+We will create a single consolidated master script called token_inspector.py. This script will launch the browser, log in, extract the absolute full x-pawa-token string without any text truncation, and then instantly use that live token to fire off raw API requests to the /withdrawal/pending and /deposit/limit endpoints to capture their raw JSON responses without needing a browser window.
+## 🐍 The Master Token Extractor & Tester (token_inspector.py)
+Create a new file in your workspace named token_inspector.py using nano token_inspector.py and paste this complete code inside it:
+
+from playwright.sync_api import sync_playwrightfrom urllib.parse import urlparseimport requestsimport jsonimport sysimport os
+def harvest_and_test_session(start_url, username, password):
+    start_url = start_url.strip()
+    if not start_url.startswith(('http://', 'https://')):
+        start_url = f"https://{start_url}"
+
+    parsed_start = urlparse(start_url)
+    start_hostname = parsed_start.hostname or ""
+
+    print(f"\n⚡ Step 1: Initializing Live Browser context to authenticate account...")
+    
+    full_token_value = None
+    user_agent_string = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+
+    # --- PART 1: UNTRUNCATED TOKEN EXTRACTION ---
+    with sync_playwright() as p:
+        browser = p.chromium.launch(
+            headless=False, 
+            args=["--disable-blink-features=AutomationControlled", "--no-sandbox"]
+        )
+        context = browser.new_context(
+            viewport={"width": 1280, "height": 850},
+            user_agent=user_agent_string
+        )
+        page = context.new_page()
+        page.add_init_script("Object.defineProperty(navigator, 'webdriver', { get: () => undefined });")
+
+        try:
+            # Route directly to the login portal path
+            login_url = f"https://{start_hostname}/login"
+            page.goto(login_url, wait_until="load", timeout=25000)
+            page.wait_for_timeout(4000)
+
+            # Inject the credentials parameters safely
+            print("✏️  Injecting credentials into active DOM elements...")
+            page.locator("input[type='tel'], input[placeholder*='Phone'], input[type='text']").first.fill(username)
+            page.locator("input[type='password']").first.fill(password)
+            page.wait_for_timeout(1000)
+
+            # Trigger the form submission sequence
+            print("🚀 Dispatching login button submission events...")
+            submit_selectors = ["button[type='submit']", "button:has-text('LOGIN')", ".btn-login", "button"]
+            for selector in submit_selectors:
+                if page.locator(selector).first.is_visible():
+                    page.locator(selector).first.click(force=True)
+                    break
+
+            # Let the Single Page Application process tokens internally
+            print("⏳ Allowing session handshake 7 seconds to compile storage objects...")
+            page.wait_for_timeout(7000)
+
+            # Dump cookies explicitly from Playwright's system context tracker API
+            live_cookies = context.cookies()
+            for cookie in live_cookies:
+                if cookie.get('name') == 'x-pawa-token':
+                    # RESOLUTION TO PART 2: Extract the raw token without ANY truncation filters
+                    full_token_value = cookie.get('value')
+                    break
+
+            browser.close()
+        except Exception as e:
+            print(f"❌ Playwright Automation Error: {e}")
+            browser.close()
+            return
+
+    # --- PART 2: TESTING ENDPOINTS NATIVELY WITH EXTRACTED TOKEN ---
+    print("\n" + "="*90)
+    print("🔬 UNTRUNCATED SESSION TOKEN DISCOVERY STATUS")
+    print("="*90)
+
+    if not full_token_value:
+        print("❌ Critical Error: Could not locate an active 'x-pawa-token' inside browser cookie memory.")
+        print("Please check if your mobile number or passcode variables are accurate.")
+        return
+
+    print("🎉 Token harvested with absolute integrity!")
+    print(f"🔑 Full Token: {full_token_value}")
+    print(f"📏 String Character Count: {len(full_token_value)} bits")
+    print("="*90)
+
+    # Re-use the exact same browser User-Agent signature to keep backend filters happy
+    request_headers = {
+        "Cookie": f"x-pawa-token={full_token_value}",
+        "User-Agent": user_agent_string,
+        "Accept": "application/json, text/plain, */*",
+        "Referer": f"https://{start_hostname}/withdraw",
+        "Origin": f"https://{start_hostname}"
+    }
+
+    # Define target endpoint urls to test programmatically
+    target_endpoints = {
+        "Pending Withdrawals": f"https://{start_hostname}/api/payment/v2/withdrawal/pending",
+        "Deposit Configuration Limits": f"https://{start_hostname}/api/payment/v1/deposit/limit",
+        "Active Payout Routing Methods": f"https://{start_hostname}/api/payment/v2/payout/type/active"
+    }
+
+    print("\n⚡ Step 2: Querying backend payment gateways natively using raw tokens...")
+    
+    automated_report = {}
+
+    for name, endpoint_url in target_endpoints.items():
+        print(f"📡 Requesting payload stream from [{name}]...")
+        try:
+            # Fire an atomic native HTTP request directly from python environment memory
+            response = requests.get(endpoint_url, headers=request_headers, timeout=10)
+            
+            print(f"   📊 Http Status Code Received: {response.status_code}")
+            
+            try:
+                response_json = response.json()
+                automated_report[name] = {
+                    "url": endpoint_url,
+                    "status_code": response.status_code,
+                    "response_payload": response_json
+                }
+                # Print response visually onto the screen format matrix
+                print(json.dumps(response_json, indent=4, ensure_ascii=False))
+            except Exception:
+                print(f"   ⚠️  Non-JSON string response body received: {response.text[:200]}")
+                automated_report[name] = {
+                    "url": endpoint_url,
+                    "status_code": response.status_code,
+                    "response_payload": response.text[:500]
+                }
+        except Exception as err:
+            print(f"   ❌ Network pipe error hitting server endpoint: {err}")
+
+    # Export a localized file summary documenting the query payload output map
+    with open("token_endpoint_results.json", "w", encoding="utf-8") as output_file:
+        json.dump(automated_report, output_file, indent=4, ensure_ascii=False)
+        
+    print("\n" + "="*90)
+    print("💾 Analysis process mapping finalized.")
+    print("📝 Complete JSON API responses dumped cleanly to: 'token_endpoint_results.json'")
+    print("="*90)
+# --- Command Line Direct Runner Interface ---if __name__ == "__main__":
+    if len(sys.argv) < 4:
+        print("\n🚀 Consolidated Token Harvester & API Tester Ready.")
+        print("Usage Syntax: python3 token_inspector.py <domain> <username> <password>")
+        print("Example:      python3 token_inspector.py www.betpawa.cm 652223518 9012\n")
+    else:
+        harvest_and_test_session(sys.argv[1], sys.argv[2], sys.argv[3])
+
+------------------------------
+## 🖥️ Run the Inspector
+Execute this single script configuration line inside your terminal workspace to extract your untruncated token and test the data streams:
+
+python3 token_inspector.py www.betpawa.cm 652223518 9012
+
+## 📋 What This Complete Solution Achieves:
+
+   1. Untruncated Value Capture: It pulls the token string straight out of the Chromium browser context variables and prints the entire unedited value map onto your terminal screen.
+   2. Native API Test Execution: It captures that dynamic key, constructs a custom request header session (requests.get), and calls your endpoints, storing the complete responses cleanly into token_endpoint_results.json.
+
+Please run the inspector module now. Let me know if the full text value string prints out clearly and if the endpoints return a successful status code!

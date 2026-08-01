@@ -1,0 +1,224 @@
+To make the script perform a login flow and then continue exploring all pages while sniffing traffic, we need to instruct Playwright to interact with the input fields on the screen, submit valid credentials, and then hand the authenticated browser session over to the recursive network collector.
+Since betting applications handle authentication dynamically inside Single Page Application (SPA) state machines, logging in requires waiting for the input boxes to become visible, filling them using the .fill() command, and clicking the submit button.
+## 🐍 The Authenticated Deep Inspector (eight.py)
+Create a new file called eight.py using nano eight.py and paste this complete automated authentication and crawl framework:
+
+from playwright.sync_api import sync_playwrightfrom urllib.parse import urlparse, urljoinimport jsonimport os
+def authenticated_site_spider(start_url, username, password, max_pages=15):
+    start_url = start_url.strip()
+    if not start_url.startswith(('http://', 'https://')):
+        start_url = f"https://{start_url}"
+
+    parsed_start = urlparse(start_url)
+    start_hostname = parsed_start.hostname or ""
+    start_parts = start_hostname.split('.')
+    target_root_domain = ".".join(start_parts[-2:]) if len(start_parts) >= 2 else start_hostname
+
+    print(f"\n🕸️  Initializing Authenticated Spider for: {target_root_domain}")
+    print(f"🔐 Configured Target Account Identity: {username}")
+
+    # Global data queues and storage
+    queue = []
+    visited_pages = set()
+    captured_traffic = []
+    ui_routes = set()
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(
+            headless=False, # Keep window open to observe login sequencing 
+            args=["--disable-blink-features=AutomationControlled", "--no-sandbox"]
+        )
+        context = browser.new_context(
+            viewport={"width": 1280, "height": 850},
+            user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+        )
+        page = context.new_page()
+        page.add_init_script("Object.defineProperty(navigator, 'webdriver', { get: () => undefined });")
+
+        # Global Request/Response Interceptor
+        def handle_response(response):
+            try:
+                request = response.request
+                url = request.url
+                if any(x in url for x in ["google", "facebook", "doubleclick", "sentry"]):
+                    return
+
+                parsed_url = urlparse(url)
+                host = parsed_url.hostname or ""
+                parts = host.split('.')
+                current_domain = ".".join(parts[-2:]) if len(parts) >= 2 else host
+
+                if current_domain == target_root_domain and request.resource_type in ["xhr", "fetch"]:
+                    # Capture Auth Tokens or Cookies transmitted during navigation sessions
+                    headers = request.headers
+                    auth_header = headers.get("authorization", "None")
+                    cookie_header = headers.get("cookie", "None")
+                    post_data = request.post_data if request.post_data else "None"
+
+                    try:
+                        response_payload = response.json()
+                    except Exception:
+                        response_payload = "Non-JSON Data"
+
+                    traffic_node = {
+                        "url": url,
+                        "method": request.method,
+                        "status": response.status,
+                        "authorization": auth_header,
+                        "cookies": cookie_header,
+                        "request_body": post_data,
+                        "response_json": response_payload
+                    }
+                    captured_traffic.append(traffic_node)
+            except Exception:
+                pass
+
+        page.on("response", handle_response)
+
+        try:
+            # STEP 1: Route to landing configuration node
+            print(f"🎯 Directing browser to landing zone: {start_url}")
+            page.goto(start_url, wait_until="load", timeout=25000)
+            page.wait_for_timeout(5000)
+
+            # STEP 2: Navigate directly to the login panel view or trigger button interaction
+            print("🔑 Accessing application login layout elements...")
+            # Attempt to hit explicit sub-path route or fall back to structural layout nodes
+            if "betpawa.cm" in start_url:
+                page.goto(f"https://{start_hostname}/login", wait_until="load")
+                page.wait_for_timeout(3000)
+
+            # STEP 3: Automated Credentials Filling Phase
+            # We target standard phone/password fields commonly used on betting grids
+            print("✏️  Injecting credentials into active input fields...")
+            
+            # Common input field attributes (Phone/Username selectors)
+            username_selectors = [
+                "input[type='text']", "input[type='tel']", 
+                "input[placeholder*='Phone']", "input[name*='phone']"
+            ]
+            password_selectors = ["input[type='password']", "input[name*='password']"]
+
+            # Safely locate and fill the identity parameter
+            user_field_found = False
+            for selector in username_selectors:
+                if page.locator(selector).is_visible():
+                    page.locator(selector).fill(username)
+                    user_field_found = True
+                    break
+            
+            # Safely locate and fill the secret credential sequence
+            pass_field_found = False
+            for selector in password_selectors:
+                if page.locator(selector).is_visible():
+                    page.locator(selector).fill(password)
+                    pass_field_found = True
+                    break
+
+            if user_field_found and pass_field_found:
+                print("✅ Credentials injected successfully. Submitting authentication payload request...")
+                # Target the login completion button and execute a hard click event
+                submit_button_selectors = ["button[type='submit']", "button:has-text('LOGIN')", ".btn-login"]
+                
+                for btn_selector in submit_button_selectors:
+                    if page.locator(btn_selector).is_visible():
+                        page.locator(btn_selector).click(force=True)
+                        break
+                
+                # Give browser session 6 seconds to complete handshake and initialize internal session store variables
+                page.wait_for_timeout(6000)
+                print(f"🛡️  Authentication loop finalized. Operational active node context: {page.url}")
+            else:
+                print("⚠️  Could not locate standard login fields natively. Proceeding using current session context.")
+
+            # STEP 4: Initialize deep multi-page discovery post-login
+            # Seed the recursive crawl loop with current post-authentication landing path
+            queue.append(page.url)
+            ui_routes.add(page.url)
+
+            while queue and len(visited_pages) < max_pages:
+                current_url = queue.pop(0)
+                parsed_current = urlparse(current_url)
+                normalized_url = f"{parsed_current.scheme}://{parsed_current.netloc}{parsed_current.path}"
+
+                if normalized_url in visited_pages:
+                    continue
+
+                print(f"🔍 Crawling Core Node [{len(visited_pages)+1}/{max_pages}]: {normalized_url}")
+                visited_pages.add(normalized_url)
+
+                try:
+                    page.goto(current_url, wait_until="commit", timeout=15000)
+                    page.wait_for_timeout(4000)
+                    
+                    # Extract active interactable targets dynamically on current layout view
+                    elements = page.locator("a, button, [role='button'], [class*='sport']").all()
+                    
+                    # Look for fresh navigation links to feed the recursive mapping array
+                    for element in elements[:15]:
+                        try:
+                            if element.is_visible():
+                                href_attr = element.get_attribute("href")
+                                if href_attr and not href_attr.startswith(('#', 'javascript:')):
+                                    full_url = urljoin(page.url, href_attr)
+                                    parsed_found = urlparse(full_url)
+                                    found_host = parsed_found.hostname or ""
+                                    
+                                    if target_root_domain in found_host:
+                                        ui_routes.add(full_url)
+                                        found_normalized = f"{parsed_found.scheme}://{parsed_found.netloc}{parsed_found.path}"
+                                        if found_normalized not in visited_pages and found_normalized not in queue:
+                                            queue.append(full_url)
+                        except Exception:
+                            continue
+
+                    # Execute scroll actions to keep live streaming WebSockets/API endpoints recording
+                    page.evaluate("window.scrollBy(0, 400);")
+                    page.wait_for_timeout(1500)
+
+                except Exception as e:
+                    print(f"⚠️  Skipping path transition exception: {e}")
+                    continue
+
+            browser.close()
+        except Exception as e:
+            print(f"❌ Automation runtime failure: {e}")
+            browser.close()
+            return
+
+    # --- EXPORT REPORT INVENTORY ---
+    with open("authenticated_traffic.json", "w", encoding="utf-8") as f:
+        json.dump(captured_traffic, f, indent=4, ensure_ascii=False)
+
+    print("\n" + "="*90)
+    print(f"🏁 AUTOMATED AUTHENTICATED CRAWL FINALIZED. Evaluated {len(visited_pages)} layout areas.")
+    print(f"💾 Dissected data parameters stored securely to: 'authenticated_traffic.json'")
+    print("="*90)
+    print(f"📦 Total Extracted Application Routing Structures: {len(ui_routes)}")
+    print(f"⚡ Total Authenticated Request Pipeline Frames Recorded: {len(captured_traffic)}")
+# --- Execution Entry Interface Prompt ---
+print("🚀 Authenticated Multi-Page Traffic Mapping Engine Online.")
+print("Type 'exit' to shut down execution matrix framework.")
+while True:
+    target_site = input("\nEnter Target Site Domain (e.g., www.betpawa.cm): ")
+    if target_site.strip().lower() == 'exit':
+        break
+    user_num = input("Enter Account Phone Number/Username: ")
+    user_pass = input("Enter Account Security Password: ")
+
+
+authenticated_site_spider(target_site, user_num, user_pass, max_pages=10)
+
+
+### 🖥️ Run the Authentication Spider
+
+Execute your script file from your virtual environment workspace container:
+```bash
+python3 eight.py
+
+## 📋 What Happens During This Sequence
+
+   1. Interactive Credentials Processing: The engine lands on the target site, uses structural string arrays to target user identity inputs (input[type='tel']), and injects your specified logging inputs directly into browser memory.
+   2. Session Persistence Continuity: By retaining the exact initialization context during execution loops, all subsequent pages visited inside the while queue block inherit the authenticated cookies and headers, capturing the protected interior APIs.
+
+If you run the script with a test account profile, let me know if it logs in smoothly and starts parsing your deep pages list successfully. Would you like to check how to isolate authorization tokens from this file automatically?

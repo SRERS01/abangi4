@@ -1,0 +1,125 @@
+{
+    "/api/payment/v1/deposit/limit": {
+        "status": 200,
+        "url": "https://www.betpawa.cm/api/payment/v1/deposit/limit",
+        "data": {
+            "userUuid": "621aa8ec-d443-4731-b8d7-d86bbf830703",
+            "currency": "XAF",
+            "monthlyLimit": null,
+            "usedMonthlyDepositAmount": 0.0,
+            "depositedThisMonth": 0.0
+        }
+    },
+    "/api/payment/v1/deposit/options": {
+        "status": 200,
+        "url": "https://www.betpawa.cm/api/payment/v1/deposit/options",
+        "data": {
+            "data": [
+                {
+                    "depositTypeName": "CAMEROON_PAWAPAY_MTN_MOMO",
+                    "pageUrl": "/deposit-mtn",
+                    "text": "MTN",
+                    "paymentProvider": "MTN",
+                    "status": "OPERATIONAL",
+                    "minDepositAmount": 50.0,
+                    "maxDepositAmount": 500000.0,
+                    "sorting": 1,
+                    "phoneOperatorDescription": "MTN_CM",
+                    "currencyCode": "XAF",
+                    "webAvailable": true,
+                    "ussdAvailable": false,
+                    "applicableForUserTelco": true,
+                    "feeStructure": "",
+                    "feeValue": 0,
+                    "minDepositAmountForFeeCompensation": 0,
+                    "chargeableFeeStructure": "",
+                    "chargeableFeeValue": 0,
+                    "chargeableFeeName": "",
+                    "fractionalSupported": false,
+                    "walletType": "MOMO",
+                    "extraData": null
+                },
+                {
+                    "depositTypeName": "CAMEROON_PAWAPAY_ORANGE",
+                    "pageUrl": "/deposit-orange",
+                    "text": "Orange",
+                    "paymentProvider": "ORANGE",
+                    "status": "OPERATIONAL",
+                    "minDepositAmount": 100.0,
+                    "maxDepositAmount": 500000.0,
+                    "sorting": 2,
+                    "phoneOperatorDescription": "ORANGE_CM",
+                    "currencyCode": "XAF",
+                    "webAvailable": true,
+                    "ussdAvailable": false,
+                    "applicableForUserTelco": false,
+                    "feeStructure": "",
+                    "feeValue": 0,
+                    "minDepositAmountForFeeCompensation": 0,
+                    "chargeableFeeStructure": "",
+                    "chargeableFeeValue": 0,
+                    "chargeableFeeName": "",
+                    "fractionalSupported": false,
+                    "walletType": "MOMO",
+                    "extraData": null
+                }
+            ]
+        }
+    },
+    "/api/payment/v2/withdrawal/pending": {
+        "status": 200,
+        "url": "https://www.betpawa.cm/api/payment/v2/withdrawal/pending",
+        "data": {
+            "data": []
+        }
+    },
+    "/api/payment/v2/payout/type/active": {
+        "status": 200,
+        "url": "https://www.betpawa.cm/api/payment/v2/payout/type/active",
+        "data": {
+            "data": {
+                "successfulPayoutsToday": 0,
+                "thisWeeksSuccessfulPayoutsCount": 0,
+                "successfulWithdrawalsCounts": {
+                    "thisDay": 0,
+                    "thisWeek": 0
+                },
+                "restriction": {
+                    "applied": false,
+                    "restrictedToOption": null
+                },
+                "payoutMethods": [
+                    {
+                        "personalDataSet": false,
+                        "PayoutType": "CAMEROON_MTN_PAWAPAY",
+                        "CmsComponentId": null,
+                        "PayoutTypeName": "MTN",
+                        "PayoutTypeStrategy": "Default",
+                        "ExtraData": {},
+                        "FirstName": null,
+                        "LastName": null,
+                        "Nationality": "",
+                        "NationalIdentificationNumber": "",
+                        "DocumentNumber": "",
+                        "isPersonalDataSet": false,
+                        "channel": null,
+                        "minAmount": 105.0,
+                        "maxAmount": 500000.0,
+                        "currencyCode": "XAF",
+                        "state": "",
+                        "paymentProvider": "MTN",
+                        "status": "OPERATIONAL",
+                        "freeWithdrawalsCount24h": null,
+                        "percentageFee": null,
+                        "flatFee": null,
+                        "freeWithdrawalsCountPerWeek": null,
+                        "fractionalSupported": false,
+                        "walletType": "MOMO"
+                    }
+                ],
+                "bankAccounts": [],
+                "bvnValidationRequired": false
+            }
+        }
+    }
+}

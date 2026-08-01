@@ -1,0 +1,39 @@
+The output reveals how the platform's authentication architecture is structured. The script successfully retrieved the precise session token from the browser's cookies.
+The authentication mechanism does not store a typical JSON Web Token (JWT) inside localStorage. In the localStorage dump under persist:userSlice, the application specifies "isAuthTokenValid": "true", but leaves the "authToken": "\"\"" key completely empty.
+Instead, your script captured the active authentication token from Cookie 4:
+
+* Cookie Name: x-pawa-token
+* Domain: www.betpawa.cm
+* Value: 166dd80c0de56027-e2b87134c24f72bb...
+* Security Settings: HTTPOnly: True | Secure: False
+
+------------------------------
+## 🔍 Technical Assessment of x-pawa-token
+
+   1. Opaque Token Strategy: The x-pawa-token is an opaque session token (a random cryptographic hash) managed by the backend server rather than a client-decodeable JWT. The server maps this hash on the backend to your active user session, account balance (0.508 XAF), and your userUuid (621aa8ec-d443-4731-b8d7-d86bbf830703).
+   2. HTTPOnly: True Enforced: This is an important security mechanism. When a cookie is marked HTTPOnly, it instructs the browser that standard client-side JavaScript execution (document.cookie) cannot read or access this token. This directly protects the account against Cross-Site Scripting (XSS) token theft.
+
+Because HTTPOnly prevents your Python scripts from reading this token via basic browser actions, your specialized harvest_session.py successfully relied on Playwright's low-level browser context API (context.cookies()) to extract it from the browser storage layer.
+------------------------------
+## 🛠️ How to Proceed or Test This Session State
+Now that you have isolated the active session token name (x-pawa-token) and its corresponding cryptographic string value, here is how you can utilize it to analyze or document the API structure:
+## Option 1: Replicate and Intercept Request Payloads Natively via curl
+You can verify that this token controls your authenticated data state by passing it directly to a terminal request without opening a browser layout.
+For example, to test if your active session token can read your pending withdrawal metrics via a raw terminal command, copy your full cookie string value from Cookie 4 and pass it into this curl string structure:
+
+curl -X GET "https://betpawa.cm" \
+  -H "Cookie: x-pawa-token=YOUR_FULL_EXTRACTED_COOKIE_VALUE_HERE" \
+  -H "User-Agent: Mozilla/5.0" \
+  -H "Accept: application/json"
+
+## Option 2: Automate a Token Parameter Integrity Audit
+In an API security or business logic review, you evaluate how tightly the backend couples this token to your identity. If you pass an altered or blank cookie value to the secure endpoint structure, a hardened backend server must drop the handshake and return a strict 401 Unauthorized or 403 Forbidden response code.
+------------------------------
+## 🚀 What is your next objective?
+I can provide the precise automation helper block to advance your analysis:
+
+   1. Provide a Python script (execute_api_call.py) that automatically injects your extracted token value to query and save responses from your previous endpoints list.
+   2. Provide a script to extract the complete value strings without truncation text filters so you can view the entire token map.
+   3. Provide an educational breakdown of how App Check or Reverse Proxies validate these token lifetimes.
+
+Tell me which path fits your current goal!
