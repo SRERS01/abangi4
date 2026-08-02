@@ -1,0 +1,44 @@
+retire (commonly known as Retire.js) is a specialized vulnerability scanner designed to detect the use of outdated, known-vulnerable JavaScript libraries and Node.js modules [1.1, 1.2].
+In security testing and bug bounty workflows, its core functionalities include:
+## 1. Component Analysis & Identification
+
+* Library Detection: It scans JavaScript source code to identify exactly which libraries are being used (e.g., jQuery, Bootstrap, Angular, Lodash, Handlebars).
+* Version Extraction: It extracts precise version numbers from file names, comments, hashes, and internal script headers to build a software bill of materials (SBOM).
+
+## 2. Vulnerability Mapping
+
+* CVE Matching: It matches discovered versions against a curated database of public vulnerabilities (CVEs) and security advisories [1.2, 1.3].
+* Detailed Reporting: If an outdated library is found, it lists the specific security flaws affecting that version, alongside links to official advisories or patches [1.2].
+
+## 3. Multi-Platform Scanning Support
+retire can analyze components across several layers of an application [1.4]:
+
+* Client-Side (Websites): Scans the front-end JavaScript files loaded by a live website URL [1.2].
+* Node.js Dependencies: Scans package.json files and node_modules folders for backend vulnerabilities [1.1, 1.2].
+* Build Pipelines: Integrates into CI/CD environments (like Jenkins or GitHub Actions) to block deployment if an insecure package is introduced.
+
+## 4. Detection Methods
+It doesn't just read file names; it looks deeper using:
+
+* Filename and URL Regex Matching: Identifies patterns like jquery-1.12.4.min.js.
+* File Content Searching: Inspects headers and specific code snippets inside .js files when the filename is randomized or minified.
+* Hash Verification (SHA-1): Validates the file contents against known library hashes to prevent trickery or obfuscation.
+
+------------------------------
+## How to Use the Key Features
+You can run retire with different flags depending on what you want it to look at:
+
+* Scan a local directory or repository:
+
+retire
+
+* Scan a live bug bounty target URL:
+
+retire --jsurl https://example.com
+
+* Output findings to a JSON file for automation parsing:
+
+retire --outputformat json --outputpath report.json
+
+
+If you are interested, I can show you how to chain retire output with your comment scraper to create a highly automated reconnaissance toolkit for your targets.

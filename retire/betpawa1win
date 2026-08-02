@@ -1,0 +1,85 @@
+(myvenv) user@user-Latitude-3380:~/0/retire$ python recon_suite.py 1win.com
+[🚀] Step 1: Gathering subdomains via Subfinder for: 1win.com
+[+] Found 12 subdomains for 1win.com.
+
+[⚙️] Step 2: Spinning up Concurrent ThreadPool Execution Layer...
+[*] Commencing Deep Scan: https://grafana.1win.com
+[*] Commencing Deep Scan: https://www.1win.com[*] Commencing Deep Scan: https://dns.1win.com
+
+[*] Commencing Deep Scan: https://kubernetes.1win.com[*] Commencing Deep Scan: https://external.1win.com
+
+[*] Commencing Deep Scan: https://m.1win.com
+[*] Commencing Deep Scan: https://mail2.1win.com[*] Commencing Deep Scan: https://vpn.1win.com
+
+[*] Commencing Deep Scan: https://forum.1win.com
+[*] Commencing Deep Scan: https://autoconfig.1win.com
+[*] Commencing Deep Scan: https://common.1win.com
+[*] Commencing Deep Scan: https://dns1.1win.com
+    [!] Secret Flagged in https://web-k8s-forum-prod.s3.eu-central-1.amazonaws.com/uploads/javascript_core/front_front_core.js.gz?v=4a676ae7ca1785652429 -> Key terms: ['key']
+    [!] Secret Flagged in https://cdn.amplitude.com/libs/analytics-browser-2.11.12-min.js.gz -> Key terms: ['key', 'config']
+    [!] Secret Flagged in https://web-k8s-forum-prod.s3.eu-central-1.amazonaws.com/uploads/javascript_global/root_framework.js.gz?v=4a676ae7ca1785652429 -> Key terms: ['key']
+    [!] Secret Flagged in https://web-k8s-forum-prod.s3.eu-central-1.amazonaws.com/uploads/javascript_global/root_framework.js.gz?v=4a676ae7ca1785652429 -> Key terms: ['key']
+    [!] Secret Flagged in https://web-k8s-forum-prod.s3.eu-central-1.amazonaws.com/uploads/javascript_global/root_framework.js.gz?v=4a676ae7ca1785652429 -> Key terms: ['key']
+    [!] Secret Flagged in https://web-k8s-forum-prod.s3.eu-central-1.amazonaws.com/uploads/javascript_global/root_framework.js.gz?v=4a676ae7ca1785652429 -> Key terms: ['key']
+    [!] Secret Flagged in https://web-k8s-forum-prod.s3.eu-central-1.amazonaws.com/uploads/javascript_core/global_global_core.js.gz?v=4a676ae7ca1785652429 -> Key terms: ['key']
+
+[🎉] Complete! Interactive HTML visual reporting dashboard saved to: recon_report_1win_com.html
+(myvenv) user@user-Latitude-3380:~/0/retire$ python advanced_js_hunter.py https://www.1win.com
+============================================================
+ Starting Combined Recon Scan on: https://www.1win.com
+============================================================
+
+[*] Found 1 unique external JavaScript files.
+
+
+--> Analyzing Script Asset: https://www.1win.com/resources/v1/app/assets/main-DOKJ30Mo.js
+--------------------------------------------------
+[*] Running Retire.js on: https://www.1win.com/resources/v1/app/assets/main-DOKJ30Mo.js
+    [+] Retire.js: No public library CVEs detected.
+    [+] Comment Scraper: No sensitive leaks found.
+(myvenv) user@user-Latitude-3380:~/0/retire$ python recon_suite.py betpawa.cm
+[🚀] Step 1: Gathering subdomains via Subfinder for: betpawa.cm
+[+] Found 15 subdomains for betpawa.cm.
+
+[⚙️] Step 2: Spinning up Concurrent ThreadPool Execution Layer...
+[*] Commencing Deep Scan: https://ns3.betpawa.cm
+[*] Commencing Deep Scan: https://ns4.betpawa.cm
+[*] Commencing Deep Scan: https://static.betpawa.cm[*] Commencing Deep Scan: https://api.betpawa.cm
+
+[*] Commencing Deep Scan: https://payment.betpawa.cm
+[*] Commencing Deep Scan: https://mail2.betpawa.cm
+[*] Commencing Deep Scan: https://images.betpawa.cm
+[*] Commencing Deep Scan: https://mx.betpawa.cm
+[*] Commencing Deep Scan: https://staging.betpawa.cm
+[*] Commencing Deep Scan: https://webmail.betpawa.cm
+[*] Commencing Deep Scan: https://support.betpawa.cm
+[*] Commencing Deep Scan: https://test.betpawa.cm
+[*] Commencing Deep Scan: https://www.betpawa.cm
+[*] Commencing Deep Scan: https://admin.betpawa.cm
+[*] Commencing Deep Scan: https://go.betpawa.cm
+    [!] Secret Flagged in https://www.betpawa.cm/_next/static/chunks/polyfills-42372ed130431b0a.js -> Key terms: ['key', 'db']
+    [!] Secret Flagged in https://www.betpawa.cm/_next/static/chunks/zod-b9d658137d322042.js -> Key terms: ['key']
+    [!] Secret Flagged in https://www.betpawa.cm/_next/static/chunks/main-ef4648336859d447.js -> Key terms: ['pass', 'key', 'token', 'config']
+    [!] Secret Flagged in https://www.betpawa.cm/_next/static/chunks/redux-05bc02d9d227c2cd.js -> Key terms: ['key']
+    [!] Secret Flagged in https://support.betpawa.cm/js/chunk-spreadsheet.0f6294b8.js -> Key terms: ['key', 'token']
+    [!] Secret Flagged in https://support.betpawa.cm/js/chunk-spreadsheet.0f6294b8.js -> Key terms: ['key', 'secret']
+    [!] Secret Flagged in https://support.betpawa.cm/js/chunk-spreadsheet.0f6294b8.js -> Key terms: ['key']
+    [!] Secret Flagged in https://support.betpawa.cm/js/chunk-spreadsheet.0f6294b8.js -> Key terms: ['todo', 'key', 'token', 'db', 'config']
+    [!] Secret Flagged in https://www.betpawa.cm/_next/static/chunks/pages/_app-d407e39375493933.js -> Key terms: ['key', 'admin', 'token', 'db', 'config']
+    [!] Secret Flagged in https://support.betpawa.cm/js/app.f0a31812.js -> Key terms: ['key', 'admin', 'token', 'config']
+    [!] Secret Flagged in https://support.betpawa.cm/js/app.f0a31812.js -> Key terms: ['key', 'admin', 'config']
+    [!] Secret Flagged in https://support.betpawa.cm/js/chunk-emoji.4857a83c.js -> Key terms: ['pass', 'key', 'secret']
+    [!] Secret Flagged in https://support.betpawa.cm/js/chunk-vendors.d71148ca.js -> Key terms: ['key', 'config']
+    [!] Secret Flagged in https://support.betpawa.cm/js/chunk-vendors.d71148ca.js -> Key terms: ['key']
+    [!] Secret Flagged in https://support.betpawa.cm/js/chunk-vendors.d71148ca.js -> Key terms: ['key']
+    [!] Secret Flagged in https://support.betpawa.cm/js/chunk-vendors.d71148ca.js -> Key terms: ['key']
+    [!] Secret Flagged in https://support.betpawa.cm/js/chunk-vendors.d71148ca.js -> Key terms: ['key', 'secret', 'config']
+    [!] Secret Flagged in https://support.betpawa.cm/js/chunk-vendors.d71148ca.js -> Key terms: ['key', 'token']
+    [!] Secret Flagged in https://support.betpawa.cm/js/chunk-vendors.d71148ca.js -> Key terms: ['config']
+    [!] Secret Flagged in https://support.betpawa.cm/js/chunk-vendors.d71148ca.js -> Key terms: ['key', 'config']
+    [!] Secret Flagged in https://support.betpawa.cm/js/chunk-vendors.d71148ca.js -> Key terms: ['key', 'config']
+    [!] Secret Flagged in https://support.betpawa.cm/js/chunk-vendors.d71148ca.js -> Key terms: ['key', 'config']
+    [!] Secret Flagged in https://support.betpawa.cm/js/chunk-vendors.d71148ca.js -> Key terms: ['key', 'config']
+
+[🎉] Complete! Interactive HTML visual reporting dashboard saved to: recon_report_betpawa_cm.html
+(myvenv) user@user-Latitude-3380:~/0/retire$ 

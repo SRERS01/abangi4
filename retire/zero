@@ -1,0 +1,19 @@
+That error happens because retire is a file, not a folder (directory). The cd command can only open folders.
+To look inside the directory where retire lives, you must stop at the bin/ folder.
+## 1. Go to the Folder
+Run this command to navigate to the correct directory:
+
+cd /home/user/.nvm/versions/node/v22.23.2/bin/
+
+## 2. Verify the File Exists
+Once you are inside that folder, list the files to see retire by running:
+
+ls -l retire
+
+------------------------------
+## Reminders on Using retire
+
+* Do not use cd to run it: You do not need to be in this folder to use the tool. Because it is globally installed, typing retire anywhere in your system will execute it.
+* To check if it works: Just type retire --version from your home directory to see if it responds correctly.
+
+If you are trying to view or edit the actual source code of retire, let me know. I can show you how to use the cat or nano commands to open the file directly without changing directories.
