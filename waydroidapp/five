@@ -1,0 +1,68 @@
+Great, that command worked perfectly! You now have a complete map of all the apps installed inside your Waydroid container, including high-value reverse engineering targets like fintech and crypto applications.
+Here is how to extract your desired APK, analyze it with aapt, and decompile it on your host system.
+## 1. Copy the Target APK to Your Downloads
+Pick the application you want to inspect and copy it. For example, if you want to look at the Trust Wallet or 1xBet app, run the corresponding command:
+
+* For Trust Wallet (com.wallet.crypto.trustapp):
+
+cp ./~~CYc-KIC5xhmz6FlOWY57lg==/com.wallet.crypto.trustapp-AFXxgZvLU25rcLUY1eVxzg==/base.apk ~/Downloads/trust_wallet.apk
+
+* For 1xBet (com.one1xbet.one1xbetapp6):
+
+cp ./~~EKwvLXuTAeEBs02frqPOMw==/com.one1xbet.one1xbetapp6-2ZWP6Nr6hpADwYFBNTqxuQ==/base.apk ~/Downloads/1xbet.apk
+
+
+(Note: Change the paths if you prefer com.uba.vericash, com.eversendapp, or mtnft.momo.consumer).
+------------------------------
+## 2. Extract Deeper Info Using aapt
+Switch over to your target folder and run analytical commands to gather reconnaissance data:
+
+cd ~/Downloads
+
+
+* Find Deep Metadata & Entry Points:
+Find the main entry launcher activity, targets, and SDK configurations:
+
+aapt dump badging trust_wallet.apk
+
+* Extract the Human-Readable Manifest:
+Android binaries compress the XML. Use aapt to parse the structure out directly to a text file so you can search for exposed components, deep links, or intents:
+
+aapt dump xmltree trust_wallet.apk AndroidManifest.xml > manifest_dump.txt
+
+* Check for Hardcoded Asset Strings:
+Look for embedded API configurations, local certificates, or encryption configurations stashed away inside the application assets:
+
+aapt list trust_wallet.apk | grep -E "assets/|res/raw/"
+
+
+------------------------------
+## 3. Read Code & Reverse Engineer
+aapt is brilliant for metadata, but you cannot view source code logic with it. To do that, you need a reverse engineering tool chain on your Linux machine.
+## Option A: Decompile directly to Java using JADX (Recommended)
+JADX converts the compiled Dalvik bytecode (.dex files) directly into readable Java.
+
+   1. Install JADX:
+   
+   sudo apt install jadx
+   
+   2. Open the APK visually:
+   
+   jadx-gui trust_wallet.apk
+   
+   This launches a graphical interface. You can click through package structures, use Ctrl+Shift+F to search for keywords like "http://", "secret", "private_key", or "api_key".
+
+## Option B: Decode Resources using Apktool
+If you want to modify the app, inject a proxy certificate, or look at layouts, you need apktool to unpack it into Smali assembly code.
+
+   1. Install Apktool:
+   
+   sudo apt install apktool
+   
+   2. Unpack the APK:
+   
+   apktool d trust_wallet.apk -o decompiled_output_dir
+   
+   
+------------------------------
+Which application from your list are we actively targeting first, and what specific components (like network endpoints or code obfuscation layers) are you looking to dive into?

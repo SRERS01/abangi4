@@ -1,0 +1,28 @@
+To extract all 17 apps listed in your output at once, you can run a single automated bash script. This script parses your search output, creates a dedicated folder, and copies every base.apk into it while automatically renaming each file to its clean package name.
+## Step 1: Create a target directory
+Create a folder in your user space to store all the extracted APK files:
+
+mkdir -p ~/Downloads/waydroid_extracted_apks
+
+## Step 2: Run the extraction loop
+Execute this loop directly from your current terminal directory (~/.local/share/waydroid/data/app$). It uses aapt to instantly fetch the clean package name and saves the file properly:
+
+find . -name "base.apk" | while read -r apk_path; do
+    # Get the package name using aapt
+    pkg_name=$(aapt dump badging "$apk_path" 2>/dev/null | grep "package: name=" | head -n 1 | awk -F"'" '{print $2}')
+    
+    # Fallback to directory parsing if aapt fails on system apps
+    if [ -z "$pkg_name" ]; then
+        pkg_name=$(echo "$apk_path" | cut -d/ -f3 | cut -d- -f1)
+    fi
+    
+    echo "Extracting: $pkg_name..."
+    cp "$apk_path" ~/Downloads/waydroid_extracted_apks/"$pkg_name".apkdone
+
+## Step 3: Verify the extracted files
+Switch over to your target directory and verify that all your apps (Trust Wallet, WhatsApp, MTN Mobile Money, 1xBet, UBA, etc.) have been neatly compiled as flat APKs:
+
+cd ~/Downloads/waydroid_extracted_apks && ls -lh
+
+------------------------------
+Now that all your APKs are consolidated, would you like a script to automatically dump the AndroidManifest.xml for all of them using aapt, or do you want to start analyzing a specific app right away?

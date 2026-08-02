@@ -1,0 +1,62 @@
+Let's pull apart both MyMTN Cameroon (com.mtn.mtncmr3) and MTN MoMo (mtnft.momo.consumer) to locate their backend infrastructure, check how they handle your data locally, and see how they protect their network calls.
+------------------------------
+## Step 1: Extract and Filter the API Endpoints
+Run this command to search through the aapt string pools you dumped earlier. This will instantly pull out any production servers, staging/sandbox gateways, and third-party tracking APIs embedded in both apps:
+
+cd /home/user/Downloads/waydroid_extracted_apks
+
+echo "=== MYMTN CAMEROON ENDPOINTS ===" > mtn_discovered_apis.txt
+grep -E -o "https?://[a-zA-Z0-9./?=&_-]+" com.mtn.mtncmr3_strings.txt | sort -u >> mtn_discovered_apis.txt
+
+echo -e "\n=== MTN MOMO CONSUMER ENDPOINTS ===" >> mtn_discovered_apis.txt
+grep -E -o "https?://[a-zA-Z0-9./?=&_-]+" mtnft.momo.consumer_strings.txt | sort -u >> mtn_discovered_apis.txt
+# Display the findings on your screen
+cat mtn_discovered_apis.txt
+
+Look closely at the output for domain variations like mtn.cm, ericsson, or references to financial microservices.
+------------------------------
+## Step 2: Audit Shared Preferences & Local Pin Storage (Waydroid Database)
+When you use these apps inside Waydroid, they store local session tokens, user profiles, and sometimes obfuscated device fingerprints in plain XML files. Let's look inside their live container sandbox.
+Open a terminal on your host machine and access the Waydroid data partition directly:
+
+cd ~/.local/share/waydroid/data/data/
+
+Now check what files they have created on your system:
+
+* For MyMTN Cameroon:
+
+ls -la com.mtn.mtncmr3/shared_prefs/
+
+* For MTN MoMo:
+
+ls -la mtnft.momo.consumer/shared_prefs/
+
+
+If you see XML files inside these folders, you can read them with cat filename.xml to see if your phone number, account balance caches, or session hashes are stored insecurely.
+------------------------------
+## Step 3: Hunt for Certificate Pinning & Hashing inside JADX
+Most modern financial apps use SSL/TLS Certificate Pinning to prevent you from intercepting their traffic with tools like Burp Suite or OWASP ZAP. To find where they validate connections or process financial data, use JADX-GUI to decompile the source code.
+
+   1. Launch JADX with both APKs from your host terminal:
+   
+   jadx-gui /home/user/Downloads/waydroid_extracted_apks/com.mtn.mtncmr3.apk &
+   jadx-gui /home/user/Downloads/waydroid_extracted_apks/mtnft.momo.consumer.apk &
+   
+   2. Once JADX loads the code structure, use the Global Search feature (Ctrl + Shift + F) inside each app window to scan for these critical reverse-engineering keywords:
+   * To find SSL Pinning logic: Search for X509TrustManager, CertificatePinner, checkServerTrusted, or OkHttpClient.Builder.
+      * To hunt for Encryption/PIN handling: Search for SecretKeySpec, Cipher.getInstance, SHA-256, AES/CBC, or RSA.
+   
+------------------------------
+## Step 4: Live Network Interception Bypass (If needed)
+If you try to route Waydroid's traffic through a proxy on your Linux host and the apps throw connection errors, they are actively enforcement-pinning their certificates.
+To bypass this for testing purposes, you can inject a universal bypass script using Frida directly into your running Waydroid container:
+
+# Connect host ADB to Waydroid
+adb connect 192.168.240.112:5555
+# Push Frida server to Waydroid and run it as root
+adb root
+adb push frida-server /data/local/tmp/
+adb shell "chmod 755 /data/local/tmp/frida-server && /data/local/tmp/frida-server &"
+
+------------------------------
+Run the Step 1 script—what kind of internal domains or subdomains are showing up in your mtn_discovered_apis.txt? Let me know if you hit an obfuscation layer (like ProGuard or DexGuard) inside JADX where the code classes just look like a, b, or c.

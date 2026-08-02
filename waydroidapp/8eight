@@ -1,0 +1,43 @@
+Awesome, everything copied over perfectly! You have a solid 1GB target repository now containing high-value targets like Eversend, Trust Wallet, UBA Vericash, 1xBet, and the local MTN MoMo / MoMo Consumer apps.
+Since you want to test and reverse engineer these applications, the most efficient next step is to use aapt to automatically dump and audit the AndroidManifest.xml of every single APK simultaneously. This will expose hidden components, intents, and permissions without waiting hours for complete source code decompilation.
+## Step 1: Bulk-Dump All Manifests into Text Files
+Run this loop to instantly process all 17 APKs. It will create a human-readable text dump of each app's structure right next to the APK files:
+
+cd /home/user/Downloads/waydroid_extracted_apks
+for apk in *.apk; do
+    echo "Dumping manifest for: $apk"
+    aapt dump xmltree "$apk" AndroidManifest.xml > "${apk%.apk}_manifest.txt"done
+
+------------------------------
+## Step 2: Perform Attack Surface Reconnaissance using grep
+Now that you have all the manifests saved as plain text, you can audit the entire directory simultaneously for vulnerabilities. Run these high-utility queries:
+## 🔍 1. Find Unprotected Components (High Vulnerability Risk)
+Look for activities, services, or receivers that set android:exported="true". If they don't require specific permissions, any malware app installed inside Waydroid can force-launch them to bypass authentication:
+
+grep -Hn "exported" *_manifest.txt | grep "true"
+
+## 🌐 2. Audit Custom Deep Links and URL Schemes
+Attackers abuse custom deep links to hijack user sessions or steal tokens. Use this to find out what custom URLs these banking and crypto apps respond to (e.g., trust://, momo://):
+
+grep -Hni -A 3 "scheme" *_manifest.txt
+
+## 🛡️ 3. Check for Backup Vulnerabilities
+If an app defines android:allowBackup="true", an attacker with physical access or local ADB access can extract the private local database (shared preferences, session cache) out of the container:
+
+grep -Hn "allowBackup" *_manifest.txt | grep "true"
+
+------------------------------
+## Step 3: Deep Dive into the Code
+Once aapt points out which app has the most exposed attack surface, look at the actual code logic.
+
+   1. Install JADX-GUI on your host system:
+   
+   sudo apt update && sudo apt install -y jadx
+   
+   2. Open the application directly to analyze its code structure:
+   
+   jadx-gui /home/user/Downloads/waydroid_extracted_apks/com.wallet.crypto.trustapp.apk
+   
+   
+------------------------------
+Which specific app from your targets do you want to break down first? I can give you the exact ADB commands to trigger its hidden components directly inside your running Waydroid container.

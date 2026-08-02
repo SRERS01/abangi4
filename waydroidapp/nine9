@@ -1,0 +1,51 @@
+Let's focus specifically on the MTN applications in your extracted repository. You have two high-value targets for mobile money and regional services:
+
+   1. com.mtn.mtncmr3.apk (MyMTN Cameroon) [39MB]
+   2. mtnft.momo.consumer.apk (MTN MoMo / Mobile Money Consumer) [48MB]
+
+Because these are fintech apps handling digital wallets, financial transactions, and carrier communications, auditing them yields incredible reverse-engineering insights. [1, 2, 3] 
+Here is how to run targeted structural audits on both MTN applications.
+------------------------------
+## Step 1: Dump the MTN Manifests and Configuration Strings
+Run this command to create dedicated structural dumps for both MTN apps so we can read their configurations:
+
+cd /home/user/Downloads/waydroid_extracted_apks
+for app in com.mtn.mtncmr3 mtnft.momo.consumer; do
+    echo "Processing $app..."
+    aapt dump xmltree "$app.apk" AndroidManifest.xml > "${app}_manifest.txt"
+    aapt dump strings "$app.apk" > "${app}_strings.txt"done
+
+------------------------------
+## Step 2: Audit the MTN Attack Surface## 1. Look for Deep Link Schemes & Gateway Handlers
+Fintech apps use intent filters and custom URLs to initiate payments or web views. Let's find out what deep links the MTN apps handle (e.g., momo://, mymtn://):
+
+grep -E -i "scheme|host" com.mtn.mtncmr3_manifest.txt mtnft.momo.consumer_manifest.txt
+
+## 2. Scan for Hardcoded API Endpoints, URLs, and Gateway IPs [4] 
+Since you dumped the raw asset and binary resource strings using aapt dump strings, you can search the text directly for staging environments, API paths, or backend proxy domains:
+
+grep -E -o "https?://[a-zA-Z0-9./?=&_-]+" com.mtn.mtncmr3_strings.txt mtnft.momo.consumer_strings.txt | sort -u > mtn_endpoints.txt
+cat mtn_endpoints.txt
+
+(Look out for keywords in the output like sandbox, staging, v1/api, or payment.)
+## 3. Audit Over-Privileged Permissions
+See what sensitive hardware and system features these apps are requesting within the Waydroid container:
+
+grep -E "uses-permission" com.mtn.mtncmr3_manifest.txt mtnft.momo.consumer_manifest.txt
+
+(Check if they request RECEIVE_SMS, READ_SMS, or READ_CONTACTS, which are highly sensitive for MoMo transactions).
+------------------------------
+## Step 3: Track Live MTN App Logic via ADB Logs
+To see how these MTN apps behave dynamically when you open them inside Waydroid, open a secondary terminal on your Ubuntu host and attach a filtered logcat stream:
+
+* For MyMTN Cameroon:
+
+adb logcat | grep -i "mtn.mtncmr3"
+
+* For MTN MoMo:
+
+adb logcat | grep -i "momo.consumer"
+
+
+------------------------------
+Let me know what you find in mtn_endpoints.txt! Would you like help configuring jadx to search the decompiled source code for how these MTN apps handle PIN/password hashing or TLS certificate pinning?

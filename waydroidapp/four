@@ -1,0 +1,24 @@
+The previous script failed because Android stores the actual .apk file one level deeper inside another subfolder, rather than directly inside the ~~ directories.
+We can use aapt directly to read the package names instead of using strings.
+## Step 1: Run the Fixed Find Script
+Run this single command from your current directory. It accurately handles the subfolder layer and uses aapt to give you the clean package names:
+
+find . -name "base.apk" -exec sh -c 'echo "File: {}"; aapt dump badging "{}" | grep "package: name=" | head -n 1' \;
+
+## Step 2: Read the Output
+The output will clearly map the file paths to the actual app names like this:
+
+File: ./~~Ci9QE5lV-OrNE42v23iq6Q==/com.example.app-someid==/base.apk
+package: name='com.example.app' versionCode='1' versionName='1.0'
+
+## Step 3: Copy Your Target APK
+Once you find your app in the list, copy it straight to your Downloads folder using the full path shown in the script output:
+
+cp ./~~FOLDER_NAME_HERE==/SUB_FOLDER_HERE/base.apk ~/Downloads/my_test_app.apk
+
+------------------------------
+Let me know:
+
+* What package name did you find that you want to test?
+* Would you like the steps to decompile it into readable Java/Kotlin code next?
+

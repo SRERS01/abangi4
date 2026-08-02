@@ -1,0 +1,68 @@
+To test and reverse engineer an app installed inside Waydroid using aapt (Android Asset Packaging Tool), you need to bridge your Linux host filesystem with the Waydroid container. This allows you to extract the APK, inspect its manifest, and decompile its resources. [1] 
+Here is the step-by-step process.
+## 1. Locate and Extract the APK
+Waydroid stores installed applications inside its container filesystem on your host Linux machine. [2, 3] 
+
+* Open your Linux terminal.
+* Navigate to the Waydroid app directory:
+
+cd ~/.local/share/waydroid/data/app/
+
+* Find your app: Look through the folders (named by package names like com.example.myapp) to find the base.apk file.
+* Copy the APK to your working directory:
+
+cp com.example.myapp/base.apk ~/Downloads/test_app.apk
+
+[4, 5, 6] 
+
+## 2. Inspect the APK using aapt
+aapt allows you to view the app's metadata, permissions, and configurations without decompiling the whole file. Install it via your package manager if you haven't already (e.g., sudo apt install aapt or android-sdk-build-tools).
+
+* View permissions and package info:
+
+aapt dump badging ~/Downloads/test_app.apk
+
+* View the AndroidManifest.xml (in readable text):
+
+aapt dump xmltree ~/Downloads/test_app.apk AndroidManifest.xml
+
+* List all files inside the asset bundle:
+
+aapt list ~/Downloads/test_app.apk
+
+[7] 
+
+## 3. Reverse Engineer the App
+To look at the actual source code (Java/Kotlin) and resources, use specialized reverse engineering tools on your Linux host.
+
+* Extract Resources (Layouts, Images, Manifest): Use Apktool to decode the APK resources into a readable structure.
+
+apktool d ~/Downloads/test_app.apk -o ~/Downloads/decompiled_app
+
+* Extract Source Code: Use jadx to convert the Dex files directly into readable Java code.
+
+jadx-gui ~/Downloads/test_app.apk
+
+(This opens a graphical interface where you can browse the code structure and search for vulnerabilities). [8] 
+
+## 4. Live Debugging inside Waydroid (Optional)
+If you want to test the app while it runs, use Android Debug Bridge (adb) from your host terminal to connect to Waydroid. [9, 10] 
+
+* Connect to Waydroid via ADB:
+
+adb connect 192.168.240.112:5555
+
+(Note: Check your specific Waydroid IP using waydroid status or ip route if the default IP doesn't connect).
+* Monitor live logs for your app:
+
+adb logcat | grep com.example.myapp
+
+[11, 12, 13] 
+
+------------------------------
+To help tailor the next steps, let me know:
+
+* What specific security flaws or data (like APIs, certificates, or tokens) are you searching for?
+* Are you dealing with an app that uses native libraries (.so files) or heavy obfuscation?
+* Do you need assistance setting up Burp Suite to intercept the app's network traffic inside Waydroid?
+
