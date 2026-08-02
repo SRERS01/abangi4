@@ -1,0 +1,35 @@
+You will know the script has found a potential vulnerability through two clear signals: a color-coded alert in your terminal and an automated log entry in your output file.
+The script does not verify the bug for you, but it highlights the exact location of a high-risk lead. Here is exactly what to look for:
+## 1. The Terminal Alert (Real-Time Visual Clue)
+While the script runs, it completely ignores normal comments and only prints text when it matches your high-risk keywords. If it finds a lead, the text will flash bright red with a critical flag. [1] 
+
+* What it looks like on your screen:
+
+[*] Thread started: Scanning target -> https://target.com
+[!] CRITICAL HTML COMMENT on https://target.com (Keywords: ['admin', 'todo']): <!-- <a href="/admin-beta-test">TODO: remove entry before launch</a> -->
+[!] CRITICAL JS COMMENT in External JS File on https://target.com (Keywords: ['key', 'secret']): const AWS_SECRET = "AKIAIOSFODNN7EXAMPLE"
+[+] Finished https://target.com - Found 2 high-risk comments logged!
+
+
+## 2. The Output Log File (Your Hit List)
+Once the scan finishes, you do not need to scroll through your terminal history. Open the newly created high_risk_comments.txt file in your directory.
+If the file contains text, you have found potential vulnerabilities. The file formats the findings neatly so you can easily review them: [2] 
+
+[URL] https://target.com
+[TYPE] JS (External JS File) | [KEYWORDS] key, secret
+[CONTENT] const AWS_SECRET = "AKIAIOSFODNN7EXAMPLE"
+------------------------------------------------------------
+[URL] https://target.com
+[TYPE] HTML Comment | [KEYWORDS] admin, todo
+[CONTENT] <!-- <a href="/admin-beta-test">TODO: remove entry before launch</a> -->
+------------------------------------------------------------
+
+------------------------------
+## How to Triage and Confirm the Bug
+When the script hands you a red alert, follow these steps to confirm if it is a valid, payable vulnerability:
+
+   1. For Credentials (key, secret, pass): Copy the string and test it using a CLI tool or Postman to see if it is active. An old, deactivated key pays $0, but an active live key pays thousands.
+   2. For Hidden Links (admin, config): Copy the URL path found in the comment (e.g., /admin-beta-test) and paste it onto the target domain in your browser. If you can access the page without logging in, you have found an Authentication Bypass. [3] 
+   3. For Flaws (todo, fixme): Find the form field or URL parameter associated with that piece of code and start injecting payloads (like ' OR 1=1 -- - or <script>alert(1)</script>) to exploit the weakness the developer forgot to fix. [4, 5] 
+
+If you have run the script and found a specific comment you aren't sure about, paste it here! I can help you analyze if it's a real bug and show you how to write the exploit for it.

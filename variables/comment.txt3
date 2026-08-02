@@ -1,0 +1,112 @@
+Here is a comprehensive breakdown of every major programming language, all of their comment syntaxes, and exactly how penetration testers and bug bounty hunters exploit them.
+------------------------------
+## C / C++ / Java / C#
+
+* Single-line: // Comment
+* Multi-line: /* Comment */ [1, 2, 3, 4, 5] 
+
+## Penetration Testing Applications:
+
+* SQL Injection WAF Bypass: Some older or poorly configured Web Application Firewalls (WAFs) fail to reassemble SQL keywords if they are split by C-style multi-line comments.
+* Payload Example: SEL/*union*/ECT /*password*/ FR/*db*/OM users; [6, 7] 
+* XSS Payload Breaking: When injecting into an existing JavaScript block, you can use // to comment out the rest of the developer's original script so it doesn't cause a syntax error that stops your payload from running.
+* Payload Example: '; alert(1); //
+* Source Code Review: In white-box assessments, searching for // TODO or // FIXME reveals security features the developers forgot to implement or rushed before deployment.
+
+------------------------------
+## Python
+
+* Single-line: # Comment
+* Multi-line: """ Comment """ or ''' Comment '''
+
+## Penetration Testing Applications:
+
+* Server-Side Template Injection (SSTI): Python-based template engines (like Jinja2 or Mako) handle comments differently. You can use comment tags to test if an application is rendering your templates.
+* Payload Example: {# This is a Jinja comment #} (If this disappears from the HTML source without rendering, it confirms SSTI). [8] 
+* Config File Manipulation: If you find a Local File Inclusion (LFI) or Arbitrary File Write vulnerability on a server running Python apps, you can inject lines starting with # to selectively disable configuration settings or environment paths.
+
+------------------------------
+## SQL (Structured Query Language)
+
+* Single-line: -- Comment (Requires a space after the dashes in most SQL dialects) or # Comment (MySQL/MariaDB specific)
+* Multi-line: /* Comment */ [9, 10, 11, 12] 
+
+## Penetration Testing Applications:
+
+* Truncating SQL Queries: This is the most famous use of comments in hacking. When performing an authentication bypass via SQL Injection, adding a comment syntax truncates the rest of the developer’s backend query (like the password check).
+* Payload Example: ' OR 1=1 -- - or ' OR 1=1 #
+* Database Fingerprinting: Different databases handle comment extensions uniquely. You can identify the exact database engine running on the backend by executing comment-wrapped conditional logic.
+* MySQL Specific: /*!50110 SELECT * FROM users */ (This code only executes if the MySQL version is 5.01.10 or higher).
+
+------------------------------
+## JavaScript / TypeScript
+
+* Single-line: // Comment
+* Multi-line: /* Comment */
+* HTML-style (Legacy Browser support): <!-- Comment or --> Comment [13, 14, 15] 
+
+## Penetration Testing Applications:
+
+* Cross-Site Scripting (XSS) Filter Evasion: You can use multi-line comments to break up strings or bypass basic regex filters that look for spaces or specific strings.
+* Payload Example: <script>alert/*comment*/(1)</script> [16] 
+* Client-Side Information Disclosure: Since JavaScript runs entirely in the user's browser, inspecting .js files via your browser's Developer Tools (Ctrl+Shift+I) frequently reveals commented-out development routes, API endpoints, internal test credentials, and logic flaws. [17] 
+
+------------------------------
+## HTML (HyperText Markup Language)
+
+* All comments: <!-- Comment -->
+
+## Penetration Testing Applications:
+
+* HTML Injection & XSS: If an application reflects your input inside an HTML comment, you must break out of the comment using --> before your payload will execute.
+* Payload Example: --> <script>alert(1)</script> <!--
+* Comment Leakage Reconnaissance: Developers often comment out old login forms, hidden administrative links, or development tools in the front-end code instead of properly deleting them. Inspecting the page source (Ctrl+U) exposes these hidden features instantly.
+
+------------------------------
+## PHP
+
+* Single-line: // Comment or # Comment
+* Multi-line: /* Comment */ [18, 19] 
+
+## Penetration Testing Applications:
+
+* PHP Object Injection / LFI: When exploiting PHP inclusions, comment characters are used in "log poisoning." You can inject PHP code into a log file, and use comment blocks to cleanly format the log or isolate your executed commands from surrounding log metadata. [20] 
+* Bypassing File Upload Restrictions: If an application strips out specific extensions, combining comments inside backend configuration files (.htaccess files use #) allows you to force a server to execute arbitrary text files as PHP code. [21] 
+
+------------------------------
+## Bash / Shell
+
+* Single-line: # Comment
+
+## Penetration Testing Applications:
+
+* Command Injection Filter Evasion: When exploiting an OS Command Injection vulnerability, if spaces are stripped or filtered by the application, you can use internal shell structures or comments to separate commands.
+* Linux Privilege Escalation: Penetration testers frequently write Bash scripts (.sh) to automate local security checks. Commenting out lines in automated cron job scripts that run as root allows you to hijack system execution flows. [22, 23] 
+
+------------------------------
+## Ruby
+
+* Single-line: # Comment
+* Multi-line: =begin \n Comment \n =end [24, 25] 
+
+## Penetration Testing Applications:
+
+* Argument Injection / Code Execution: If a Ruby backend unsafely handles user inputs inside system execution commands (like open() or eval()), testers use comment lines to safely format payloads so the rest of the application process does not crash and throw an error before the payload completes.
+
+------------------------------
+## Quick Reference: The Hacker's Comment Cheat Sheet
+
+| Language | Comment Symbol | Primary Penetration Testing Use Case |
+|---|---|---|
+| SQL | -- , #, /* */ | Authentication bypass, WAF evasion, query truncation. |
+| HTML | <!-- --> | XSS breakout, discovering hidden development links. |
+| JavaScript | //, /* */ | Client-side recon, API discovery, string filter bypass. |
+| PHP / Python | # | Log poisoning formatting, config file manipulation. |
+
+------------------------------
+To help apply this knowledge practically, tell me:
+
+* Are you trying to bypass a specific WAF or filter right now?
+* Do you need help building an XSS/SQLi breakout payload for a specific code context?
+* Would you like an automated tool script to scrape comments from target websites?
+

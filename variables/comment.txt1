@@ -1,0 +1,32 @@
+In bug bounty testing, comments are highly valuable tools for both exploitation (reconnaissance and code injection) and reporting (documentation). [1, 2, 3] 
+Here is how you can use them:
+## 1. Code Injection and WAF Bypass
+Attackers and bounty hunters use comment syntax to manipulate code execution or trick Web Application Firewalls (WAFs). [4] 
+
+* SQL Injection (SQLi): Use comment symbols to cut off the rest of a database query. This neutralizes the developer's original syntax and forces the application to execute your injected code.
+* Example: ' OR 1=1 -- (The -- comments out everything after it, preventing errors). [5, 6] 
+* WAF Evasion: Insert multi-line comments inside restricted keywords. Some poorly configured WAFs fail to read the keyword, but the back-end SQL engine removes the comment and executes the command.
+* Example: SEL/*comment*/ECT * FR/*comment*/OM users;
+* Cross-Site Scripting (XSS): Break out of existing JavaScript blocks or bypass length restrictions by commenting out unwanted code.
+* Example: '; alert(1); // [7, 8, 9] 
+
+## 2. Reconnaissance (Information Gathering)
+Developers frequently leave sensitive information inside comments in production code. Always inspect the page source, public repositories, and JavaScript files. [10, 11, 12, 13] 
+
+* Hidden Endpoints: Look for commented-out URLs or development/staging environments (e.g., <!-- <a href="/admin-test">Admin Login</a> -->).
+* Credentials: Developers sometimes accidentally leave hardcoded API keys, passwords, or internal emails in code comments.
+* Logic Clues: Look for "TODO" or "FIXME" comments. They point directly to unpatched bugs, weak validation logic, or incomplete security features. [14, 15] 
+
+## 3. Report Documentation
+When submitting a bug to a platform like HackerOne or Bugcrowd, clear comments in your Proof of Concept (PoC) scripts make your report professional and easy to triage.
+
+* Step-by-step Clarification: Use comments to explain exactly what each payload does.
+* Credit and Contact: Add your handle at the top of your scripts to claim ownership.
+
+------------------------------
+To help you apply this, let me know:
+
+* What vulnerability type (SQLi, XSS, SSRF) you are testing for
+* If you need a specific payload structure for a target
+* If you want help automating source code analysis for hidden comments
+

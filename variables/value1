@@ -1,0 +1,58 @@
+Value vulnerabilities encompass every flavor of injection, data manipulation, and access flaw where the container holds data perfectly, but the application parses the data dangerously. [1] 
+On platforms like [HackerOne](https://www.hackerone.com/bug-bounty-programs) or [Bugcrowd](https://help.doit.com/docs/vendor-information/bug-bounty-program), these are generally classified under the OWASP Top 10 rather than individual variables. Because corporate programs use the Common Vulnerability Scoring System (CVSS) to calculate maximum impact, the cash payout depends entirely on whether the malicious value triggers a low-level error or a critical infrastructure compromise. [1, 2] 
+------------------------------
+## The Definitive Catalog of Value Vulnerabilities & Payouts
+The reward tiers below represent average market rates for active, high-paying corporate programs (e.g., PayPal or Airbnb). [3, 4] 
+## Group 1: Backend & Server Command Injections (Critical Impact)
+These occur when untrusted text values are sent to backend parsers or command lines, executing the attacker’s input as server instructions.
+
+* SQL Injection (SQLi / CWE-89): Malicious inputs alter raw database queries.
+* Standard Payout: $5,000 – $25,000
+   * Max Documented: $50,000+ (If leading to massive data exfiltration) [4, 5, 6] 
+* Remote Code Execution (RCE / CWE-94): Passing dangerous values directly to server-side functions like eval().
+* Standard Payout: $10,000 – $35,000
+   * Max Documented: $100,000+ [5, 7] 
+* Server-Side Request Forgery (SSRF / CWE-918): Providing a URL string value that forces the host server to hit internal APIs or cloud metadata links.
+* Standard Payout: $3,000 – $15,000
+   * Max Documented: $30,000+ (If it leaks cloud IAM production keys) [4, 8, 9] 
+* XML External Entity (XXE / CWE-611): Injecting malicious file paths inside an XML payload value to read internal configuration documents.
+* Standard Payout: $2,500 – $12,000 [5] 
+
+## Group 2: Client-Side Data Defacements (Medium to High Impact)
+These occur when unvalidated user input text values are mirrored back onto browser windows or execution spaces of other system users.
+
+* Stored Cross-Site Scripting (Stored XSS / CWE-79): Script values permanently stored in databases that execute in browser sessions.
+* Standard Payout: $1,500 – $5,000 [1] 
+* Reflected Cross-Site Scripting (Reflected XSS / CWE-79): Script values directly echoed back to a user from a transient link or form field.
+* Standard Payout: $500 – $2,500
+* Open Redirect (CWE-601): Passing external link strings into login fields to trick users into navigating to a malicious domain.
+* Standard Payout: $200 – $1,000
+
+## Group 3: File System & Local Inclusions (High Impact)
+These compromise underlying web trees or server path rules based on dirty input strings.
+
+* Path Traversal / Local File Inclusion (LFI / CWE-22): Injecting sequence values like ../../etc/passwd to view restricted server text directories.
+* Standard Payout: $3,000 – $10,000 [10, 11] 
+* Remote File Inclusion (RFI / CWE-98): Passing an external link value into template engines to render unauthorized remote logic scripts.
+* Standard Payout: $5,000 – $15,000
+
+## Group 4: Logical Identity & Access Flaws (High to Critical Impact)
+These manipulate parameter value names, session IDs, or request structures to access data belonging to someone else.
+
+* Insecure Direct Object Reference (IDOR / CWE-639): Altering identifier key values (e.g., swapping ?user_id=101 to ?user_id=102) to view private dashboards.
+* Standard Payout: $2,000 – $12,000
+   * Max Documented: $30,000+ (If it enables full cross-tenant account takeovers) [1, 4, 12, 13] 
+* Mass Assignment / Parameter Pollution (CWE-915): Appending unseen parameter keys (like &isAdmin=true) to HTTP form payloads.
+* Standard Payout: $1,000 – $6,000
+* Cross-Site Request Forgery (CSRF / CWE-352): Tricking users into transmitting automated action state values.
+* Standard Payout: $500 – $3,000 [10, 14] 
+
+## Group 5: Modern LLM & Semantic Variable Exploits (Emerging Landscape)
+
+* Indirect Prompt Injection (CWE-1422): Injecting specific adversarial string text into database context variables to hijack AI engine instructions.
+* Standard Payout: $1,000 – $15,000 (Via enterprise programs like [Anthropic](https://wraith.sh/learn/ai-bug-bounty-programs)) [10] 
+
+------------------------------
+## Industry Realities Regarding Open Submissions
+While corporate enterprise programs continue paying standard rates, be aware that major crowdsourced architectures have severely slashed open public baseline payouts. Platforms like Google and GitHub scaled back public open-submission fees due to massive influxes of AI-generated noise reports. GitHub, for instance, capped standard public critical findings much lower, restricting premium triple-rate tiers strictly to invite-only, vetted VIP groups. [15, 16] 
+Are you looking to chain multiple value bugs (like an IDOR paired with XSS) to escalate your report to a higher tier? Let me know what specific framework you are auditing, and I can detail how to document the full impact. [1] 

@@ -1,0 +1,69 @@
+Value vulnerabilities encompass every bug class where the structural container is completely secure, but the literal text string, data object, or numerical value supplied by the user is processed dangerously. [1] 
+In bug bounty hunting on platforms like HackerOne and Bugcrowd, there is a definitive, finite list of exactly 20 recognized value bug classes. The bounty numbers provided below reflect active 2026 market standards across mid-to-high tier technology programs (such as the [Google VRP](https://bughunters.google.com/about/rules/google-friends/google-and-alphabet-vulnerability-reward-program-vrp-rules) and [Meta Bug Bounty](https://bugbounty.meta.com/payout-guidelines/)). [2, 3, 4, 5] 
+------------------------------
+## The Complete Catalog of Value Bugs and Payouts## Tier 1: Server-Side Execution Injections (Critical)
+These bugs happen when a system interprets raw input text values as programming instructions, commands, or database structures. [1] 
+
+* 1. SQL Injection (SQLi / CWE-89): Supplying database query strings to hijack backend tables.
+* Average Payout: $5,000 – $15,000
+   * Max Cap: $75,000+ on Google Applications. [3, 5, 6] 
+* 2. OS Command Injection (CWE-78): Injecting terminal values like ; rm -rf into text processing functions to control the host server OS.
+* Average Payout: $10,000 – $25,000
+   * Max Cap: $101,010 via the Google VRP rules. [5, 7, 8] 
+* 3. Server-Side Template Injection (SSTI / CWE-1336): Forcing values into front-end rendering engines (like Jinja or Twig) to achieve remote code execution.
+* Average Payout: $8,000 – $20,000 [2] 
+* 4. XML External Entity (XXE / CWE-611): Injecting parsing properties into XML strings to view internal files or trigger local requests.
+* Average Payout: $3,500 – $12,000 [3, 5] 
+* 5. Expression Language (EL) / OGNL Injection (CWE-917): Passing value strings into Java evaluation frameworks to slip through sandbox blocks.
+* Average Payout: $5,000 – $15,000 [2, 6] 
+* 6. Local/Remote File Inclusion (LFI/RFI / CWE-98): Sending path variables like ../../etc/passwd to force the app to execute foreign configuration files.
+* Average Payout: $3,000 – $10,000 [9] 
+* 7. NoSQL Injection (CWE-943): Submitting JSON query value symbols to alter document databases like MongoDB.
+* Average Payout: $2,500 – $8,000 [2, 6] 
+* 8. LDAP Injection (CWE-90): Manipulating internal user query directory structures using custom filter values.
+* Average Payout: $2,000 – $6,000 [2, 7] 
+
+## Tier 2: Logical Trust and Access Bugs (High to Critical)
+These bugs rely on manipulating scalar parameters, account numbers, or contextual data configurations to step over privilege boundaries. [3] 
+
+* 9. Insecure Direct Object Reference (IDOR / CWE-639): Changing account key values (e.g., modifying user account 1001 to 1002) to look at data belonging to someone else.
+* Average Payout: $4,000 – $15,000
+   * Max Cap: $50,000 for bypassing critical controls. [3, 5] 
+* 10. Server-Side Request Forgery (SSRF / CWE-918): Submitting an internal IP or local URL string that tricks the backend into requesting internal services.
+* Average Payout: $3,000 – $12,000 [3, 4, 10] 
+* 11. Mass Assignment / Parameter Pollution (CWE-915): Sneaking hidden key-value inputs into form data to silently toggle system status adjustments.
+* Average Payout: $1,500 – $5,000 [3] 
+* 12. Cryptographic Value Hardcoding (CWE-798): Deploying application code that uses readable encryption keys or API tokens inside text files.
+* Average Payout: $1,000 – $4,000 [11] 
+
+## Tier 3: Client-Side Response Injections (Medium to High)
+These flaws trigger when unvalidated values are sent back out and parsed inside a victim's web browser environment. [1] 
+
+* 13. Stored Cross-Site Scripting (Stored XSS / CWE-79): Saving JavaScript values inside a target database that automatically execute when other users pull that record.
+* Average Payout: $2,500 – $6,000 [3, 6] 
+* 14. Reflected Cross-Site Scripting (Reflected XSS / CWE-79): Tricking a user into clicking a link that echoes an executable script value right off the page layout.
+* Average Payout: $750 – $2,500 [3, 6] 
+* 15. Open Redirect (CWE-601): Crafting link targets inside login parameters to instantly bounce a victim out to an unauthorized phishing domain.
+* Average Payout: $200 – $1,000
+* 16. HTML Injection (CWE-74): Inserting unescaped layout strings to visually alter a website to mimic fake login popups.
+* Average Payout: $200 – $750
+* 17. CRLF Injection / HTTP Response Splitting (CWE-113): Dropping return sequence symbols into header fields to alter core cookie settings.
+* Average Payout: $500 – $2,000 [7, 9] 
+* 18. CSV / Formula Injection (CWE-1236): Saving fields starting with =CMD() that execute commands whenever an admin exports tables to Microsoft Excel.
+* Average Payout: $250 – $1,000 [9, 12] 
+
+## Tier 4: Modern Context and Infrastructure Injections (Emerging)
+
+* 19. Host Header Injection (CWE-644): Swapping default system domain configurations inside HTTP traffic fields to rewrite account reset hyperlinks.
+* Average Payout: $1,000 – $3,500 [7] 
+* 20. Indirect Prompt Injection (CWE-1422): Planting strategic instructions inside database text records that cause connected AI models to silently forward back-end account configurations to the attacker.
+* Average Payout: $2,000 – $15,000
+   * Max Cap: Up to $90,000 via specialized target structures like Meta AI programs. [2, 4] 
+
+------------------------------
+If you are currently analyzing a target system, tell me:
+
+* Are you testing a web endpoint, a backend API, or an AI prompt environment?
+* What data parameters are you able to control right now? [2] 
+
+I can help map out a precise exploit payload strategy targeting these specific payout definitions.

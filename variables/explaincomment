@@ -1,0 +1,32 @@
+The output from this script provides immediate, actionable leads for your bug bounty hunt. Instead of spending hours manually reviewing source code, the script filters out the noise and highlights exactly where a developer made a mistake.
+Here is how you can transform the results in your high_risk_comments.txt file into paid bug bounty rewards:
+## 1. Instant Information Disclosure Payouts
+If the script flags keywords like key, secret, pass, or token, you may have found hardcoded credentials.
+
+* The Result: // const stripe_key = "sk_live_51Nx..."
+* How it helps you: If you verify that this key is active and gives access to internal customer data or financial infrastructure, you can immediately file a Critical (P1) or High (P2) report. These often pay anywhere from $1,500 to $10,000+ depending on the scope of the data exposed.
+
+## 2. Discovering Hidden Administrative Attack Surfaces
+Developers often comment out draft code or structural links to administrative panels that are not linked anywhere else on the public website.
+
+* The Result: <!-- <a href="/internal-staging-v2/db-admin">Migration Tool</a> -->
+* How it helps you: The script gives you an endpoint that automated directory-bruteforcing tools (like Gobuster or Dirsearch) might miss. Navigating to that hidden URL could reveal unauthenticated administration panels, leading to an easy Broken Authentication or IDOR report.
+
+## 3. Finding Pre-Identified Security Vulnerabilities
+Keywords like todo and fixme are direct admissions by developers that a feature is incomplete or insecure.
+
+* The Result: /* TODO: Implement robust sanitization here to prevent SQLi */
+* How it helps you: The developer has literally left you a map to a vulnerability. By targeting that specific input field or parameter with your SQL injection or XSS payloads, your chances of a successful exploit skyrocket. You save hours of random fuzzing by focusing exclusively on code the developers already knew was weak.
+
+## 4. Bypassing Client-Side Logic
+Sometimes, complex applications handle user permissions or premium features using client-side JavaScript.
+
+* The Result: // FIXME: Temporary bypass for testing billing tier, remove before production followed by a function like if(user.role == 'admin' || testMode == true)
+* How it helps you: You can open your browser console, toggle the testMode variable to true based on the clue from the comment, and see if the frontend lets you access restricted menus or hidden business operations. If the backend fails to validate this change, you have a Business Logic Flaw.
+
+------------------------------
+If you want to take your automation further, let me know if you would like to:
+
+* Add automated triage links so you can click directly on the discovered vulnerabilities in your terminal.
+* Integrate a Slack or Discord webhook to send instant notifications to your phone when a high-risk secret is found during background scans.
+

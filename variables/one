@@ -1,0 +1,37 @@
+HackerOne does not classify bug bounties by a narrow "variable vulnerability" category, but instead sets payouts according to the overall severity (Low to Critical) and the specific asset impacted. In security research, "variable vulnerabilities" encompass memory mismanagement, environmental manipulation, and data type state issues. [1] 
+Because HackerOne operates as a crowdsourced platform hosting thousands of independent corporate programs, individual company policies dictate exact cash prizes. Below is a complete list of known variable-handling vulnerabilities mapped to their standard severity tier and their 2026 HackerOne market payout ranges. [2, 3, 4, 5, 6] 
+------------------------------
+## Variable Vulnerability Payout Matrix
+The following table synthesizes the typical severity levels and reward ranges for variable vulnerabilities across mid-to-high tier programs (e.g., PayPal or Slack). [7, 8] 
+
+| Vulnerability Type | Primary Root Cause | HackerOne Severity Tier | Standard Payout Range | Extreme/Max Payout |
+|---|---|---|---|---|
+| Buffer Overflow (Stack/Heap) | Writing excess data past variable memory allocation. | Critical to High | $10,000 – $30,000+ | Up to $250,000+ (e.g., Google Chrome/Enterprise kernels) |
+| Use-After-Free (UAF) | Program fails to clear a variable pointer after freeing memory. | Critical to High | $8,000 – $25,000 | Up to $150,000+ (Browsers / OS Kernels) |
+| Integer Overflow / Underflow | Numeric variable exceeds maximum storage bits and flips value. | High to Medium | $1,000 – $15,000 | Millions (if targeting Crypto/Smart Contracts via Immunefi[](https://sqmagazine.co.uk/smart-contract-bug-bounties-statistics/)) |
+| Race Condition (TOCTOU) | Variable changes state between a check and its usage. | High to Medium | $2,000 – $12,000 | Up to $30,000+ (Fintech/Payment bypasses) |
+| Environment Variable Injection | Modifying systemic variables to load malicious libraries. | Medium to Low | $500 – $5,000 | Program-dependent |
+| Uninitialized Variable Use | Reading memory from a variable container before assigning a value. | Medium to Low | $250 – $3,000 | Context-dependent (Information Disclosure) |
+| Type Confusion | Variable allocated as one object type but accessed as another. | Critical to High | $5,000 – $20,000 | Up to $100,000+ (V8 Engine / WebKit) |
+
+------------------------------
+## Key Financial Factors on HackerOne## 1. Impact Dictates the Dollar [9] 
+A buffer overflow in an internal, non-production test environment might earn a Low reward ($50 to $1,000) or simply be closed as "Informational". Conversely, the exact same memory vulnerability inside a core product API that allows full Remote Code Execution (RCE) elevates the report to Critical, commanding $20,000 to $30,000+. [7, 10] 
+## 2. General vs. Internet Bug Bounty (IBB) Rates
+
+* Private/Corporate Programs: Top-tier enterprise programs pay premium rates. For example, a severe data-handling flow can pay up to $30,000 on [PayPal's Bug Bounty Program](https://hackerone.com/paypal). [7] 
+* The Internet Bug Bounty (IBB): HackerOne's open-source collaborative pool. Following a significant rewards restructuring, standard open-source variable vulnerabilities are capped much lower:
+* Critical: ~$2,257
+   * High: ~$1,009
+   * Medium: ~$297 [11, 12, 13] 
+
+## 3. AI and Prompt-Variable Injection [14] 
+Corporate scopes are shifting toward large language model (LLM) infrastructure. Manipulating user-facing variables to corrupt system prompt variables (Prompt Injection) regularly yields $1,000 to $30,000, depending on whether the system leaks back-end database records or performs unauthenticated commands. [15, 16] 
+------------------------------
+If you are hunting for a bounty, tell me:
+
+* What target program or industry are you reviewing?
+* Do you have a Proof of Concept (PoC) targeting memory or local states?
+
+I can help draft a highly technical HackerOne report template optimized to prove maximum business impact.
+

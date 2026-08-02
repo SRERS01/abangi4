@@ -1,0 +1,55 @@
+The regex update worked perfectly. It bypassed the noise from params and matched on the variable ignoreCdaPassCheck and the key __CDA_IGNORE_CDA_PASS_CHECK__ inside function K.
+This is no longer a false positive. You have uncovered an interesting piece of client-side authentication logic that warrants active penetration testing.
+------------------------------
+## Vulnerability Analysis: The K() Function Logic
+Let's look closely at the function your script flagged:
+
+K=()=>{
+  var r,o;
+  if((o=(r=t.INITIAL_DATA)==null?void 0:r.cda)!=null && o.ignoreCdaPassCheck || localStorage.getItem("__CDA_IGNORE_CDA_PASS_CHECK__"))
+    return !1;
+  let e=u(f);
+  return !!(e && e!=="0")
+}
+
+## How it works:
+
+   1. This code executes as part of a Cross-Domain Authentication (cda) check.
+   2. It looks into localStorage for a key named "__CDA_IGNORE_CDA_PASS_CHECK__".
+   3. If that item exists in the browser's storage, the function instantly returns false.
+   4. Looking down at the execution block at the bottom of the script:
+   
+   if(K()){
+     // Skips authentication redirection if K() returns true
+     (W=t._onelog)==null||W.info({..., params:["cda_passed_cookie_present"]});
+     return}yield t.cda.tryRedirect("auth")
+   
+   
+By making K() return false or manipulating the parameters that wrap it, you alter how the application forces a user through the Cross-Domain login flow. The application is trusting client-side configuration variables to determine whether security checks should be performed.
+------------------------------
+## How to Test This for a Bug Bounty (PoC Steps)
+You need to check if setting this local storage item allows you to bypass authentication or access a staging/development domain without logging in.
+
+   1. Open the Target Page: Navigate to the website where your script found this snippet.
+   2. Open Developer Tools: Press F12 or Ctrl + Shift + I and head to the Console tab.
+   3. Inject the Storage Key: Type the following command and press Enter to simulate a developer flag:
+   
+   localStorage.setItem("__CDA_IGNORE_CDA_PASS_CHECK__", "true");
+   
+   4. Inject the Domain Variable (Optional but recommended): The script also references an internal domain handler (de()). Try setting a target domain:
+   
+   localStorage.setItem("__CDA_DOMAIN__", "localhost"); // or an external Burp Collaborator URL
+   
+   5. Refresh the Page: Reload the website.
+
+## What to look for:
+
+* Scenario A (Authentication Bypass): Does refreshing the page bypass a login wall, log you into a default test account, or give you access to dashboard elements you couldn't see before? If yes, this is a High/Critical Business Logic Flaw.
+* Scenario B (Open Redirect / SSRF): Look at the oe function in the script. It dynamically builds a form and POSTs it to /cdaredirect. If changing these parameters causes the site to automatically POST your session tokens or trace IDs to a domain you specified in __CDA_DOMAIN__, you have an Open Redirect or an Account Takeover via Token Leakage.
+
+------------------------------
+If you test this in your browser, let me know:
+
+* What happens to the page when you refresh after setting localStorage.setItem("__CDA_IGNORE_CDA_PASS_CHECK__", "true")?
+* Does the network tab show requests being sent to unexpected endpoints or throwing specific Javascript errors?
+

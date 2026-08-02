@@ -1,0 +1,47 @@
+The [Common Weakness Enumeration (CWE)](https://cwe.mitre.org/data/reports/chains_and_composites.html) managed by MITRE formally catalogs all variations of structural, memory, lifecycle, scope, and mathematical anomalies regarding variable handling. [1] 
+The comprehensive list below encompasses every distinct architectural vulnerability involving variables categorized across software exploitation history: [1] 
+------------------------------
+## Group 1: Memory-Boundary Variable Flaws
+
+* CWE-121: Stack-Based Buffer Overflow – Writing excess data past a variable's allocated boundary on the call stack.
+* CWE-122: Heap-Based Buffer Overflow – Forcing dynamically allocated variable arrays to spill over into adjacent memory slots.
+* CWE-124: Buffer Underwrite (Negative Indexing) – Referencing or writing to a variable pointer address located before the intended index array.
+* CWE-787: Out-of-Bounds Write – The generic category for writing variable data outside the boundaries of the designated storage array.
+* CWE-125: Out-of-Bounds Read – Allowing system processes to view contents outside a variable's bounds, causing an information leak. [2] 
+
+## Group 2: Lifecycle & Allocation Flaws
+
+* CWE-456: Missing Initialization of a Variable – The system leaves a variable unallocated, relying on unsafe or conditional declarations. [3] 
+* CWE-457: Use of Uninitialized Variable – Reading from a declared variable before assigning a value, absorbing random residual memory junk. [2, 4] 
+* CWE-908: Use of Uninitialized Resource – Utilizing systemic or structural entities before data parameters have been established. [5] 
+* CWE-416: Use-After-Free (Dangling Pointer) – Accessing a variable reference pointer after its linked memory block has already been released back to the heap.
+* CWE-415: Double Free – Executing a memory cleanup command twice on the same pointer variable, inducing systemic instability.
+* CWE-562: Return of Stack Variable Address – A function terminates but leaves a pointer reference pointing down to local stack variable addresses. [6] 
+
+## Group 3: Type & Cast Conversion Flaws
+
+* CWE-843: Type Confusion – Allocating a variable space as one type but running code operations that parse it as an entirely different type.
+* CWE-190: Integer Overflow / Wraparound – Incrementing a numeric variable past its bit limit, forcing it to instantly flip into negative numbers.
+* CWE-191: Integer Underflow / Wraparound – Decrementing a numeric variable past zero, causing it to cycle into a massive positive value.
+* CWE-195: Signed to Unsigned Conversion Error – Forcing a casting operation that changes negative integer variables into positive array bounds.
+* CWE-704: Incorrect Type Conversion – Forcing variable conversion routines across unrelated object types, causing logic crashes.
+
+## Group 4: Dynamic & Architectural Manipulation
+
+* CWE-627: Dynamic Variable Evaluation – The execution engine treats raw strings supplied by users as actual variable assignments.
+* CWE-914: Improper Control of Dynamically-Identified Variables – The program permits input parameter names to dynamically resolve into target application variables.
+* CWE-473: PHP External Variable Modification (Variable Extraction) – Forcing input maps to overwrite pre-existing system configurations.
+* CWE-154: Improper Neutralization of Variable Name Delimiters – Allowing specific symbol configurations to split variable structures apart.
+* CWE-767: Access to Critical Private Variable via Public Method – Exposing secure variable fields through insufficiently protected getter methods. [7, 8, 9] 
+
+## Group 5: Scope & Concurrency Flaws
+
+* CWE-1126: Declaration of Variable with Unnecessarily Wide Scope – Exposing internal variable components globally rather than sealing them locally.
+* CWE-1109: Use of Same Variable for Multiple Purposes – Reusing a single variable container globally across unrelated modules, crossing data streams.
+* CWE-563: Assignment to Variable without Use – Storing values inside a memory variable container and leaving it dead, creating compiler bloat.
+* CWE-567: Unsynchronized Access to Shared Data in a Multithreaded Context – Thread collisions modifying shared variable objects concurrently.
+* CWE-367: Time-of-Check to Time-of-Use (TOCTOU) – A race condition where a variable's state shifts after a verification check passes.
+* CWE-426: Untrusted Search Path – Relying on environment variables like $PATH that malicious local users can alter. [10, 11, 12, 13, 14] 
+
+------------------------------
+If you are writing a automated code analyzer or building a payload, let me know which group you want to focus on. I can provide the exact code block that demonstrates how that vulnerability triggers at the machine layer.
