@@ -1,0 +1,104 @@
+To uncover vulnerabilities that automated scanners and thousands of standard researchers routinely miss across these specific categories, you have to exploit deep logic state flaws, asynchronous race windows, type confusion, and multi-tier infrastructure parsing asymmetries.
+Scanners only look for immediate HTTP status codes, reflected input, or simple differential responses. They do not understand business state transitions or backend processing chains.
+Here is exactly what is hidden from standard views for every vulnerability class listed in the 1win scope.
+------------------------------
+## 🛡️ Critical Severity Vulnerabilities## 1. Remote Code Execution (RCE)
+
+* What everyone misses: Fuzzing standard input fields for OS command characters (|, &, $()).
+* What is actually hidden: RCE hidden behind trusted file processors or memory corruption in low-level edge-case dependencies. [1] 
+* The Technique: Look for places where the application parses complex data formats like spreadsheet imports for betting logs, image processing for identity verification (OCR), or PDF generators for transaction histories.
+* The Hidden Invalidation: Uploading a valid image file that embeds malicious payloads targeting underlying libraries (like ImageMagick or Ghostscript vulnerabilities). Alternatively, exploiting template injection (SSTI) inside custom web-hook or notification setups where user variables are rendered dynamically into back-end server environments. [2, 3, 4] 
+
+## 2. Unauthorized Fund Movement / Balance Crediting
+
+* What everyone misses: Changing the amount parameter from positive to negative in a standard request.
+* What is actually hidden: Floating-point underflow math errors or asynchronous state splitting between independent microservices.
+* The Technique: When converting balances between different currencies or transferring funds to secondary wallets, use extreme fractional floating-point numbers (e.g., 0.00000001).
+* The Hidden Invalidation: If the balance-deduction logic rounds a value down to zero, but the balance-addition logic rounds that exact same fractional transaction up to the lowest real currency unit (e.g., 0.01), automated recursive loops can generate unauthorized value out of thin air.
+
+## 3. Payment Verification Bypass or Double-Credit
+
+* What everyone misses: Modifying the payment status string from pending to success in an HTTP proxy.
+* What is actually hidden: Non-cryptographic signature parsing errors and type juggling within payment gateway callbacks.
+* The Technique: Look at how the system verifies signature arrays (sha256(secret + amount + orderId)).
+* The Hidden Invalidation: If the code uses loose comparison operators (== instead of ===), sending the signature parameter as a boolean true or an array instead of a string can cause the verification algorithm to resolve as true without validating the authentic payment data. Another hidden flaw is Order ID collisions—generating a real pending transaction ID that perfectly mirrors a previously completed transaction hash pattern.
+
+## 4. Injections (SQLi or Equivalent)
+
+* What everyone misses: Putting a single quote (') or OR 1=1 into search inputs or login forms.
+* What is actually hidden: Second-order SQL/NoSQL injections inside parameters that are processed late by background databases.
+* The Technique: Target parameters that are stored for administrative review, such as the User-Agent string, regional localization settings, or custom voucher codes.
+* The Hidden Invalidation: The front-end API sanitizes the input safely before storing it in a staging cache. However, when an internal analytical script or billing ledger queries that data hours later, the unescaped input executes directly inside a secondary backend system (such as an internal PostgreSQL or MongoDB instance processing historical metrics).
+
+## 5. Local File Access / Manipulation (LFI, RFI, XXE) [5] 
+
+* What everyone misses: Putting ../../etc/passwd directly into file path URL arguments.
+* What is actually hidden: Path traversal via archive decompression or XML external entity parsing within data schemas.
+* The Technique: Focus on zip/tar extraction features (like uploading a compressed batch configuration file) or XML-based profile configurations.
+* The Hidden Invalidation: Simulating a Zip Slip vulnerability by creating an archive file where the file headers inside the compressed archive explicitly contain directory traversal paths (../../filename). When the back-end extraction microservice unpacks the document, it writes arbitrary files directly across unauthorized locations on the internal server storage. [6, 7] 
+
+## 6. Admin / Support Interface Authentication Bypass [8] 
+
+* What everyone misses: Trying admin credentials like admin/admin on an uncovered /admin portal.
+* What is actually hidden: Access control bypass via proxy headers and routing discrepancy exploits.
+* The Technique: Send normal queries to public user endpoints, but inject specific HTTP routing headers designed to confuse internal reverse proxies (like Nginx or Cloudflare).
+* The Hidden Invalidation: Modifying headers like X-Original-URL, X-Rewrite-URL, or Forwarded. If the edge proxy passes these headers to the internal routing architecture without scrubbing them, the application server may treat the query as a local, fully authenticated call originating directly from an admin control loop. [9, 10, 11] 
+
+------------------------------
+## 📈 High Severity Vulnerabilities## 7. Server-Side Request Forgery (SSRF) - Blind & Non-Blind [12, 13, 14, 15] 
+
+* What everyone misses: Passing http://127.0.0.1 into profile avatar image URLs.
+* What is actually hidden: DNS rebinding and protocol smuggling inside web-hook registration frameworks.
+* The Technique: Utilize a custom DNS server that fluctuates its resolution mapping instantly.
+* The Hidden Invalidation: When the application performs a validation check on a user-submitted URL, the DNS resolves to a safe public IP address. Immediately after passing the verification step, the backend engine initiates the actual data connection request. At that exact millisecond, the DNS shifts resolution to an internal private IP address (http://169.254.169.254 or 127.0.0.1), bypassing the internal blocklist. [16, 17, 18] 
+
+## 8. Info Disclosure / IDOR / BOLA (Critical, Bulk, or Non-Covered Data) [19] 
+
+* What everyone misses: Incrementing a standard numeric variable like user_id=1001 to 1002.
+* What is actually hidden: Mass assignment context leaks and second-order object reference validation failures.
+* The Technique: Look at requests where deep JSON structures are processed, such as /api/v1/profile/update.
+* The Hidden Invalidation: Automated tools check variables on the direct target view. They miss hidden property modification. If you inject unauthorized nested variables into a payload (e.g., adding "preferences": {"role": "manager", "view_all_transactions": true}), an insecurely configured ORM engine may save the property directly to the database without checking if the specific account possesses authorization to hold that parameter role.
+
+## 9. Account Takeover (ATO)
+
+* What everyone misses: Forcing weak passwords or testing standard token resets without rate limits.
+* What is actually hidden: Race conditions in password reset redemption or array-based token parameter pollution.
+* The Technique: Request a password reset link to an account you own. Intercept the redemption request where the key is supplied.
+* The Hidden Invalidation: Supplying the token argument as an array containing multiple values (token[]=valid_token&token[]=victim_target_id). If the authentication system parses the array using logic that verifies the first item (your valid key) but executes the account adjustment step using the secondary reference value, you can hijack the access credential assignment workflow. [20] 
+
+## 10. Admin / Support Interface Blind XSS
+
+* What everyone misses: Injecting <script>alert(1)</script> into standard profile name fields.
+* What is actually hidden: Stored XSS payloads targeting administrative chat frameworks, ticketing log files, or internal security review consoles.
+* The Technique: Focus fields directly associated with backend administrative workflows, such as user feedback logs, bug report attachments, or payment dispute descriptions.
+* The Hidden Invalidation: The public API strips standard active scripts. However, by using alternative event handlers or encoding mechanisms (such as <svg onload=eval(atob('BASE64_PAYLOAD'))>), the script can stay dormant in the database until an operator opens the specific customer ticket in their dedicated, un-sanitized internal desktop portal.
+
+------------------------------
+## ⚖️ Medium & Low Severity Vulnerabilities## 11. Financial Business-Logic Bypass with Quantifiable Gain
+
+* What everyone misses: Using a promo code twice sequentially on the same browser session.
+* What is actually hidden: Multi-tab state corruption and cross-currency exchange rate drift.
+* The Technique: Open multiple simultaneous active connection windows targeting a singular promo-code redemption flow or voucher activation pool.
+* The Hidden Invalidation: Lock a specific transaction state in window A (e.g., confirming a balance conversion calculation) and pause. In window B, execute a transaction that modifies your core account balance currency state. When you resume the transaction in window A, the system may process the final checkout step using the stale balance context checked prior to the modification, letting you artificially multiply value.
+
+## 12. Cross-Site Scripting (XSS)
+
+* What everyone misses: Standard browser alerts via manual reflected input strings.
+* What is actually hidden: Client-side prototype pollution or postMessage communication vulnerabilities.
+* The Technique: Look for places where the application integrates third-party widgets or listens for incoming JavaScript windows via event listeners.
+* The Hidden Invalidation: If the main window features a window.addEventListener('message') parameter that fails to strictly validate the origin (event.origin), any external malicious frame running alongside the browser context can transmit custom JSON events to force the parent frame to execute internal JavaScript commands. [21] 
+
+## 13. Subdomain Takeover
+
+* What everyone misses: Checking if a random dead subdomain returns a standard "404 Not Found" page.
+* What is actually hidden: Subdomain hijacking via orphan CNAME paths hidden behind private regional content delivery networks (CDNs) or local cloud environments.
+* The Technique: Use advanced DNS lookup tools to look past public nameservers, mapping out localized regional domains (br.1w.run, in.1w.cash) back to their base internal tracking paths.
+* The Hidden Invalidation: Scanners miss domains where a CNAME points to an external cloud resource bucket that was deleted, but the actual domain zone entry remains intact. Registering that exact bucket name on the external provider gives you immediate administrative command over that specific subdomain zone.
+
+------------------------------
+## 🎯 Next Steps to Advance Your Hunt
+To focus your efforts on these high-leverage entry points:
+
+* Which specific category (Payment Hash Juggling or Reverse Proxy Routing Discrepancies) matches your target strategy?
+* Do you want to review the precise HTTP/2 single-packet configuration rules needed to bypass standard WAF rate limits for these tests?
+

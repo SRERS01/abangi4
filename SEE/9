@@ -1,0 +1,71 @@
+## 🚨 Part 1: Automated Regex Alarms in Burp Suite
+Standard traffic lists are too noisy. Thousands of requests fly by, and human eyes miss the small tracking parameters where the financial "glue" is hidden. To fix this, you must configure Burp Suite to act as an automated, passive alarm system that flags these hidden structures instantly.
+## Step-by-Step Configuration:
+
+   1. Open Burp Suite and navigate to Extensions -> BBRug / Match and Replace (or use the core Proxy -> HTTP history filter settings).
+   2. For an automated live scanner approach, go to Settings -> Tools -> Proxy -> Highlighting Rules or use Logger.
+   3. Create a new custom rule under Match and Replace or create an Intruder/Scanner configuration with the following parameters:
+
+## The Regex Rules to Apply:
+Add these exact strings to your match rules to force Burp Suite to highlight requests in Red/Orange the millisecond they cross your proxy network:
+
+* Rule 1 (Callback & Webhook Traps):
+* Type: Response / Request Header & Body
+   * Regex: (?i)(callback|webhook|notify_url|return_url|success_url|fail_url|redirect_uri)
+   * Purpose: This catches the exact location where 1win tells the third-party provider, "Send the payment confirmation back here."
+* Rule 2 (Signature & Cryptographic Verification Traps):
+* Type: Request Body / Query String
+   * Regex: (?i)(sign|signature|hash|hmac|mac|checksum|token|auth_key)
+   * Purpose: This instantly isolates the integrity checks. If you see these fields present alongside a callback URL, you have successfully isolated a high-value payment gateway validation tier.
+* Rule 3 (Transaction Reference IDs):
+* Type: Request Body
+   * Regex: (?i)(utr|txn_id|transaction_id|reference_no|order_id|payment_id)
+   * Purpose: Flags where the tracking numbers reside, allowing you to quickly copy them for the multi-threaded replay attacks described earlier.
+
+------------------------------
+## 🔍 Part 2: Extracting and Decoding Cryptographic Payment Traps
+When you isolate a payment request, the data inside the parameters will often look like a scrambled string of random numbers and letters (e.g., Y2hhaW5fZGF0YV9leGFtcGxl... or %3D%3D). Automated tools fail here because they do not know how to unpack this information safely to read the underlying values.
+Here is the precise extraction pipeline to reverse-engineer what the server is reading.
+
+       [ Scrambled Parameter String ]
+                     │
+                     ▼
+         [ Step 1: URL Decoding ] (Removes %3D, %2F)
+                     │
+                     ▼
+       [ Step 2: Base64/Hex Decoding ] (Unpacks the raw string)
+                     │
+                     ▼
+      [ Readable JSON / Parameter Map ] (Reveals hidden structural fields)
+
+## Step 1: URL Decoding
+Data sent via HTTP POST or GET queries is almost always URL-encoded.
+
+* The Problem: Characters like = become %3D, and / becomes %2F.
+* The Fix: Highlight the string in Burp Suite and press Ctrl + U (or Cmd + U on Mac) to decode it into raw text.
+
+## Step 2: Identification & Base64 Decoding
+If the decoded string ends with one or two equals signs (=), or contains a clean alphanumeric mix, it is encoded in Base64.
+
+* The Fix: Send the payload to Burp CyberChef or Burp Decoder. Choose Decode as... Base64.
+* What is hidden inside: This often unpacks a secondary, completely hidden JSON object containing the merchant ID, the real internal account status, and transaction validation flags that were invisible on the standard screen view.
+
+## Step 3: Hex and MD5/SHA Separation
+If the string is exactly 32, 40, or 64 characters long and contains only numbers and the letters a-f, it is a cryptographic hash signature (MD5, SHA-1, or SHA-256).
+
+* The Extraction: You cannot "decrypt" a hash, but you can deduce how the developers built it. Look at the other parameters in that same request.
+* The Reversal Formula: If the request contains amount=10.00, order=555, and a 32-character hash, open your local terminal and test variations of those strings combined to see if you can recreate the exact same hash pattern:
+
+# Testing if the signature is simply MD5(order + amount)
+echo -n "55510.00" | md5sum
+# Testing if it uses a common delimiter format
+echo -n "555|10.00|1win_secret" | md5sum
+
+If your local execution output matches the signature value passing through your proxy, you have successfully reverse-engineered their verification matrix. You can now craft your own authenticated payloads manually, bypassing the limitation that stops 99% of other bug hunters.
+------------------------------
+## 🚀 Moving Into Action
+With your regex alarms configured and your extraction pipeline ready to go:
+
+* Would you like a live execution checklist to track your test cycles systematically when you initiate your first real payment pathway check?
+* Or do you want to review the precise Burp Suite macro tracking configuration to handle dynamic session tokens automatically during long testing hours?
+

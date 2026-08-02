@@ -1,0 +1,92 @@
+## 🛡️ Critical Severity Vulnerabilities## 1. Remote Code Execution (RCE)
+
+* What scripts fail to see: Scanners look for instant command execution outputs in web forms or search boxes using common characters (|, &, $).
+* What is truly hidden: Asynchronous, second-order RCE hidden deep within backend media processing engines or serialized file uploads.
+* How to find it: Identify places where the platform processes user-provided files or formats (like uploading a custom profile picture, uploading a verification document, or generating a PDF statement/betting slip).
+* The Execution: Create an image payload that exploits memory corruption in the server's back-end image handling libraries (such as a polyglot SVG or an image containing embedded server-side template tags like {{7*7}}). If the back-end converts or processes this file hours later in an isolated environment, it executes code out-of-band.
+
+## 2. Unauthorized Fund Movement or Balance Crediting
+
+* What scripts fail to see: Changing an HTTP parameter like amount=10 to amount=-10 or amount=999999 to see if it allows free money.
+* What is actually hidden: Micro-transaction precision loss and cross-currency decimal rounding mismatches inside internal database ledgers.
+* How to find it: Target endpoints that handle internal funds routing, such as converting balance from one currency to another or transferring small amounts between your own main wallet and bonus wallets.
+* The Execution: Submit a transaction using extreme fractional decimals (e.g., 0.00000001). If the balance-deduction engine truncates or rounds this fractional value down to 0.00 on your sending balance, but the receiving wallet engine rounds it up to 0.01, you create real money by cycling the request rapidly inside a single loop.
+
+## 3. Payment Verification Bypass or Double-Credit
+
+* What scripts fail to see: Intercepting a redirect request and manually changing status=fail to status=success.
+* What is actually hidden: Cryptographic signature validation omissions when processing regional third-party payment gateway callbacks (webhooks).
+* How to find it: Locate the hidden endpoint where the payment provider tells 1win that a deposit was completed (e.g., /api/payments/callback/v2/).
+* The Execution: Automated tools cannot guess these webhook payloads. You must capture a real transaction callback payload. Then, remove the cryptographic signature entirely, or shift the payload type (e.g., changing a parameter string into an array status[]=success). If the back-end code uses a loose type-comparison check (== instead of ===), the authentication logic resolves as valid, crediting your balance without a real payment.
+
+## 4. Injections (SQLi or equivalent)
+
+* What scripts fail to see: Scanners inject ' OR 1=1 -- into inputs and look for rapid database error pages or delay changes.
+* What is actually hidden: Stored, multi-tier execution where malicious data stays completely silent in a safe database, only to execute inside a different analytical database later.
+* How to find it: Look for headers or data fields that are logged but never displayed back to you, such as the User-Agent, X-Forwarded-For tracking headers, or custom betting names.
+* The Execution: Inject an SQL or NoSQL payload into these tracking fields. The primary database saves it securely without issue. However, at midnight, when a secondary background script pulls these transaction logs to generate business analytics or anti-fraud metrics, the raw data executes directly inside that internal analytical database.
+
+## 5. Local File Access / Manipulation (LFR, RFI, XXE)
+
+* What scripts fail to see: Appending standard strings like ../../../../etc/passwd directly to parameter paths.
+* What is actually hidden: Archive extraction path traversal (Zip Slip) or external entity processing via nested XML data streams.
+* How to find it: Find functions that accept zipped batch files, backup templates, or configuration uploads.
+* The Execution: Craft a custom .zip or .tar archive file manually. Inside this archive, name the files explicitly using directory traversal sequences (e.g., a file named ../../../../var/www/html/index.php). When the server-side microservice unzips the archive automatically, it overrides or writes files outside the intended directory, opening access to internal file paths.
+
+## 6. Admin / Support Interface Authentication Bypass
+
+* What scripts fail to see: Trying standard dictionary passwords or scanning common paths like /admin/ or /login/.
+* What is actually hidden: Proxy routing asymmetries where front-end reverse proxies (like Cloudflare or Nginx) and back-end application servers parse URL paths differently.
+* The Execution: Submit a request using path pollution or trailing characters (e.g., /api/v1/user/settings/..;/..;/admin/dashboard). The front-end proxy reads the path as a safe user settings directory and allows it past the firewall. The back-end application resolves the relative dot segments, stripping the path down to the hidden admin interface.
+
+------------------------------
+## 📈 High Severity Vulnerabilities## 7. SSRF (Server-Side Request Forgery) - Blind & Non-Blind
+
+* What scripts fail to see: Passing http://127.0.0.1 into image URLs or profile links to look for an immediate server error or response.
+* What is actually hidden: Time-of-Check to Time-of-Use (TOCTOU) DNS rebinding that exploits delayed back-end resolution.
+* The Execution: Provide a URL pointing to a custom domain nameserver that you control. Configure your nameserver to return a perfectly safe, public IP address on the first request (when the application validates the URL against its internal blocklist). Program your nameserver to immediately change its response to an internal local address (127.0.0.1 or 169.254.169.254) on the second request—the exact millisecond the backend engine actually fetches the data.
+
+## 8. Info Disclosure / IDOR / BOLA
+
+* What scripts fail to see: Incrementing numeric identifiers sequentially (e.g., changing id=5001 to id=5002) and checking the page content.
+* What is actually hidden: JSON Mass Assignment where unexpected object keys modify hidden administrative properties inside a profile or session data model.
+* The Execution: When updating standard user preferences, manually inject undocumented parameters into the JSON body (e.g., adding "role": "operator" or "vip_tier": 99). If the developer used an ORM framework that automatically maps incoming JSON keys to the user database record without an explicit whitelist, you overwrite unauthorized account fields.
+
+## 9. Account Takeover (ATO)
+
+* What scripts fail to see: Brute-forcing standard login forms or attempting to guess password reset tokens.
+* What is actually hidden: Session fragmentation via multi-device synchronization endpoints or token pollution.
+* The Execution: Request an account link or password recovery token to your own address. Intercept the confirmation request and add duplicate or array-based parameters targeting a victim (e.g., email=your_email@test.com&email=victim@test.com). If the validation script maps the authorization check to the first email but updates the account password using the secondary parameter value, the victim's profile is hijacked.
+
+## 10. Admin / Support Interface Blind XSS
+
+* What scripts fail to see: Injecting basic alert scripts like <script>alert(1)</script> into visible name fields.
+* What is actually hidden: Delayed payload execution inside internal customer relationship management (CRM) frameworks or security operations centers.
+* The Execution: Submit a ticket or set a profile parameter using uncommon event handlers or obfuscated tags (e.g., <iframe srcdoc="&#x3C;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;&#x3E;...">). The text looks completely safe and sterile to the public web application. It remains completely hidden until a support operator opens your file inside their specialized, internal admin tool, executing your script in their session context.
+
+------------------------------
+## ⚖️ Medium & Low Severity Vulnerabilities## 11. Financial Business-Logic Bypass with Quantifiable Gain
+
+* What scripts fail to see: Using a promotional voucher code multiple times on a single browser session.
+* What is actually hidden: State desynchronization across concurrent client tabs or live conversion rate delays.
+* The Execution: Open two browser tabs. In Tab A, initiate a balance withdrawal or conversion check and pause at the final validation step. In Tab B, quickly spend or bet that exact same balance. Go back to Tab A and click submit. Because scripts test actions sequentially, they miss this gap: if the backend fails to re-verify the account state at the exact millisecond of completion, you bypass financial limit controls.
+
+## 12. Cross-Site Scripting (XSS)
+
+* What scripts fail to see: Standard reflected or stored input characters inside common search bars or profile fields.
+* What is actually hidden: Client-side prototype pollution that alters the core structure of global JavaScript objects via the browser URL.
+* The Execution: Fuzz the application query parameters with keys like __proto__[template]=.... Scanners miss this because no characters are reflected in the HTML source code. Instead, the input alters the base execution flow of the client-side JavaScript engine itself, forcing it to execute code when a secondary script initializes.
+
+## 13. Subdomain Takeover
+
+* What scripts fail to see: Running automated tools that flag dead "404 Not Found" pages on root domains.
+* What is actually hidden: Orphaned regional CNAME routing tags pointing to deleted, secondary third-party localization buckets.
+* The Execution: Manually audit localized domains (br.1w.run, in.1w.cash). Look for domains whose DNS setup still points to a third-party host (like an old CDN, chat widget, or regional landing page engine) that was deleted from the provider but never cleaned up in the 1win DNS console. Registering that exact identifier on the third-party provider gives you control over that domain space.
+
+------------------------------
+## 🎯 Proposing the Next Phase
+Now that you have the complete map of hidden flaws across every single tier:
+
+* Do you want to write a custom python script template to target a specific flow (like testing the currency rounding precision math)?
+* Or would you prefer to break down how to capture and analyze the hidden payment gateway callback endpoints?
+

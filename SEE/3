@@ -1,0 +1,32 @@
+To find what over a thousand researchers missed, you must avoid automated tools and standard checklists. Most hunters run the same scanners, check the same basic IDORs, and move on. You will find bugs by exploiting business complexity, structural architectural flaws, and edge-case application logic. [1] 
+Here is how to look where others fail to see.
+## 1. Chain Multiple Low-Severity Behaviors
+Most researchers report single bugs (e.g., a reflected parameter or a minor info disclosure) and get an "Informative" closure. You win by combining them.
+
+* The Blueprint: Find a low-level information disclosure or IDOR that leaks an internal user variable (like an internal account token or UUID). Use that leaked token to bypass a security check on a completely different endpoint, such as a withdrawal or registration flow.
+
+## 2. Hunt for Context-Switching Flaws
+1win uses multiple platforms, mirrors, and third-party APIs. Vulnerabilities always hide where two different systems talk to each other.
+
+* The Casino API Handshake: When you launch a casino game, 1win's backend issues a token and hands your session over to a third-party game provider (like Pragmatic Play or Evolution). Inspect this handshake. Does the third-party game balance sync instantly with the main wallet? If you lose money in a game, kill your WebSocket or network connection immediately. Does the main 1win database register the loss, or does it time out and preserve your balance?
+* Mobile API vs. Desktop Web: Switch your browser user-agent to an obsolete mobile device or intercept requests from their official Android/iOS apps. Developers frequently forget to implement the same rate-limits, validation rules, or authorization checks on mobile API endpoints (/api/v2/mobile/...) that they strict-tested on the web version. [2, 3] 
+
+## 3. Exploit Mass Assignment & Nested JSON Parsing
+Standard tools test top-level HTTP parameters. They miss deep parameters nested inside complex JSON payloads.
+
+* The Blueprint: When updating your personal profile settings or creating a support ticket, look at the JSON structure sent to the server. Proactively inject hidden, administrative parameters into the payload that weren't originally there (e.g., adding "isAdmin": true, "role": "operator", or "balance_bonus": 9999). If the backend parses JSON objects directly into data models without strict white-listing, you can overwrite unauthorized fields.
+
+## 4. Create Complex Currency/Fractional Race Conditions
+Standard race condition checks just send 10 identical requests to see if they get a double payout. Advanced hunters manipulate values to break database math.
+
+* The Blueprint: Open two accounts. Account A uses a high-value currency (like USD). Account B uses a low-value hyper-inflationary currency with a high decimal multiplier. Transfer fractional, tiny amounts between them or into a shared game wallet simultaneously. Force the system to convert currencies back and forth at the exact same millisecond. Look for rounding errors that slice away fractional pennies in your favor on every automated cycle.
+
+## 5. Weaponize Regional & Local Variations
+Because 1win functions across dozens of developing countries (e.g., Cameroon, Bangladesh, Brazil), they must integrate with highly localized, third-party mobile money providers (like MTN MoMo, Orange Money, or local banking apps).
+
+* The Blueprint: Global researchers usually test with standard international credit cards or simulated test gateways. Use your local geolocation to test real, hyper-local payment redirect flows. Local gateway callbacks are notoriously poorly coded by regional third-party providers. Look for weak verification hashes, easily guessing payment order numbers, or unauthenticated HTTP callbacks originating from these specific regional payment routes.
+
+If you are ready to dig into this now, tell me:
+
+* Are you going to look at the third-party casino game handshakes or the local payment gateway configurations first?
+* Do you need a specific Burp Suite macro / Turbo Intruder python script tailored for hunting these nested currency/concurrency bugs?
